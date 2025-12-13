@@ -189,21 +189,7 @@ The compiled JAR will be located at:
 build/libs/veil_origins_mod-1.0.2.jar
 ```
 
----
 
-## 🔗 Related Mods
-
-Veil Origins is part of the **Veil-Bound Mods** ecosystem:
-
-| Mod                                  | Description                                   |
-| ------------------------------------ | --------------------------------------------- |
-| [Veil Origins](./veil_origins_mod)   | Core origin system (this mod)                 |
-| [Veil Quests](./veil_quests)         | Quest system with origin-specific story lines |
-| [Veil Share](./veil_share)           | P2P multiplayer connectivity                  |
-| [Veil Animations](./veil_animations) | Animation framework for entities              |
-| [Veil Mobs](./veil_mobs)             | Custom mobs and bosses                        |
-
----
 
 ## 🤝 Contributing
 
@@ -240,8 +226,8 @@ See [LICENSE.md](LICENSE.md) for the full license text.
 
 ## 📞 Support
 
-- **Issues**: Report bugs on [GitHub Issues](#)
-- **Discord**: Join our community [Discord Server](#)
+- **Issues**: Report bugs on [GitHub Issues](https://github.com/InsanityLabs/Veil-Origins/issues)
+- **Discord**: Join our community [Discord Server (Soon)](#)
 - **Authors**: Insanity Studios
 
 ---
