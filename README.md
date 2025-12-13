@@ -10,6 +10,7 @@
   <img alt="Minecraft" src="https://img.shields.io/badge/Minecraft-1.21.1--1.21.3-green?style=flat-square">
   <img alt="Java" src="https://img.shields.io/badge/Java-21+-orange?style=flat-square">
   <img alt="License" src="https://img.shields.io/badge/License-Clopen%20v1.0-yellow?style=flat-square">
+  [![Java CI with Gradle](https://github.com/InsanityLabs/Veil-Origins/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/InsanityLabs/Veil-Origins/actions/workflows/gradle.yml)
 </p>
 
 ---
