@@ -1,0 +1,10 @@
+{
+  "type": "veil_origins:pocket_dimension",
+  "generator": {
+    "type": "veil_origins:pocket_dimension",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:the_void"
+    }
+  }
+}

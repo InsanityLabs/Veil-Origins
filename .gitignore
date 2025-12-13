@@ -1,10 +1,30 @@
-.eclipse
-.gradle
-.idea
-.vscode
-.settings
-bin/
+# Gradle
+.gradle/
 build/
 out/
+*.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Run directories
+run/
+.idea/
+
+.settings
+
+bin
+
+build/
+
 gradle/
+
 runs/
