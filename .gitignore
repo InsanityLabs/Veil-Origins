@@ -1,0 +1,10 @@
+.eclipse
+.gradle
+.idea
+.vscode
+.settings
+bin/
+build/
+out/
+gradle/
+runs/
