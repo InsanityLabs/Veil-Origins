@@ -59,7 +59,7 @@
 1. Download the latest release from [Releases](#)
 2. Place the `.jar` file in your Minecraft `mods` folder
 3. Launch Minecraft with NeoForge
-4. (Optional) Install companion mods: [Veil Quests](#), [Veil Share](#), [Veil Animations](#)
+4. (Optional) Install companion mods: [Veil Quests(Soon)](#), [Veil Animations(Soon)](#)
 
 ---
 
