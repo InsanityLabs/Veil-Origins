@@ -20,6 +20,8 @@ import com.veilorigins.origins.vampire.*;
 import com.veilorigins.origins.vampling.*;
 import com.veilorigins.origins.werewolf.*;
 import com.veilorigins.origins.wolfling.*;
+import com.veilorigins.origins.dryad.*;
+import com.veilorigins.origins.necromancer.*;
 
 public class ModOrigins {
 
@@ -43,6 +45,8 @@ public class ModOrigins {
                 registerVampling();
                 registerWerewolf();
                 registerWolfling();
+                registerDryad();
+                registerNecromancer();
         }
 
         private static void registerVeilborn() {
@@ -388,5 +392,43 @@ public class ModOrigins {
                                 .build();
 
                 VeilOriginsAPI.registerOrigin(wolfling);
+        }
+
+        private static void registerDryad() {
+                Origin dryad = new OriginBuilder("veil_origins:dryad")
+                                .setDisplayName("Dryad")
+                                .setDescription(
+                                                "Nature spirit and forest guardian. You command plants and commune with nature, but fire and dry climates are hostile to you.")
+                                .setImpactLevel(ImpactLevel.MEDIUM)
+                                .setHealthModifier(1.0f)
+                                .setSpeedModifier(1.0f)
+                                .addAbility(new EntanglingRootsAbility())
+                                .addAbility(new NaturesBlessingAbility())
+                                .addPassive(new SunlightPhotosynthesisPassive())
+                                .addPassive(new ForestBondPassive())
+                                .addPassive(new DryadWeaknessesPassive())
+                                .setResourceType(new ResourceType("nature_energy", 100, 0.5f))
+                                .build();
+
+                VeilOriginsAPI.registerOrigin(dryad);
+        }
+
+        private static void registerNecromancer() {
+                Origin necromancer = new OriginBuilder("veil_origins:necromancer")
+                                .setDisplayName("Necromancer")
+                                .setDescription(
+                                                "Master of death and undeath. You command the dead and drain life from the living, but sunlight weakens you and holy places are harmful.")
+                                .setImpactLevel(ImpactLevel.HIGH)
+                                .setHealthModifier(0.9f) // Slightly less health
+                                .setSpeedModifier(1.0f)
+                                .addAbility(new RaiseDeadAbility())
+                                .addAbility(new LifeSiphonAbility())
+                                .addPassive(new UndeadMasteryPassive())
+                                .addPassive(new DeathAuraPassive())
+                                .addPassive(new NecromancerWeaknessesPassive())
+                                .setResourceType(new ResourceType("death_essence", 100, 0.4f))
+                                .build();
+
+                VeilOriginsAPI.registerOrigin(necromancer);
         }
 }
