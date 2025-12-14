@@ -6,7 +6,7 @@ plugins {
     id 'net.neoforged.gradle.userdev' version '7.0.163'
 }
 
-version = '1.0.2'
+version = '1.0.3'
 group = 'com.veilorigins'
 
 base {

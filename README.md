@@ -34,7 +34,7 @@
 
 ## ✨ Features
 
-- ✅ **19 Unique Origins** - Each with distinct abilities, passives, and playstyles
+- ✅ **21 Unique Origins** - Each with distinct abilities, passives, and playstyles
 - ✅ **Core API System** - Extensible API for addon developers
 - ✅ **Origin Management** - Full registration and player data attachment system
 - ✅ **HUD Overlay** - Resource bar + ability cooldowns display
@@ -111,19 +111,21 @@ All commands require operator permission level 2.
 | **Ethereal**    | Ghostly being phased between dimensions               | Phase Shift, Possession           |
 | **Vampire**     | Immortal blood drinker with night powers              | Blood Drain, Bat Form             |
 | **Werewolf**    | Cursed shapeshifter with moon-powered transformations | Wolf Form, Howl                   |
+| **Necromancer** | Master of death and undeath, summons minions          | Raise Dead, Life Siphon           |
 
 ### Medium Impact Origins
 
-| Origin           | Description                                 | Abilities                        |
-| ---------------- | ------------------------------------------- | -------------------------------- |
-| **Frostborn**    | Children of winter, masters of ice and cold | Ice Spike, Blizzard              |
-| **Cindersoul**   | Born from volcanic fury, masters of flame   | Flame Burst, Lava Walk           |
-| **Tidecaller**   | Ocean dwellers who command water            | Tidal Wave, Aqua Bubble          |
-| **Starborne**    | Fallen from the cosmos, light-empowered     | Celestial Dash, Starlight Beacon |
-| **Skyborn**      | Wind masters who never touch the ground     | Wind Blast, Updraft              |
-| **Mycomorph**    | Part mushroom, part humanoid                | Spore Cloud, Fungal Network      |
-| **Technomancer** | Cybernetic being, master of redstone        | Redstone Pulse, Overclock        |
-| **Vampling**     | Lesser vampire with diluted bloodline       | Life Steal                       |
+| Origin           | Description                                 | Abilities                           |
+| ---------------- | ------------------------------------------- | ----------------------------------- |
+| **Frostborn**    | Children of winter, masters of ice and cold | Ice Spike, Blizzard                 |
+| **Cindersoul**   | Born from volcanic fury, masters of flame   | Flame Burst, Lava Walk              |
+| **Tidecaller**   | Ocean dwellers who command water            | Tidal Wave, Aqua Bubble             |
+| **Starborne**    | Fallen from the cosmos, light-empowered     | Celestial Dash, Starlight Beacon    |
+| **Skyborn**      | Wind masters who never touch the ground     | Wind Blast, Updraft                 |
+| **Mycomorph**    | Part mushroom, part humanoid                | Spore Cloud, Fungal Network         |
+| **Technomancer** | Cybernetic being, master of redstone        | Redstone Pulse, Overclock           |
+| **Vampling**     | Lesser vampire with diluted bloodline       | Life Steal                          |
+| **Dryad**        | Nature spirit and forest guardian           | Entangling Roots, Nature's Blessing |
 
 ### Low Impact Origins
 
@@ -191,8 +193,6 @@ The compiled JAR will be located at:
 ```
 build/libs/veil_origins_mod-1.0.2.jar
 ```
-
-
 
 ## 🤝 Contributing
 
