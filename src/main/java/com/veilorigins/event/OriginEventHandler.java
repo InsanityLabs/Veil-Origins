@@ -4,7 +4,12 @@ import com.veilorigins.VeilOrigins;
 import com.veilorigins.api.Origin;
 import com.veilorigins.api.VeilOriginsAPI;
 import com.veilorigins.data.OriginData;
+import com.veilorigins.network.ModPackets;
+import com.veilorigins.network.packet.SyncOriginDataPacket;
+import com.veilorigins.origins.vampire.VampiricDoubleJumpPassive;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -20,15 +25,30 @@ public class OriginEventHandler {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
-        if (!player.level().isClientSide()) {
+        if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             VeilOriginsAPI.loadPlayerOrigin(player);
 
             Origin origin = VeilOriginsAPI.getPlayerOrigin(player);
+
+            // Sync origin data to the client - this is critical for multiplayer!
+            OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
+            String originId = origin != null ? origin.getId().toString() : "";
+            SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
+                    originId,
+                    data.getOriginLevel(),
+                    data.getOriginXP(),
+                    data.getResourceBar());
+            ModPackets.sendToPlayer(serverPlayer, syncPacket);
+            VeilOrigins.LOGGER.info("Sent origin sync packet to player {}: {}",
+                    player.getName().getString(), originId);
+
             if (origin != null) {
-                player.sendSystemMessage(Component.literal("§aWelcome back, " + origin.getDisplayName() + "!"));
+                player.sendSystemMessage(Component.literal("Welcome back, " + origin.getDisplayName() + "!")
+                        .withStyle(ChatFormatting.GREEN));
             } else {
                 player.sendSystemMessage(Component
-                        .literal("§eYou haven't chosen an origin yet. Use /origin select <origin> to choose one!"));
+                        .literal("You haven't chosen an origin yet. Use /origin select <origin> to choose one!")
+                        .withStyle(ChatFormatting.YELLOW));
             }
         }
     }
@@ -41,6 +61,8 @@ public class OriginEventHandler {
         Player player = event.getEntity();
         if (!player.level().isClientSide()) {
             VeilOriginsAPI.unloadPlayer(player);
+            // Clean up sync tracking to prevent memory leaks
+            lastSyncedResource.remove(player.getUUID());
         }
     }
 
@@ -50,11 +72,26 @@ public class OriginEventHandler {
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
-        if (!player.level().isClientSide()) {
+        if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             // Load origin again to reapply passive effects
             VeilOriginsAPI.loadPlayerOrigin(player);
+
+            // Re-sync origin data to the client after respawn
+            Origin origin = VeilOriginsAPI.getPlayerOrigin(player);
+            OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
+            String originId = origin != null ? origin.getId().toString() : "";
+            SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
+                    originId,
+                    data.getOriginLevel(),
+                    data.getOriginXP(),
+                    data.getResourceBar());
+            ModPackets.sendToPlayer(serverPlayer, syncPacket);
         }
     }
+
+    // Track last synced resource bar values per player to avoid excessive syncing
+    private static final java.util.Map<java.util.UUID, Float> lastSyncedResource = new java.util.HashMap<>();
+    private static int syncTickCounter = 0;
 
     @SubscribeEvent
     public static void onPlayerTick(net.neoforged.neoforge.event.tick.EntityTickEvent.Pre event) {
@@ -81,6 +118,29 @@ public class OriginEventHandler {
         if (origin.getResourceType() != null) {
             float regenRate = origin.getResourceType().getRegenRate();
             data.addResource(regenRate / 20.0f); // Per tick
+        }
+
+        // Periodic sync of resource bar to client (every 20 ticks / 1 second)
+        // Only sync if the value has changed significantly to reduce network traffic
+        if (player instanceof ServerPlayer serverPlayer) {
+            syncTickCounter++;
+            if (syncTickCounter >= 20) {
+                syncTickCounter = 0;
+
+                float currentResource = data.getResourceBar();
+                Float lastResource = lastSyncedResource.get(player.getUUID());
+
+                // Sync if changed by more than 0.5 or if never synced
+                if (lastResource == null || Math.abs(currentResource - lastResource) > 0.5f) {
+                    SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
+                            origin.getId().toString(),
+                            data.getOriginLevel(),
+                            data.getOriginXP(),
+                            currentResource);
+                    ModPackets.sendToPlayer(serverPlayer, syncPacket);
+                    lastSyncedResource.put(player.getUUID(), currentResource);
+                }
+            }
         }
 
         // Cindersoul resource logic (Internal Heat)
@@ -196,6 +256,21 @@ public class OriginEventHandler {
         // Skyborn takes 75% reduced fall damage when falling from high altitudes
         if (origin.getId().getPath().equals("skyborn")) {
             event.setDamageMultiplier(0.25f);
+        }
+
+        // Vampire/Vampling: No fall damage after double jump
+        String originPath = origin.getId().getPath();
+        if (originPath.equals("vampire") || originPath.equals("vampling")) {
+            // Check if player has the VampiricDoubleJumpPassive and has immunity
+            origin.getPassives().stream()
+                    .filter(passive -> passive instanceof VampiricDoubleJumpPassive)
+                    .findFirst()
+                    .ifPresent(passive -> {
+                        VampiricDoubleJumpPassive doubleJumpPassive = (VampiricDoubleJumpPassive) passive;
+                        if (doubleJumpPassive.hasDoubleJumpImmunity(player)) {
+                            event.setCanceled(true);
+                        }
+                    });
         }
     }
 
@@ -318,7 +393,7 @@ public class OriginEventHandler {
             if (lightLevel >= 8) {
                 event.setCanceled(true);
                 player.sendSystemMessage(
-                        net.minecraft.network.chat.Component.literal("§cYou cannot place such bright light sources!"));
+                        Component.literal("You cannot place such bright light sources!").withStyle(ChatFormatting.RED));
             }
         }
     }
@@ -343,7 +418,8 @@ public class OriginEventHandler {
                 player.level().explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         5.0f, net.minecraft.world.level.Level.ExplosionInteraction.BLOCK);
                 player.sendSystemMessage(
-                        net.minecraft.network.chat.Component.literal("§5Reality is too unstable - the bed explodes!"));
+                        Component.literal("Reality is too unstable - the bed explodes!")
+                                .withStyle(ChatFormatting.DARK_PURPLE));
             }
         }
     }

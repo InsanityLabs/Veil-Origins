@@ -23,6 +23,7 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.ChatFormatting;
 
 public class FlameBurstAbility extends OriginAbility {
     private static final int RADIUS = 8;
@@ -80,8 +81,10 @@ public class FlameBurstAbility extends OriginAbility {
 
         // Notify player if creepers were detonated
         if (creepersDetonated > 0) {
-            player.sendSystemMessage(Component.literal("§c§l" + creepersDetonated + " Creeper" +
-                    (creepersDetonated > 1 ? "s" : "") + " ignited! §r§7Run!"));
+            player.sendSystemMessage(
+                    Component.literal(ChatFormatting.RED + "" + ChatFormatting.BOLD + creepersDetonated + " Creeper" +
+                            (creepersDetonated > 1 ? "s" : "") + " ignited! " + ChatFormatting.RESET
+                            + ChatFormatting.GRAY + "Run!"));
         }
 
         // Environmental Effects (Blocks)

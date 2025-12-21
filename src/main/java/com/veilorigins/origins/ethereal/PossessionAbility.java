@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
 
 /**
  * Possession - Take control of a mob, seeing through their eyes and controlling
@@ -99,12 +100,18 @@ public class PossessionAbility extends OriginAbility {
             long endTime = level.getGameTime() + POSSESSION_DURATION;
             possessedMobs.put(player.getUUID(), new PossessionState(target, endTime, player.position()));
 
-            // Make player invisible and mount the mob (for camera control)
+            // Make player invisible (they'll observe from mob's perspective)
             player.setInvisible(true);
-            player.startRiding(target, true);
 
-            // Disable mob AI temporarily
-            target.setNoAi(true);
+            // DON'T use riding - it breaks movement. Instead, sync position directly.
+            // Mark the mob with a tag so we know it's possessed
+            target.addTag("possessed_by:" + player.getUUID().toString());
+
+            // Keep mob AI enabled but clear its current target
+            target.setTarget(null);
+
+            // Teleport player to be inside the mob (invisible, so this is fine)
+            player.teleportTo(target.getX(), target.getY(), target.getZ());
 
             // Visual/audio feedback
             level.playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -119,13 +126,18 @@ public class PossessionAbility extends OriginAbility {
             }
 
             player.sendSystemMessage(
-                    Component.literal("§5§lPossessing " + target.getName().getString() + "! §r§7(30 seconds)"));
-            player.sendSystemMessage(Component.literal("§7Use the ability again or wait to end possession."));
+                    Component.literal(ChatFormatting.DARK_PURPLE + "" + ChatFormatting.BOLD + "Possessing "
+                            + target.getName().getString() + "! " + ChatFormatting.RESET + ChatFormatting.GRAY
+                            + "(30 seconds)"));
+            player.sendSystemMessage(
+                    Component.literal(
+                            ChatFormatting.GRAY + "WASD to move the mob. Press R/V again or wait to end possession."));
 
             player.causeFoodExhaustion(HUNGER_COST);
             startCooldown();
         } else {
-            player.sendSystemMessage(Component.literal("§cNo possessable mob found! Look at a mob to possess it."));
+            player.sendSystemMessage(
+                    Component.literal(ChatFormatting.RED + "No possessable mob found! Look at a mob to possess it."));
         }
     }
 
@@ -143,29 +155,50 @@ public class PossessionAbility extends OriginAbility {
             Mob target = state.target;
 
             // Check if possession should end
-            if (currentTime >= state.endTime || !target.isAlive() || !player.isPassenger()) {
+            if (currentTime >= state.endTime || !target.isAlive()) {
                 endPossession(player, level);
                 return;
             }
 
+            // Keep player synced with mob position (player is invisible and inside mob)
+            player.teleportTo(target.getX(), target.getY(), target.getZ());
+
             // Transfer player input to mob movement
-            // The player is riding, so their input controls the mount
-            // We need to make the mob move based on player looking direction
-            if (player.zza != 0 || player.xxa != 0) {
-                Vec3 moveDir = player.getLookAngle().multiply(1, 0, 1).normalize();
-                float speed = 0.3f;
+            // Use player input to control the mob's navigation/velocity
+            float forward = player.zza; // W/S key input (-1 to 1)
+            float strafe = player.xxa; // A/D key input (-1 to 1)
 
-                // Forward/backward
-                if (player.zza > 0) {
-                    target.setDeltaMovement(moveDir.scale(speed).add(0, target.getDeltaMovement().y, 0));
-                } else if (player.zza < 0) {
-                    target.setDeltaMovement(moveDir.scale(-speed * 0.5).add(0, target.getDeltaMovement().y, 0));
-                }
+            if (forward != 0 || strafe != 0) {
+                // Calculate movement direction based on where player is looking
+                float yaw = player.getYRot();
+                double radYaw = Math.toRadians(yaw);
 
-                // Make mob face same direction as player
-                target.setYRot(player.getYRot());
-                target.setYHeadRot(player.getYRot());
-                target.yRotO = player.getYRot();
+                // Forward/backward movement in the direction player faces
+                double moveX = -Math.sin(radYaw) * forward + -Math.cos(radYaw) * strafe;
+                double moveZ = Math.cos(radYaw) * forward + -Math.sin(radYaw) * strafe;
+
+                float speed = (float) target
+                        .getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED) * 3.5f;
+
+                // Apply movement to the mob
+                target.setDeltaMovement(
+                        moveX * speed,
+                        target.getDeltaMovement().y, // Keep vertical momentum
+                        moveZ * speed);
+
+                // Make mob face the movement direction for visual coherence
+                target.setYRot(yaw);
+                target.setYHeadRot(yaw);
+                target.yRotO = yaw;
+
+                // Also use navigation for pathfinding around obstacles
+                Vec3 targetPos = target.position().add(moveX * 3, 0, moveZ * 3);
+                target.getNavigation().moveTo(targetPos.x, targetPos.y, targetPos.z, 1.5);
+            }
+
+            // Clear mob's attack target to prevent it attacking while possessed
+            if (target.getTarget() != null) {
+                target.setTarget(null);
             }
 
             // Soul trail particles
@@ -178,7 +211,8 @@ public class PossessionAbility extends OriginAbility {
             // Warning when time is running out
             long remaining = state.endTime - currentTime;
             if (remaining == 5 * 20) {
-                player.sendSystemMessage(Component.literal("§ePossession ending in 5 seconds..."));
+                player.sendSystemMessage(
+                        Component.literal(ChatFormatting.YELLOW + "Possession ending in 5 seconds..."));
             }
         }
     }
@@ -190,16 +224,13 @@ public class PossessionAbility extends OriginAbility {
         if (state != null) {
             Mob target = state.target;
 
-            // Dismount
-            player.stopRiding();
+            // Remove possession tag from mob
+            if (target.isAlive()) {
+                target.removeTag("possessed_by:" + player.getUUID().toString());
+            }
 
             // Restore player visibility
             player.setInvisible(false);
-
-            // Restore mob AI
-            if (target.isAlive()) {
-                target.setNoAi(false);
-            }
 
             // Teleport player next to mob (not inside it)
             Vec3 exitPos = target.position().add(
@@ -218,7 +249,7 @@ public class PossessionAbility extends OriginAbility {
                         20, 0.5, 0.5, 0.5, 0.1);
             }
 
-            player.sendSystemMessage(Component.literal("§7Possession ended."));
+            player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Possession ended."));
         }
     }
 

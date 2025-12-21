@@ -12,6 +12,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.ChatFormatting;
 
 public class SunlightPhotosynthesisPassive extends OriginPassive {
     private int tickCounter = 0;
@@ -101,7 +102,7 @@ public class SunlightPhotosynthesisPassive extends OriginPassive {
     @Override
     public void onEquip(Player player) {
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                "§aAs a Dryad, you photosynthesize in sunlight. Flowers empower you."));
+                ChatFormatting.GREEN + "As a Dryad, you photosynthesize in sunlight. Flowers empower you."));
     }
 
     @Override

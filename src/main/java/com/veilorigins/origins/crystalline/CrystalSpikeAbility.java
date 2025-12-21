@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.ChatFormatting;
 
 /**
  * Crystal Spike - Summons a burst of crystal shards that damage and slow
@@ -110,7 +111,8 @@ public class CrystalSpikeAbility extends OriginAbility {
         }
 
         if (!spikesPlaced.isEmpty()) {
-            player.sendSystemMessage(Component.literal("§d" + spikesPlaced.size() + " crystal spikes erupted!"));
+            player.sendSystemMessage(Component
+                    .literal(ChatFormatting.LIGHT_PURPLE + "" + spikesPlaced.size() + " crystal spikes erupted!"));
         }
 
         player.causeFoodExhaustion(HUNGER_COST);

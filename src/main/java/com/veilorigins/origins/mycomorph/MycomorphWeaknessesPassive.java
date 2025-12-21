@@ -4,6 +4,7 @@ import com.veilorigins.api.OriginPassive;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.ChatFormatting;
 
 public class MycomorphWeaknessesPassive extends OriginPassive {
     private int tickCounter = 0;
@@ -38,7 +39,7 @@ public class MycomorphWeaknessesPassive extends OriginPassive {
     @Override
     public void onEquip(Player player) {
         player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal("§2As Mycomorph, fire is death, but nature is your ally."));
+                .literal(ChatFormatting.DARK_GREEN + "As Mycomorph, fire is death, but nature is your ally."));
     }
 
     @Override

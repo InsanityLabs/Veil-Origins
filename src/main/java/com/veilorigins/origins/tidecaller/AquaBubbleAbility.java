@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
 
 /**
  * Aqua Bubble - Dual mode ability:
@@ -103,11 +104,15 @@ public class AquaBubbleAbility extends OriginAbility {
 
         // Message
         if (playersBuffed > 0) {
-            player.sendSystemMessage(Component.literal("§b§lAqua Bubble! §r§7Water Breathing shared with §b" +
-                    playersBuffed + " §7nearby player" + (playersBuffed > 1 ? "s" : "") + "!"));
+            player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Aqua Bubble! "
+                    + ChatFormatting.RESET + ChatFormatting.GRAY + "Water Breathing shared with " + ChatFormatting.AQUA
+                    +
+                    playersBuffed + ChatFormatting.GRAY + " nearby player" + (playersBuffed > 1 ? "s" : "") + "!"));
         } else {
             player.sendSystemMessage(Component
-                    .literal("§b§lAqua Bubble! §r§7Water Breathing for 60 seconds. §8(Stay near allies to share!)"));
+                    .literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Aqua Bubble! " + ChatFormatting.RESET
+                            + ChatFormatting.GRAY + "Water Breathing for 60 seconds. " + ChatFormatting.DARK_GRAY
+                            + "(Stay near allies to share!)"));
         }
     }
 
@@ -123,8 +128,9 @@ public class AquaBubbleAbility extends OriginAbility {
         for (Player nearbyPlayer : nearbyPlayers) {
             nearbyPlayer.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, duration, 0, false, true));
             nearbyPlayer.setAirSupply(nearbyPlayer.getMaxAirSupply());
-            nearbyPlayer.sendSystemMessage(Component.literal("§b" + tidecaller.getName().getString() +
-                    " §7is sharing their Aqua Bubble with you!"));
+            nearbyPlayer
+                    .sendSystemMessage(Component.literal(ChatFormatting.AQUA + "" + tidecaller.getName().getString() +
+                            ChatFormatting.GRAY + " is sharing their Aqua Bubble with you!"));
             count++;
 
             // Particles on buffed player
@@ -223,9 +229,10 @@ public class AquaBubbleAbility extends OriginAbility {
         }
 
         if (entitiesHit > 0) {
-            player.sendSystemMessage(Component.literal("§b§lWater Ball! §r§7Hit " + entitiesHit + " enemies!"));
+            player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Water Ball! "
+                    + ChatFormatting.RESET + ChatFormatting.GRAY + "Hit " + entitiesHit + " enemies!"));
         } else {
-            player.sendSystemMessage(Component.literal("§bWater Ball fired!"));
+            player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "Water Ball fired!"));
         }
     }
 

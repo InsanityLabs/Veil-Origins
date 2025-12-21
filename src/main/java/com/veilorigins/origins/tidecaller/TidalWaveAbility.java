@@ -17,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.minecraft.ChatFormatting;
 
 public class TidalWaveAbility extends OriginAbility {
     private static final int COOLDOWN = 30 * 20; // 30 seconds
@@ -146,7 +147,8 @@ public class TidalWaveAbility extends OriginAbility {
 
         // Feedback message
         if (enemiesHit > 0 || firesExtinguished > 0) {
-            player.sendSystemMessage(Component.literal("§b§lTidal Wave! §r§7Hit " + enemiesHit + " enemies" +
+            player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Tidal Wave! "
+                    + ChatFormatting.RESET + ChatFormatting.GRAY + "Hit " + enemiesHit + " enemies" +
                     (firesExtinguished > 0 ? ", extinguished " + firesExtinguished + " fires" : "")));
         }
 

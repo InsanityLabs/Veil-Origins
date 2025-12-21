@@ -9,6 +9,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.ChatFormatting;
 
 public class DryadWeaknessesPassive extends OriginPassive {
     private int tickCounter = 0;
@@ -87,7 +88,8 @@ public class DryadWeaknessesPassive extends OriginPassive {
     @Override
     public void onEquip(Player player) {
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                "§cWarning: As a Dryad, fire deals 50% more damage. Desert biomes and the Nether are hostile to you."));
+                ChatFormatting.RED
+                        + "Warning: As a Dryad, fire deals 50% more damage. Desert biomes and the Nether are hostile to you."));
     }
 
     @Override

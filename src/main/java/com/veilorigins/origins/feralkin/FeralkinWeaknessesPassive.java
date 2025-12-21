@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.ChatFormatting;
 
 public class FeralkinWeaknessesPassive extends OriginPassive {
     private int tickCounter = 0;
@@ -47,7 +48,8 @@ public class FeralkinWeaknessesPassive extends OriginPassive {
                 // Warning at 45 seconds (15 seconds remaining)
                 if (civilizedSeconds == 45 && !hasWarned) {
                     player.sendSystemMessage(Component.literal(
-                            "§eYou're starting to feel uncomfortable in this civilized area... (15s remaining)"));
+                            ChatFormatting.YELLOW
+                                    + "You're starting to feel uncomfortable in this civilized area... (15s remaining)"));
                     hasWarned = true;
                 }
 
@@ -59,7 +61,8 @@ public class FeralkinWeaknessesPassive extends OriginPassive {
                     // Notify every 10 seconds
                     if ((civilizedSeconds - CIVILIZED_GRACE_SECONDS) % 10 == 0) {
                         player.sendSystemMessage(
-                                Component.literal("§cToo many artificial smells! Leave this civilized area!"));
+                                Component.literal(
+                                        ChatFormatting.RED + "Too many artificial smells! Leave this civilized area!"));
                     }
                 }
             } else {
@@ -67,7 +70,8 @@ public class FeralkinWeaknessesPassive extends OriginPassive {
                 if (civilizedSeconds > 0) {
                     civilizedSeconds = 0;
                     hasWarned = false;
-                    player.sendSystemMessage(Component.literal("§aYou feel more comfortable in the wilderness."));
+                    player.sendSystemMessage(
+                            Component.literal(ChatFormatting.GREEN + "You feel more comfortable in the wilderness."));
                 }
             }
         }
@@ -82,7 +86,8 @@ public class FeralkinWeaknessesPassive extends OriginPassive {
                     // Remove heavy armor
                     player.getInventory().removeItem(armor);
                     player.drop(armor, false);
-                    player.sendSystemMessage(Component.literal("§cHeavy armor feels too restrictive!"));
+                    player.sendSystemMessage(
+                            Component.literal(ChatFormatting.RED + "Heavy armor feels too restrictive!"));
                 }
             }
         }
@@ -154,7 +159,8 @@ public class FeralkinWeaknessesPassive extends OriginPassive {
     @Override
     public void onEquip(Player player) {
         player.sendSystemMessage(Component
-                .literal("§7As Feralkin, you cannot wear heavy armor and feel uncomfortable in civilized areas."));
+                .literal(ChatFormatting.GRAY
+                        + "As Feralkin, you cannot wear heavy armor and feel uncomfortable in civilized areas."));
     }
 
     @Override

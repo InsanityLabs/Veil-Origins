@@ -1,8 +1,160 @@
 # Changelog
 
-## v1.0.3
+## v1.0.3 (2025-12-21) - RELEASED
 
-### In Development.....
+### Added
+
+#### Unicode Font Handler System
+
+- **New `UnicodeFontHandler`** - Custom font rendering system for improved Unicode support
+
+  - Uses Java AWT to load TrueType fonts with full Unicode character support
+  - Generates bitmap texture atlases for efficient GPU rendering
+  - Automatic glyph caching for performance
+  - Graceful fallback to Minecraft's default font for unsupported characters
+  - Auto-detects system fonts with good Unicode coverage (Segoe UI Symbol, Arial Unicode MS, DejaVu Sans, etc.)
+  - Pre-caches common Unicode ranges: Basic Latin, Latin-1 Supplement, General Punctuation, Symbols, Dingbats
+
+- **New `UnicodeFontUtils`** - Utility class for formatted text with Unicode
+
+  - Symbol text helpers: `checkText()`, `crossText()`, `energyText()`, `diamondText()`, etc.
+  - Status indicators with color-coded symbols
+  - Progress bar generation using Unicode block characters (█░)
+  - Cooldown formatting with automatic time conversion
+  - Decorative elements: separators, boxed titles, bullet points
+
+- **Unicode Symbol Constants** - Easy access to commonly used symbols:
+  - ✓ ✗ ⚡ ♦ ♥ ★ ● → ← ↑ ↓ ∞ ☠ ☀ ☽
+
+#### HUD Configuration System
+
+- **New HUD Config Screen** - Press **H** to open a dedicated screen for customizing HUD elements
+
+  - Toggle individual HUD elements on/off with visual ON/OFF indicators
+  - Adjust HUD opacity (0-100%) with visual slider
+  - "Enable All" / "Disable All" quick preset buttons
+  - Changes save automatically
+
+- **New Keybind** - `H` key opens the HUD Configuration screen (configurable in Controls)
+
+- **Granular HUD Toggles** - Control visibility of each HUD element individually:
+
+  - Origin Info Panel (name and level display)
+  - Resource Bar (blood, heat, hydration, etc.)
+  - XP Progress Bar
+  - Ability Indicators (cooldown boxes)
+  - Passive Indicators (e.g., double jump ready)
+  - Cooldown Overlays (animated cooldown fill)
+  - Keybind Hints ([R], [V] labels)
+  - Unicode Symbols (✓/✗ vs ASCII)
+
+- **Config Screen in Mod List** - Access mod settings from the NeoForge mod list "Config" button
+
+#### Vampire & Vampling - New Passives
+
+- **Vampiric Double Jump** - Sprint and double-tap jump while airborne to perform a damaging leap!
+
+  - Deals damage to nearby enemies (6 HP for Vampire, 3 HP for Vampling)
+  - Knocks back enemies hit
+  - Provides forward momentum boost
+  - Visual crimson spore particles and smoke effects
+  - Audio feedback with bat takeoff and phantom flap sounds
+  - Cooldown: 1.5s (Vampire) / 2s (Vampling)
+
+- **Blood Drain Gaze** - Crouch and stare at a creature with blood for 5 seconds to drain it!
+  - Works on any creature with blood: large animals, villagers, pillagers, players
+  - Excludes undead (zombies, skeletons), constructs (iron golems), and tiny creatures (bats, chickens)
+  - Progress bar UI while focusing
+  - Crimson particle stream from target to player
+  - Deals continuous damage while healing the vampire
+  - Slows and weakens the target
+  - Bonus effects when fully draining a creature (Regeneration II, Strength I)
+  - Range: 8 blocks (Vampire) / 5 blocks (Vampling)
+
+#### Werewolf & Wolfling - Dietary Preferences
+
+- **Rotten Flesh Immunity** - Can eat rotten flesh without the hunger debuff
+
+  - Also provides minor healing (2 HP for Werewolf, 1 HP for Wolfling)
+  - "The rotten flesh satisfies your feral hunger!"
+
+- **Raw Meat Preference** - Eating raw meat provides bonus effects
+  - Regeneration (II for Werewolf, I for Wolfling)
+  - Saturation bonus
+  - "The raw meat invigorates you!"
+
+#### Vampire & Vampling - Dietary Preferences
+
+- **Raw Meat Bonus** - Eating raw meat provides regeneration
+
+  - "The blood in the meat sustains you!"
+  - Full Vampires also get Strength I boost
+
+- **Cooked Meat Weakness** - Cooked meat provides little nourishment
+  - Applies Weakness I effect
+  - "The cooked meat provides little nourishment..."
+
+### Changed
+
+- **Code Quality: ChatFormatting** - Replaced all `§` section symbol color codes with proper `ChatFormatting` enum
+
+  - Affected files: `OriginCommand`, `OriginEventHandler`, `SelectOriginPacket`, `FoodEventHandler`, `HudConfigScreen`, `RadialMenuScreen`
+  - Uses `.withStyle()` and `.append()` for multi-colored Component messages
+  - More maintainable, type-safe, and IDE-friendly
+
+- **Unicode Symbol Rendering** - `OriginHudOverlay` now uses `UnicodeFontHandler.getSymbol()` for proper fallback
+
+  - Automatically falls back to ASCII if Unicode symbol can't be rendered
+
+- **Config Split** - Configuration now separated into two files:
+  - `veil_origins-common.toml` - Gameplay settings (cooldowns, damage, abilities, sizes)
+  - `veil_origins-client.toml` - Client-side HUD/display settings
+- **Translation Keys** - Added translation keys for all config options for localization support
+
+### Fixed
+
+#### HUD Config Screen
+
+- **Fixed background rendering above buttons** - Corrected render order so widgets display on top of background
+- **Fixed Unicode minus symbol not rendering** - Changed `−10` (U+2212) to ASCII `-10`
+
+#### Config Loading Crash
+
+- **Fixed crash on startup: "Cannot get config value before config is loaded"**
+  - Root cause: `onLoad` handler tried to access both COMMON and CLIENT config values when only one was loaded
+  - Now checks which config spec is being loaded and only accesses values from that config
+
+#### Multiplayer Origin Synchronization
+
+- **Fixed non-host players unable to use origin abilities (R and V keybinds) in multiplayer**
+  - Root cause: Origin data was not being synced from server to client for non-host players
+  - `SyncOriginDataPacket.handle()` now properly updates the client-side origin cache
+  - Added `VeilOriginsAPI.setPlayerOriginClient()` for client-side cache updates without triggering server-side passives
+  - Sync packets are now sent:
+    - When a player logs in
+    - When a player respawns
+    - When a player selects or changes their origin
+    - When origin is set/reset via commands
+  - Added periodic resource bar sync (every 1 second) to keep HUD accurate
+  - Non-host players can now see their origin HUD elements and use all abilities
+
+### Technical
+
+- Added `UnicodeFontHandler` - Custom Unicode font rendering with AWT, texture atlas, and glyph caching
+- Added `UnicodeFontUtils` - Utility methods for formatted text with Unicode symbols
+- Added `HudConfigScreen` - New GUI screen for HUD configuration
+- Added `OptionsScreenHandler` - Utility for opening HUD config from various contexts
+- Added `HUD_CONFIG` keybind (H key) with handler in `KeyInputHandler`
+- Registered `IConfigScreenFactory` for NeoForge mod list config button
+- Split `ModConfigEvent` handler to load COMMON and CLIENT configs separately
+- Added `VampiricDoubleJumpPassive` - Server-validated double jump with client-side input detection
+- Added `BloodDrainGazePassive` - Crosshair-based drain mechanic with entity type filtering
+- Added `FoodEventHandler` - Handles dietary effects for wolf and vampire origins
+- Added `DoubleJumpPacket` - Network packet for double jump synchronization
+- Entity blood detection uses type ID blacklist for reliable cross-version compatibility
+- Initialized `UnicodeFontHandler` in `VeilOrigins.onClientSetup()` for early availability
+
+---
 
 ## v1.0.2
 

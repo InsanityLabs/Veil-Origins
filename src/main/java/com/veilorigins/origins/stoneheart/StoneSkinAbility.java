@@ -7,6 +7,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.ChatFormatting;
 
 public class StoneSkinAbility extends OriginAbility {
     private static final int RESOURCE_COST = 6;
@@ -22,13 +23,13 @@ public class StoneSkinAbility extends OriginAbility {
     public void onActivate(Player player, Level level) {
         isActive = true;
         activeDuration = DURATION;
-        
+
         // Apply slowness to prevent movement (rooted)
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, DURATION, -10, false, false));
-        
+
         // Visual feedback
-        player.sendSystemMessage(Component.literal("§7You become as immovable as stone!"));
-        
+        player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "You become as immovable as stone!"));
+
         startCooldown();
     }
 
@@ -36,18 +37,19 @@ public class StoneSkinAbility extends OriginAbility {
     public void tick(Player player) {
         if (isActive && activeDuration > 0) {
             activeDuration--;
-            
+
             // Keep player rooted
             player.setDeltaMovement(0, player.getDeltaMovement().y, 0);
-            
+
             // Warning when ending
             if (activeDuration == 3 * 20) {
-                player.sendSystemMessage(Component.literal("§eStone Skin ending in 3 seconds..."));
+                player.sendSystemMessage(
+                        Component.literal(ChatFormatting.YELLOW + "Stone Skin ending in 3 seconds..."));
             }
-            
+
             if (activeDuration == 0) {
                 isActive = false;
-                player.sendSystemMessage(Component.literal("§7Stone Skin ended."));
+                player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Stone Skin ended."));
             }
         }
     }

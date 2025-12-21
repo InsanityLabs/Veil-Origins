@@ -5,6 +5,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.ChatFormatting;
 
 public class VampirePassive extends OriginPassive {
     private int tickCounter = 0;
@@ -18,18 +19,18 @@ public class VampirePassive extends OriginPassive {
         tickCounter++;
         Level level = player.level();
         int lightLevel = level.getMaxLocalRawBrightness(player.blockPosition());
-        
+
         // Night vision in darkness
         if (lightLevel < 11) {
             player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 220, 0, false, false));
         } else if (player.hasEffect(MobEffects.NIGHT_VISION)) {
             player.removeEffect(MobEffects.NIGHT_VISION);
         }
-        
+
         // Check every 20 ticks (1 second)
         if (tickCounter >= 20) {
             tickCounter = 0;
-            
+
             // Sunlight damage (2 HP per second) - helmet protects
             if (level.isDay() && level.canSeeSky(player.blockPosition()) && lightLevel >= 12) {
                 // Check if wearing helmet
@@ -38,7 +39,7 @@ public class VampirePassive extends OriginPassive {
                 }
             }
         }
-        
+
         // Strength at night
         if (lightLevel < 7) {
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 25, 1, false, false));
@@ -48,7 +49,8 @@ public class VampirePassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§4As a Vampire, you are powerful at night but burn in sunlight. Wear a helmet for protection!"));
+        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(ChatFormatting.DARK_RED
+                + "As a Vampire, you are powerful at night but burn in sunlight. Wear a helmet for protection!"));
     }
 
     @Override

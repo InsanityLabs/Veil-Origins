@@ -11,6 +11,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.ChatFormatting;
 
 public class ShadowMeldAbility extends OriginAbility {
     private static final int RESOURCE_COST = 4;
@@ -25,31 +26,32 @@ public class ShadowMeldAbility extends OriginAbility {
     @Override
     public void onActivate(Player player, Level level) {
         int lightLevel = level.getMaxLocalRawBrightness(player.blockPosition());
-        
+
         // Only works in darkness (light level 7 or below)
         if (lightLevel > 7) {
-            player.sendSystemMessage(Component.literal("§cToo bright! Shadow Meld requires darkness (light level 7 or below)."));
+            player.sendSystemMessage(Component.literal(
+                    ChatFormatting.RED + "Too bright! Shadow Meld requires darkness (light level 7 or below)."));
             return;
         }
-        
+
         isActive = true;
         activeDuration = DURATION;
-        
+
         // Apply invisibility
         player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, DURATION, 0, false, false));
-        
+
         // Shadow particles
         if (level instanceof ServerLevel serverLevel) {
             Vec3 pos = player.position();
             serverLevel.sendParticles(ParticleTypes.SMOKE,
-                pos.x, pos.y + 1, pos.z, 30, 0.5, 0.5, 0.5, 0.05);
+                    pos.x, pos.y + 1, pos.z, 30, 0.5, 0.5, 0.5, 0.05);
         }
-        
+
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-            SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.5f, 0.5f);
-        
-        player.sendSystemMessage(Component.literal("§8You meld into the shadows..."));
-        
+                SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.5f, 0.5f);
+
+        player.sendSystemMessage(Component.literal(ChatFormatting.DARK_GRAY + "You meld into the shadows..."));
+
         startCooldown();
     }
 
@@ -57,7 +59,7 @@ public class ShadowMeldAbility extends OriginAbility {
     public void tick(Player player) {
         if (isActive && activeDuration > 0) {
             activeDuration--;
-            
+
             // Check if still in darkness
             int lightLevel = player.level().getMaxLocalRawBrightness(player.blockPosition());
             if (lightLevel > 7) {
@@ -65,12 +67,12 @@ public class ShadowMeldAbility extends OriginAbility {
                 player.removeEffect(MobEffects.INVISIBILITY);
                 isActive = false;
                 activeDuration = 0;
-                player.sendSystemMessage(Component.literal("§cThe light breaks your shadow meld!"));
+                player.sendSystemMessage(Component.literal(ChatFormatting.RED + "The light breaks your shadow meld!"));
             }
-            
+
             if (activeDuration == 0) {
                 isActive = false;
-                player.sendSystemMessage(Component.literal("§8Shadow Meld ended."));
+                player.sendSystemMessage(Component.literal(ChatFormatting.DARK_GRAY + "Shadow Meld ended."));
             }
         }
     }
@@ -80,7 +82,7 @@ public class ShadowMeldAbility extends OriginAbility {
             player.removeEffect(MobEffects.INVISIBILITY);
             isActive = false;
             activeDuration = 0;
-            player.sendSystemMessage(Component.literal("§cAttacking breaks your shadow meld!"));
+            player.sendSystemMessage(Component.literal(ChatFormatting.RED + "Attacking breaks your shadow meld!"));
         }
     }
 

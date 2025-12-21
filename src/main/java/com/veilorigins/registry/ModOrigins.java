@@ -339,6 +339,8 @@ public class ModOrigins {
                                 .addAbility(new BloodDrainAbility())
                                 .addAbility(new BatFormAbility())
                                 .addPassive(new VampirePassive())
+                                .addPassive(new VampiricDoubleJumpPassive(6.0f))
+                                .addPassive(new BloodDrainGazePassive(true))
                                 .setResourceType(new ResourceType("blood_essence", 100, 0.3f))
                                 .build();
 
@@ -355,6 +357,8 @@ public class ModOrigins {
                                 .setSpeedModifier(1.05f)
                                 .addAbility(new LifeStealAbility())
                                 .addPassive(new VamplingPassive())
+                                .addPassive(new VampiricDoubleJumpPassive(3.0f))
+                                .addPassive(new BloodDrainGazePassive(false))
                                 .setResourceType(new ResourceType("blood_essence", 100, 0.5f))
                                 .build();
 

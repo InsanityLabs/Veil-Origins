@@ -1,5 +1,6 @@
 package com.veilorigins;
 
+import com.veilorigins.api.UnicodeFontHandler;
 import com.veilorigins.api.VeilOriginsAPI;
 import com.veilorigins.client.KeyBindings;
 import com.veilorigins.client.OriginHudOverlay;
@@ -17,6 +18,8 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +33,16 @@ public class VeilOrigins {
         // Register attachment types
         OriginData.ATTACHMENT_TYPES.register(modEventBus);
 
-        // Register config
-        modContainer.registerConfig(ModConfig.Type.COMMON, VeilOriginsConfig.SPEC);
-        LOGGER.info("Veil Origins: Registered configuration");
+        // Register configs - COMMON for gameplay settings, CLIENT for HUD settings
+        modContainer.registerConfig(ModConfig.Type.COMMON, VeilOriginsConfig.COMMON_SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, VeilOriginsConfig.CLIENT_SPEC);
+        LOGGER.info("Veil Origins: Registered COMMON and CLIENT configuration files");
+
+        // Register config screen for the mod list (client-side only)
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+            LOGGER.info("Veil Origins: Registered config screen factory");
+        }
 
         // Register dimensions
         com.veilorigins.registry.ModDimensions.CHUNK_GENERATORS.register(modEventBus);
@@ -63,6 +73,14 @@ public class VeilOrigins {
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
+        // Initialize Unicode font handler for rendering Unicode symbols in HUD
+        event.enqueueWork(() -> {
+            if (UnicodeFontHandler.initialize()) {
+                LOGGER.info("Veil Origins: Unicode font handler initialized successfully");
+            } else {
+                LOGGER.warn("Veil Origins: Unicode font handler initialization failed, falling back to ASCII symbols");
+            }
+        });
         LOGGER.info("Veil Origins: Client setup complete");
     }
 
@@ -70,7 +88,9 @@ public class VeilOrigins {
         event.register(KeyBindings.ABILITY_1);
         event.register(KeyBindings.ABILITY_2);
         event.register(KeyBindings.RESOURCE_INFO);
-        LOGGER.info("Veil Origins: Registered {} keybindings", 3);
+        event.register(KeyBindings.RADIAL_MENU);
+        event.register(KeyBindings.HUD_CONFIG);
+        LOGGER.info("Veil Origins: Registered {} keybindings", 5);
     }
 
     private void registerGuiLayers(RegisterGuiLayersEvent event) {

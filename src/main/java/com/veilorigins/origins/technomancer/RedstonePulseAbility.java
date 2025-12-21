@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.ChatFormatting;
 
 public class RedstonePulseAbility extends OriginAbility {
     private static final int COOLDOWN = 20 * 20;
@@ -46,7 +47,8 @@ public class RedstonePulseAbility extends OriginAbility {
             }
         }
 
-        player.sendSystemMessage(Component.literal("§cRedstone Pulse sent! (" + count + " activated)"));
+        player.sendSystemMessage(
+                Component.literal(ChatFormatting.RED + "Redstone Pulse sent! (" + count + " activated)"));
         startCooldown();
     }
 

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
 
 /**
  * Ore Resonance - Sense and highlight ores through walls using glowing markers
@@ -105,14 +106,16 @@ public class OreResonanceAbility extends OriginAbility {
 
         // Message with ore breakdown
         if (oresFound > 0) {
-            StringBuilder message = new StringBuilder("§d§lOre Resonance: §r§7Found ");
-            message.append(oresFound).append(" ores! §8(");
-            oreCounts.forEach((ore, count) -> message.append(getOreColor(ore)).append(ore).append("§8: §f")
+            StringBuilder message = new StringBuilder(ChatFormatting.LIGHT_PURPLE + "" + ChatFormatting.BOLD
+                    + "Ore Resonance: " + ChatFormatting.RESET + ChatFormatting.GRAY + "Found ");
+            message.append(oresFound).append(" ores! " + ChatFormatting.DARK_GRAY + "(");
+            oreCounts.forEach((ore, count) -> message.append(getOreColor(ore)).append(ore)
+                    .append(ChatFormatting.DARK_GRAY + ": " + ChatFormatting.WHITE)
                     .append(count).append(" "));
-            message.append("§8)");
+            message.append(ChatFormatting.DARK_GRAY + ")");
             player.sendSystemMessage(Component.literal(message.toString()));
         } else {
-            player.sendSystemMessage(Component.literal("§7No ores detected nearby..."));
+            player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "No ores detected nearby..."));
         }
 
         player.causeFoodExhaustion(HUNGER_COST);
@@ -151,7 +154,7 @@ public class OreResonanceAbility extends OriginAbility {
 
             if (markers.isEmpty()) {
                 activeMarkers.remove(id);
-                player.sendSystemMessage(Component.literal("§7Ore Resonance faded."));
+                player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Ore Resonance faded."));
             }
         }
     }
@@ -171,17 +174,17 @@ public class OreResonanceAbility extends OriginAbility {
 
     private String getOreColor(String oreName) {
         return switch (oreName) {
-            case "diamond" -> "§b";
-            case "emerald" -> "§a";
-            case "gold", "nether gold" -> "§6";
-            case "iron" -> "§f";
-            case "copper" -> "§6";
-            case "coal" -> "§8";
-            case "redstone" -> "§c";
-            case "lapis" -> "§9";
-            case "ancient debris" -> "§4";
-            case "nether quartz" -> "§f";
-            default -> "§7";
+            case "diamond" -> ChatFormatting.AQUA.toString();
+            case "emerald" -> ChatFormatting.GREEN.toString();
+            case "gold", "nether gold" -> ChatFormatting.GOLD.toString();
+            case "iron" -> ChatFormatting.WHITE.toString();
+            case "copper" -> ChatFormatting.GOLD.toString();
+            case "coal" -> ChatFormatting.DARK_GRAY.toString();
+            case "redstone" -> ChatFormatting.RED.toString();
+            case "lapis" -> ChatFormatting.BLUE.toString();
+            case "ancient debris" -> ChatFormatting.DARK_RED.toString();
+            case "nether quartz" -> ChatFormatting.WHITE.toString();
+            default -> ChatFormatting.GRAY.toString();
         };
     }
 

@@ -78,6 +78,24 @@ public class VeilOriginsAPI {
     }
 
     /**
+     * Client-side only: Set the player's origin in the local cache without
+     * triggering passives.
+     * This is used when receiving origin sync packets from the server.
+     * Passives are handled on the server side, so we only need to update the cache
+     * for client UI/abilities.
+     */
+    public static void setPlayerOriginClient(Player player, Origin origin) {
+        if (origin != null) {
+            PLAYER_ORIGINS.put(player, origin);
+            VeilOrigins.LOGGER.debug("Client: Set origin {} for player {}", origin.getId(),
+                    player.getName().getString());
+        } else {
+            PLAYER_ORIGINS.remove(player);
+            VeilOrigins.LOGGER.debug("Client: Cleared origin for player {}", player.getName().getString());
+        }
+    }
+
+    /**
      * Load origin from persistent data when player joins
      * Called from event handler on login
      */

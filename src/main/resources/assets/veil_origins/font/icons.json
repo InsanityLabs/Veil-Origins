@@ -1,0 +1,11 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "veil_origins:font_awesome_solid.otf",
+      "shift": [0, 3],
+      "size": 16,
+      "oversample": 2.0
+    }
+  ]
+}

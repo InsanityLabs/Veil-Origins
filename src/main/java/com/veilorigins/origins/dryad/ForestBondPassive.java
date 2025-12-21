@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
+import net.minecraft.ChatFormatting;
 
 public class ForestBondPassive extends OriginPassive {
     private int tickCounter = 0;
@@ -135,7 +136,7 @@ public class ForestBondPassive extends OriginPassive {
     @Override
     public void onEquip(Player player) {
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                "§2As a Dryad, forests empower you and animals trust you."));
+                ChatFormatting.DARK_GREEN + "As a Dryad, forests empower you and animals trust you."));
     }
 
     @Override

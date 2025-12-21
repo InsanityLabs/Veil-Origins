@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.ChatFormatting;
 
 public class WingsOfLightPassive extends OriginPassive {
     private int flightTickCounter = 0;
@@ -46,19 +47,21 @@ public class WingsOfLightPassive extends OriginPassive {
                     // Warning when food is low
                     if (currentFood <= 6 && currentFood > 0) {
                         player.sendSystemMessage(
-                                Component.literal("§eYour wings of light are draining your energy..."));
+                                Component.literal(
+                                        ChatFormatting.YELLOW + "Your wings of light are draining your energy..."));
                     }
                 }
 
                 // If out of food, disable flight
                 if (food.getFoodLevel() <= 0) {
-                    player.sendSystemMessage(Component.literal("§c§lYou're too hungry to maintain flight!"));
+                    player.sendSystemMessage(Component.literal(
+                            ChatFormatting.RED + "" + ChatFormatting.BOLD + "You're too hungry to maintain flight!"));
                     player.getAbilities().flying = false;
                     player.onUpdateAbilities();
 
                     // Give fall damage warning
                     if (!player.onGround() && player.getY() > player.level().getMinBuildHeight() + 5) {
-                        player.sendSystemMessage(Component.literal("§cFind ground quickly!"));
+                        player.sendSystemMessage(Component.literal(ChatFormatting.RED + "Find ground quickly!"));
                     }
                 }
             }
@@ -74,7 +77,9 @@ public class WingsOfLightPassive extends OriginPassive {
             player.getAbilities().mayfly = true;
             player.onUpdateAbilities();
             player.sendSystemMessage(
-                    Component.literal("§e§lWings of Light: §rYou can fly! §7(Drains 1 hunger every 10 seconds)"));
+                    Component.literal(
+                            ChatFormatting.YELLOW + "" + ChatFormatting.BOLD + "Wings of Light: " + ChatFormatting.RESET
+                                    + "You can fly! " + ChatFormatting.GRAY + "(Drains 1 hunger every 10 seconds)"));
         }
     }
 

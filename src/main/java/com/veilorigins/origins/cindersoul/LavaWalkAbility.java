@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
 
 /**
  * Lava Walk Ability - Works like Frost Walker but for lava!
@@ -70,7 +71,8 @@ public class LavaWalkAbility extends OriginAbility {
                     30, 0.5, 0.3, 0.5, 0.1);
         }
 
-        player.sendSystemMessage(Component.literal("§6§lLava Walk activated! §r§7(20 seconds)"));
+        player.sendSystemMessage(Component.literal(ChatFormatting.GOLD + "" + ChatFormatting.BOLD
+                + "Lava Walk activated! " + ChatFormatting.RESET + ChatFormatting.GRAY + "(20 seconds)"));
 
         // Immediately convert lava under player
         convertLavaAroundPlayer(player, level);
@@ -96,9 +98,10 @@ public class LavaWalkAbility extends OriginAbility {
             // Warning when time is running out
             long remaining = endTime - currentTime;
             if (remaining == 5 * 20) { // 5 seconds left
-                player.sendSystemMessage(Component.literal("§eLava Walk ending in 5 seconds..."));
+                player.sendSystemMessage(Component.literal(ChatFormatting.YELLOW + "Lava Walk ending in 5 seconds..."));
             } else if (remaining == 2 * 20) { // 2 seconds left
-                player.sendSystemMessage(Component.literal("§c§lLava Walk ending soon! Get to safety!"));
+                player.sendSystemMessage(Component.literal(
+                        ChatFormatting.RED + "" + ChatFormatting.BOLD + "Lava Walk ending soon! Get to safety!"));
             }
 
             // Particle trail while active
@@ -110,7 +113,7 @@ public class LavaWalkAbility extends OriginAbility {
         } else if (endTime != null) {
             // Ability just ended
             activeUntil.remove(id);
-            player.sendSystemMessage(Component.literal("§7Lava Walk ended."));
+            player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Lava Walk ended."));
         }
 
         // Handle reverting obsidian back to lava

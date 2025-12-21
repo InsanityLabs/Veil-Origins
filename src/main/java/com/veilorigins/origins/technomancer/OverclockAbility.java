@@ -9,6 +9,7 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
 
 public class OverclockAbility extends OriginAbility {
     private static final int COOLDOWN = 120 * 20;
@@ -56,7 +57,7 @@ public class OverclockAbility extends OriginAbility {
                 // Overheat penalty
                 player.hurt(player.damageSources().magic(), 6.0f); // 3 hearts
                 player.sendSystemMessage(net.minecraft.network.chat.Component
-                        .literal("§cSystem Overheat! Discharging thermal energy..."));
+                        .literal(ChatFormatting.RED + "System Overheat! Discharging thermal energy..."));
             }
         }
     }

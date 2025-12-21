@@ -5,6 +5,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.ChatFormatting;
 
 public class WolflingPassive extends OriginPassive {
 
@@ -17,7 +18,7 @@ public class WolflingPassive extends OriginPassive {
         Level level = player.level();
         long dayTime = level.getDayTime() % 24000;
         boolean isNight = dayTime >= 13000 && dayTime <= 23000;
-        
+
         // Minor enhanced abilities at night
         if (isNight) {
             player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, 0, false, false));
@@ -27,7 +28,7 @@ public class WolflingPassive extends OriginPassive {
                 player.removeEffect(MobEffects.NIGHT_VISION);
             }
         }
-        
+
         // Slight natural regeneration
         if (player.getHealth() < player.getMaxHealth() && player.tickCount % 150 == 0) {
             player.heal(0.5f);
@@ -36,7 +37,8 @@ public class WolflingPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§eAs a Wolfling, you are faster at night with enhanced senses."));
+        player.sendSystemMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.YELLOW + "As a Wolfling, you are faster at night with enhanced senses."));
     }
 
     @Override

@@ -13,6 +13,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
+import net.minecraft.ChatFormatting;
 
 public class DeathAuraPassive extends OriginPassive {
     private int tickCounter = 0;
@@ -111,7 +112,7 @@ public class DeathAuraPassive extends OriginPassive {
     @Override
     public void onEquip(Player player) {
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                "§5Your death aura damages nearby enemies. You are stronger at night."));
+                ChatFormatting.DARK_PURPLE + "Your death aura damages nearby enemies. You are stronger at night."));
     }
 
     @Override

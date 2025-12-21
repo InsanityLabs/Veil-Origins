@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.ChatFormatting;
 
 public class RaiseDeadAbility extends OriginAbility {
     private static final int RESOURCE_COST = 10;
@@ -59,7 +60,7 @@ public class RaiseDeadAbility extends OriginAbility {
                     zombie.setPos(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
                     zombie.setPersistenceRequired();
                     zombie.setCustomName(net.minecraft.network.chat.Component.literal(
-                            "§5" + player.getName().getString() + "'s Minion"));
+                            ChatFormatting.DARK_PURPLE + "" + player.getName().getString() + "'s Minion"));
 
                     // Give themed equipment
                     zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
@@ -85,7 +86,7 @@ public class RaiseDeadAbility extends OriginAbility {
                     skeleton.setPos(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
                     skeleton.setPersistenceRequired();
                     skeleton.setCustomName(net.minecraft.network.chat.Component.literal(
-                            "§5" + player.getName().getString() + "'s Archer"));
+                            ChatFormatting.DARK_PURPLE + "" + player.getName().getString() + "'s Archer"));
 
                     // Give better bow
                     skeleton.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
@@ -118,7 +119,7 @@ public class RaiseDeadAbility extends OriginAbility {
 
         // Notify player
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                "§5You raise " + summoned + " undead minions from the grave!"));
+                ChatFormatting.DARK_PURPLE + "You raise " + summoned + " undead minions from the grave!"));
 
         startCooldown();
     }

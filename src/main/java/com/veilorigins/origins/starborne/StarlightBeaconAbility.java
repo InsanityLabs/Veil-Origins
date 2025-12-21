@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
 
 public class StarlightBeaconAbility extends OriginAbility {
     private static final int COOLDOWN = 60 * 20; // 60 seconds in ticks
@@ -51,7 +52,8 @@ public class StarlightBeaconAbility extends OriginAbility {
         beacons.put(player.getUUID(), new BeaconData(beaconPos, level.getGameTime() + DURATION));
 
         player.sendSystemMessage(
-                Component.literal("§e§lStarlight Beacon placed! §rHostile mobs will be killed or pushed away."));
+                Component.literal(ChatFormatting.YELLOW + "" + ChatFormatting.BOLD + "Starlight Beacon placed! "
+                        + ChatFormatting.RESET + "Hostile mobs will be killed or pushed away."));
 
         // Initial burst effect
         if (level instanceof ServerLevel serverLevel) {
@@ -83,7 +85,7 @@ public class StarlightBeaconAbility extends OriginAbility {
         if (data != null) {
             if (level.getGameTime() > data.endTime) {
                 beacons.remove(id);
-                player.sendSystemMessage(Component.literal("§7Starlight Beacon faded."));
+                player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Starlight Beacon faded."));
                 return;
             }
 

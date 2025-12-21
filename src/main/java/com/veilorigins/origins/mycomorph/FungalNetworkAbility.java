@@ -8,6 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.*;
+import net.minecraft.ChatFormatting;
 
 public class FungalNetworkAbility extends OriginAbility {
     private static final int COOLDOWN = 90;
@@ -41,9 +42,9 @@ public class FungalNetworkAbility extends OriginAbility {
             return;
 
         // Mode 1: Tag Node (Check what player is looking at)
-        // If sneaking, maybe clear nodes?
-        // Let's make it contextual: If looking at mushroom -> Tag. If not -> Ping
-        // Network.
+        // If sneaking while looking at tagged node -> Remove it
+        // If looking at mushroom -> Tag it
+        // If not looking at mushroom -> Ping Network
 
         BlockPos lookedPos = getLookedBlock(player, 5.0);
         boolean isMushroom = false;
@@ -59,28 +60,67 @@ public class FungalNetworkAbility extends OriginAbility {
         networkNodes.putIfAbsent(id, new ArrayList<>());
         List<BlockPos> nodes = networkNodes.get(id);
 
-        if (isMushroom) {
+        if (isMushroom && lookedPos != null) {
+            // Check if sneaking to remove an existing node
+            if (player.isCrouching() && nodes.contains(lookedPos)) {
+                nodes.remove(lookedPos);
+                player.sendSystemMessage(
+                        Component.literal(ChatFormatting.YELLOW + "Fungal Node removed! (" + nodes.size() + "/"
+                                + MAX_NODES + ")"));
+                return;
+            }
+
             // Tagging
             if (nodes.contains(lookedPos)) {
-                player.sendSystemMessage(Component.literal("§cNode already tagged!"));
+                player.sendSystemMessage(
+                        Component.literal(ChatFormatting.RED + "Node already tagged! Sneak to remove it."));
             } else {
                 if (nodes.size() >= MAX_NODES) {
                     nodes.remove(0); // Remove oldest
+                    player.sendSystemMessage(
+                            Component.literal(ChatFormatting.GRAY + "(Oldest node was removed to make room)"));
                 }
                 nodes.add(lookedPos);
                 player.sendSystemMessage(
-                        Component.literal("§aFungal Node tagged! (" + nodes.size() + "/" + MAX_NODES + ")"));
+                        Component.literal(
+                                ChatFormatting.GREEN + "Fungal Node tagged! (" + nodes.size() + "/" + MAX_NODES
+                                        + ") Sneak to remove."));
             }
-            // Low cost for tagging?
+            // Low cost for tagging - no cooldown
         } else {
             // Pinging Network
             if (nodes.isEmpty()) {
-                player.sendSystemMessage(Component.literal("§eNo nodes tagged. Look at a mushroom to tag it."));
+                player.sendSystemMessage(
+                        Component.literal(ChatFormatting.YELLOW + "No nodes tagged. Look at a mushroom to tag it."));
                 return;
             }
 
             player.causeFoodExhaustion(HUNGER_COST);
-            player.sendSystemMessage(Component.literal("§2--- Fungal Network Status ---"));
+            player.sendSystemMessage(Component.literal(ChatFormatting.DARK_GREEN + "--- Fungal Network Status ---"));
+
+            // Validate nodes still exist and remove destroyed ones
+            List<BlockPos> invalidNodes = new ArrayList<>();
+            for (BlockPos pos : nodes) {
+                net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+                if (!state.is(Blocks.RED_MUSHROOM_BLOCK) && !state.is(Blocks.BROWN_MUSHROOM_BLOCK) &&
+                        !state.is(Blocks.RED_MUSHROOM) && !state.is(Blocks.BROWN_MUSHROOM)) {
+                    invalidNodes.add(pos);
+                }
+            }
+
+            // Remove invalid nodes
+            if (!invalidNodes.isEmpty()) {
+                nodes.removeAll(invalidNodes);
+                player.sendSystemMessage(
+                        Component.literal(
+                                ChatFormatting.GRAY + "(" + invalidNodes.size() + " destroyed node(s) removed)"));
+            }
+
+            if (nodes.isEmpty()) {
+                player.sendSystemMessage(
+                        Component.literal(ChatFormatting.YELLOW + "All your nodes have been destroyed!"));
+                return;
+            }
 
             for (int i = 0; i < nodes.size(); i++) {
                 BlockPos pos = nodes.get(i);
@@ -94,7 +134,8 @@ public class FungalNetworkAbility extends OriginAbility {
 
                 for (Player p : nearby) {
                     if (p != player) {
-                        p.sendSystemMessage(Component.literal("§dYou feel a fungal presence watching you..."));
+                        p.sendSystemMessage(Component
+                                .literal(ChatFormatting.LIGHT_PURPLE + "You feel a fungal presence watching you..."));
                     }
                 }
             }

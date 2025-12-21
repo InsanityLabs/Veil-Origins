@@ -13,32 +13,33 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ActivateAbilityPacket(int abilityIndex) implements CustomPacketPayload {
-    
-    public static final CustomPacketPayload.Type<ActivateAbilityPacket> TYPE = 
-        new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(VeilOrigins.MOD_ID, "activate_ability"));
-    
+
+    public static final CustomPacketPayload.Type<ActivateAbilityPacket> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(VeilOrigins.MOD_ID, "activate_ability"));
+
     public static final StreamCodec<ByteBuf, ActivateAbilityPacket> CODEC = StreamCodec.composite(
-        ByteBufCodecs.INT,
-        ActivateAbilityPacket::abilityIndex,
-        ActivateAbilityPacket::new
-    );
-    
+            ByteBufCodecs.INT,
+            ActivateAbilityPacket::abilityIndex,
+            ActivateAbilityPacket::new);
+
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-    
+
     public static void handle(ActivateAbilityPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer serverPlayer) {
                 Origin origin = VeilOriginsAPI.getPlayerOrigin(serverPlayer);
                 if (origin != null && packet.abilityIndex < origin.getAbilities().size()) {
                     OriginAbility ability = origin.getAbilities().get(packet.abilityIndex);
-                    
-                    if (ability.canUse(serverPlayer) && !ability.isOnCooldown()) {
+
+                    // Only check canUse() - it handles cooldown internally and may allow toggle-off
+                    // during cooldown
+                    if (ability.canUse(serverPlayer)) {
                         ability.onActivate(serverPlayer, serverPlayer.level());
-                        VeilOrigins.LOGGER.info("Player {} activated ability {}", 
-                            serverPlayer.getName().getString(), packet.abilityIndex);
+                        VeilOrigins.LOGGER.info("Player {} activated ability {}",
+                                serverPlayer.getName().getString(), packet.abilityIndex);
                     }
                 }
             }

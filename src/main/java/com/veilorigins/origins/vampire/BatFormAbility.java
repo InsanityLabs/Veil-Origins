@@ -14,6 +14,7 @@ import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.ChatFormatting;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +107,8 @@ public class BatFormAbility extends OriginAbility {
                     30, 0.5, 0.5, 0.5, 0.1);
         }
 
-        player.sendSystemMessage(Component.literal("§5§lBat Form! §r§7You transform into a bat! (15 seconds)"));
+        player.sendSystemMessage(Component.literal(ChatFormatting.DARK_PURPLE + "" + ChatFormatting.BOLD + "Bat Form! "
+                + ChatFormatting.RESET + ChatFormatting.GRAY + "You transform into a bat! (15 seconds)"));
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.BAT_AMBIENT, SoundSource.PLAYERS, 1.5f, 1.0f);
 
@@ -207,9 +209,10 @@ public class BatFormAbility extends OriginAbility {
             // Warning before ending
             long remaining = state.endTime - currentTime;
             if (remaining == 3 * 20) {
-                player.sendSystemMessage(Component.literal("§eBat form ending in 3 seconds..."));
+                player.sendSystemMessage(Component.literal(ChatFormatting.YELLOW + "Bat form ending in 3 seconds..."));
             } else if (remaining == 1 * 20) {
-                player.sendSystemMessage(Component.literal("§c§lBat form ending! Find a safe landing!"));
+                player.sendSystemMessage(Component.literal(
+                        ChatFormatting.RED + "" + ChatFormatting.BOLD + "Bat form ending! Find a safe landing!"));
             }
         }
     }
@@ -238,7 +241,7 @@ public class BatFormAbility extends OriginAbility {
                     30, 0.5, 0.5, 0.5, 0.1);
         }
 
-        player.sendSystemMessage(Component.literal("§7You return to your normal form."));
+        player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "You return to your normal form."));
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.BAT_DEATH, SoundSource.PLAYERS, 0.8f, 1.0f);
     }

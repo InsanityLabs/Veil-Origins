@@ -2,6 +2,7 @@ package com.veilorigins.origins.ethereal;
 
 import com.veilorigins.api.OriginPassive;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.ChatFormatting;
 
 public class IncorporealPassive extends OriginPassive {
     public IncorporealPassive() {
@@ -20,7 +21,7 @@ public class IncorporealPassive extends OriginPassive {
                         player.drop(player.getItemBySlot(slot).copy(), true);
                         player.setItemSlot(slot, net.minecraft.world.item.ItemStack.EMPTY);
                         player.sendSystemMessage(net.minecraft.network.chat.Component
-                                .literal("§cYour ethereal form cannot bear physical armor!"));
+                                .literal(ChatFormatting.RED + "Your ethereal form cannot bear physical armor!"));
                     }
                 }
             }
