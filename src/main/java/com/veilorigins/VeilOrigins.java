@@ -2,10 +2,10 @@ package com.veilorigins;
 
 import com.veilorigins.api.UnicodeFontHandler;
 import com.veilorigins.api.VeilOriginsAPI;
-import com.veilorigins.client.KeyBindings;
 import com.veilorigins.client.OriginHudOverlay;
 import com.veilorigins.config.VeilOriginsConfig;
 import com.veilorigins.data.OriginData;
+import com.veilorigins.registry.ModItems;
 import com.veilorigins.registry.ModOrigins;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -17,7 +17,6 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
@@ -32,6 +31,9 @@ public class VeilOrigins {
     public VeilOrigins(IEventBus modEventBus, ModContainer modContainer) {
         // Register attachment types
         OriginData.ATTACHMENT_TYPES.register(modEventBus);
+
+        // Register items and creative tab
+        ModItems.register(modEventBus);
 
         // Register configs - COMMON for gameplay settings, CLIENT for HUD settings
         modContainer.registerConfig(ModConfig.Type.COMMON, VeilOriginsConfig.COMMON_SPEC);
@@ -63,7 +65,7 @@ public class VeilOrigins {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             LOGGER.info("Veil Origins: Registering client events...");
             modEventBus.addListener(this::onClientSetup);
-            modEventBus.addListener(this::registerKeyMappings);
+            // Note: Keybindings are registered via @EventBusSubscriber in KeyBindings class
             modEventBus.addListener(this::registerGuiLayers);
         }
     }
@@ -84,15 +86,6 @@ public class VeilOrigins {
         LOGGER.info("Veil Origins: Client setup complete");
     }
 
-    private void registerKeyMappings(RegisterKeyMappingsEvent event) {
-        event.register(KeyBindings.ABILITY_1);
-        event.register(KeyBindings.ABILITY_2);
-        event.register(KeyBindings.RESOURCE_INFO);
-        event.register(KeyBindings.RADIAL_MENU);
-        event.register(KeyBindings.HUD_CONFIG);
-        LOGGER.info("Veil Origins: Registered {} keybindings", 5);
-    }
-
     private void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR,
                 ResourceLocation.fromNamespaceAndPath(MOD_ID, "origin_hud"),
@@ -100,3 +93,4 @@ public class VeilOrigins {
         LOGGER.info("Veil Origins: Registered HUD overlay");
     }
 }
+

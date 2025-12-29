@@ -42,12 +42,7 @@ public class OriginHudOverlay implements LayeredDraw.Layer {
     private static final int BAR_HEIGHT = 9;
     private static final int BAR_SEGMENT_SIZE = 8; // Size of each segment (like hearts)
 
-    // Colors for vampire blood bar
-    private static final int BLOOD_COLOR_FULL = 0xFF8B0000; // Dark red
-    private static final int BLOOD_COLOR_MEDIUM = 0xFFB22222; // Firebrick red
-    private static final int BLOOD_COLOR_LOW = 0xFF4A0000; // Very dark red (warning)
-    private static final int BLOOD_BAR_BORDER = 0xFF2A0000; // Dark border
-    private static final int BLOOD_BAR_BG = 0x88000000; // Semi-transparent black
+    // Note: Vampire blood bar is now handled by VampireHudHandler which replaces the vanilla hunger bar
 
     // Colors for ability indicators
     private static final int ABILITY_READY = 0xFF00FF00; // Green - ready
@@ -155,9 +150,17 @@ public class OriginHudOverlay implements LayeredDraw.Layer {
     /**
      * Renders the origin resource bar above the health bar.
      * Styled to match Minecraft's vanilla health/armor bar positioning.
+     * Note: Vampires/Vamplings use VampireHudHandler which replaces the vanilla hunger bar.
      */
     private void renderOriginResourceBar(GuiGraphics graphics, Font font, int screenWidth, int screenHeight,
             OriginData.PlayerOriginData data, Origin origin) {
+        // Skip vampires/vamplings - their blood bar is handled by VampireHudHandler
+        // which replaces the vanilla hunger bar with custom sprites
+        String originPath = origin.getId().getPath();
+        if (originPath.equals("vampire") || originPath.equals("vampling")) {
+            return; // Blood bar is rendered by VampireHudHandler
+        }
+
         // Enable blending for proper transparency
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -170,92 +173,15 @@ public class OriginHudOverlay implements LayeredDraw.Layer {
 
         ResourceType resourceType = origin.getResourceType();
         float resourcePercent = data.getResourceBar() / 100.0f;
-        String originPath = origin.getId().getPath();
 
-        // Check if this is a vampire/vampling for special blood bar rendering
-        boolean isBloodOrigin = originPath.equals("vampire") || originPath.equals("vampling");
-
-        if (isBloodOrigin) {
-            renderBloodBar(graphics, font, barX, barY, resourcePercent, data.getResourceBar(),
-                    originPath.equals("vampire"));
-        } else {
-            renderStandardResourceBar(graphics, font, barX, barY, resourcePercent, data.getResourceBar(), origin,
-                    resourceType);
-        }
+        renderStandardResourceBar(graphics, font, barX, barY, resourcePercent, data.getResourceBar(), origin,
+                resourceType);
 
         // Disable blending after done
         RenderSystem.disableBlend();
     }
 
-    /**
-     * Renders the blood bar for vampire/vampling origins.
-     * Features blood drop styling and pulsing effect when low.
-     */
-    private void renderBloodBar(GuiGraphics graphics, Font font, int x, int y, float percent,
-            float currentValue, boolean isFullVampire) {
-        int totalWidth = BAR_WIDTH;
-        int filledWidth = (int) (totalWidth * percent);
-
-        // Draw background
-        graphics.fill(x - 1, y - 1, x + totalWidth + 1, y + BAR_HEIGHT + 1, BLOOD_BAR_BORDER);
-        graphics.fill(x, y, x + totalWidth, y + BAR_HEIGHT, BLOOD_BAR_BG);
-
-        // Determine blood color based on level
-        int bloodColor;
-        if (percent > 0.5f) {
-            bloodColor = BLOOD_COLOR_FULL;
-        } else if (percent > 0.25f) {
-            bloodColor = BLOOD_COLOR_MEDIUM;
-        } else {
-            bloodColor = BLOOD_COLOR_LOW;
-            // Add pulsing effect when low
-            long time = System.currentTimeMillis();
-            if ((time / 500) % 2 == 0) {
-                bloodColor = 0xFF600000; // Pulse darker
-            }
-        }
-
-        // Draw filled portion (blood)
-        if (filledWidth > 0) {
-            graphics.fill(x, y, x + filledWidth, y + BAR_HEIGHT, bloodColor);
-
-            // Add blood drop segments for visual appeal - using BAR_SEGMENT_SIZE
-            int segments = (int) Math.ceil(currentValue / 10.0f);
-            for (int i = 0; i < segments && i < 10; i++) {
-                int segmentX = x + (i * BAR_SEGMENT_SIZE);
-                if (segmentX < x + filledWidth - 2) {
-                    // Draw small blood drop icons
-                    renderBloodDrop(graphics, segmentX + 2, y + 1, percent > 0.5f);
-                }
-            }
-        }
-
-        // Draw highlight on top edge
-        graphics.fill(x, y, x + totalWidth, y + 1, 0x33FFFFFF);
-
-        // Draw text showing value - position to the right of the bar
-        int textX = x + totalWidth + 4;
-        int textY = y + 1;
-
-        // Draw "Blood: X" text with proper colors and diamond symbol
-        int labelColor = isFullVampire ? COLOR_DARK_RED : COLOR_RED;
-        String valueText = String.format("%.0f", currentValue);
-        String bloodLabel = getDiamondSymbol() + " Blood: ";
-
-        graphics.drawString(font, bloodLabel, textX, textY, labelColor, false);
-        graphics.drawString(font, valueText, textX + font.width(bloodLabel), textY, COLOR_WHITE, false);
-    }
-
-    /**
-     * Renders a small blood drop icon.
-     */
-    private void renderBloodDrop(GuiGraphics graphics, int x, int y, boolean full) {
-        int color = full ? 0xFFCC0000 : 0xFF880000;
-        // Simple blood drop shape
-        graphics.fill(x + 1, y, x + 3, y + 1, color); // Top
-        graphics.fill(x, y + 1, x + 4, y + 5, color); // Body
-        graphics.fill(x + 1, y + 5, x + 3, y + 6, color); // Bottom
-    }
+    // Blood bar rendering moved to VampireHudHandler - replaces vanilla hunger bar with custom sprites
 
     /**
      * Renders the standard resource bar for non-blood origins.

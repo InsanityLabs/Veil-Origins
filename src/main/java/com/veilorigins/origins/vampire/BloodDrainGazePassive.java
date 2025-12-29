@@ -2,6 +2,7 @@ package com.veilorigins.origins.vampire;
 
 import com.veilorigins.api.OriginPassive;
 import com.veilorigins.data.OriginData;
+import com.veilorigins.registry.ModItems;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -18,6 +19,7 @@ import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
@@ -333,6 +335,11 @@ public class BloodDrainGazePassive extends OriginPassive {
         // Restore blood essence resource
         OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
         data.addResource(resourcePerTick);
+        
+        // Try to fill blood bottle in offhand if draining an animal (every 20 ticks)
+        if (target instanceof Animal && state.ticksLooking % 20 == 0) {
+            tryFillBloodBottle(player);
+        }
 
         // Visual effects every 10 ticks
         if (state.ticksLooking % 10 == 0) {
@@ -353,6 +360,34 @@ public class BloodDrainGazePassive extends OriginPassive {
         if (target.isDeadOrDying()) {
             onTargetDrained(player, target);
             resetDrainState(player, state);
+        }
+    }
+
+    /**
+     * Tries to fill a blood bottle in the player's offhand.
+     */
+    private void tryFillBloodBottle(Player player) {
+        ItemStack offhand = player.getOffhandItem();
+        
+        // Check if player has an empty or half blood bottle in offhand
+        if (offhand.is(ModItems.BLOOD_BOTTLE_EMPTY.get())) {
+            // Convert empty to half
+            player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, 
+                    new ItemStack(ModItems.BLOOD_BOTTLE_HALF.get()));
+            player.displayClientMessage(
+                    Component.literal(ChatFormatting.DARK_RED + "Blood bottle filling..."),
+                    true);
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.5f, 0.8f);
+        } else if (offhand.is(ModItems.BLOOD_BOTTLE_HALF.get())) {
+            // Convert half to full
+            player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, 
+                    new ItemStack(ModItems.BLOOD_BOTTLE_FULL.get()));
+            player.displayClientMessage(
+                    Component.literal(ChatFormatting.RED + "Blood bottle full!"),
+                    true);
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.5f, 1.0f);
         }
     }
 

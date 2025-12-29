@@ -1,5 +1,77 @@
 # Changelog
 
+## v1.0.4 (2025-12-29)
+
+### Updated
+
+- **Minecraft 1.21.1-1.21.3 with NeoForge 21.1.216**
+
+### Added
+
+#### Vampire Blood System Overhaul
+- **Blood Bar replaces Hunger Bar** - Vampires now have a blood bar that replaces the vanilla hunger bar
+  - Blood drains slowly over time (faster when sprinting or healing)
+  - High blood (80+) enables natural regeneration
+  - Empty blood causes starvation damage
+  - Blood syncs to hunger level for compatibility
+
+- **Blood Bottle Items** - New consumable items for vampires
+  - Empty Blood Bottle - craft from glass bottle
+  - Half Blood Bottle - restores 50 blood
+  - Full Blood Bottle - restores 100 blood
+  - Drinking gives regeneration effect
+  - Only vampires can drink blood bottles
+
+- **Bottle Filling Mechanic** - Fill blood bottles while draining animals
+  - Hold empty/half bottle in offhand while using Blood Drain ability
+  - Hold empty/half bottle in offhand while using Blood Drain Gaze passive
+  - Empty → Half → Full progression
+
+#### Vampire Ability Blood Costs
+- **Bat Form** - Costs 25 blood to activate
+- **Vampiric Leap** - Costs 5 blood per leap
+- **Blood Drain** - Free (gives +15 blood per drain)
+
+#### Custom Resource Bar API
+- **CustomResourceBar** - New API class for configuring custom resource bars
+  - Multiple styles: ICONS, SOLID_BAR, SEGMENTED_BAR, REPLACE_HUNGER, REPLACE_HEALTH
+  - Configurable positions: HOTBAR_LEFT, HOTBAR_RIGHT, corners, custom
+  - Custom colors (primary, secondary, critical, background, border)
+  - Sprite support for icon-based bars
+  - Animation options (pulse when low, bounce when critical)
+  - Threshold settings for low/critical states
+  - Factory methods: `bloodBar()`, `manaBar()`, `heatBar()`, `hydrationBar()`, `stellarBar()`
+
+- **ResourceType** - Updated with custom bar support
+  - `setCustomBar(CustomResourceBar)` - attach custom bar configuration
+  - Factory methods for common resource types
+
+- **Creative Tab** - New "Veil Origins" creative tab for mod items
+
+### Fixed
+
+#### Vampire Sun Damage
+- Fixed vampire sun damage not working properly
+- Now correctly checks daytime (0-12500 or 23500-24000)
+- Rain provides protection from sun
+- Visual fire effect when burning
+
+#### Keybind Registration
+- **Fixed potential duplicate keybind registration**
+  - Removed duplicate registration from `VeilOrigins.java`
+  - Keybinds are now registered only once via `@EventBusSubscriber` in `KeyBindings.java`
+
+### Technical
+
+- Added `BloodBottleItem` - Custom item class for blood bottle consumption
+- Added `ModItems` - Registry for all Veil Origins items
+- Added `CustomResourceBar` - API for custom bar rendering configuration
+- Added `VampireHudHandler` - Replaces vanilla hunger bar with blood bar for vampires using custom sprites
+- Updated `ResourceType` - Support for custom bar configurations with factory methods
+- Added UTF-8 encoding for Java compilation (Unicode support in source files)
+
+---
+
 ## v1.0.3 (2025-12-21) - RELEASED
 
 ### Added

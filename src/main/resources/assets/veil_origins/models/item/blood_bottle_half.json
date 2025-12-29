@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "veil_origins:item/blood_bottle_half"
+  }
+}

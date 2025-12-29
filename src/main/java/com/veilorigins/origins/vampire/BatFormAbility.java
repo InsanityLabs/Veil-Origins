@@ -25,7 +25,7 @@ import java.util.UUID;
  * bats
  */
 public class BatFormAbility extends OriginAbility {
-    private static final int RESOURCE_COST = 5;
+    private static final int RESOURCE_COST = 25; // Costs 25 blood
     private static final int DURATION = 15 * 20; // 15 seconds
     private static final int COOLDOWN = 60 * 20; // 60 seconds
 

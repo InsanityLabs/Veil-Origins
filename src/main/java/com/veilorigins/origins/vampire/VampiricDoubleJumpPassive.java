@@ -32,6 +32,7 @@ public class VampiricDoubleJumpPassive extends OriginPassive {
     private final float jumpBoostStrength;
     private final float damageRadius;
     private final int cooldownTicks;
+    private static final float BLOOD_COST = 5.0f; // Blood cost per leap
 
     /**
      * Creates a Vampiric Double Jump passive.
@@ -121,6 +122,17 @@ public class VampiricDoubleJumpPassive extends OriginPassive {
         if (!player.isSprinting() && !state.wasSprintingOnGround)
             return false;
 
+        // Must have enough blood
+        com.veilorigins.data.OriginData.PlayerOriginData data = 
+            player.getData(com.veilorigins.data.OriginData.PLAYER_ORIGIN);
+        if (data.getResourceBar() < BLOOD_COST) {
+            player.displayClientMessage(
+                net.minecraft.network.chat.Component.literal(
+                    ChatFormatting.RED + "Not enough blood for leap!"),
+                true);
+            return false;
+        }
+
         return true;
     }
 
@@ -129,6 +141,11 @@ public class VampiricDoubleJumpPassive extends OriginPassive {
      * entities.
      */
     private void performDoubleJump(Player player, JumpState state) {
+        // Consume blood for the leap
+        com.veilorigins.data.OriginData.PlayerOriginData data = 
+            player.getData(com.veilorigins.data.OriginData.PLAYER_ORIGIN);
+        data.consumeResource(BLOOD_COST);
+        
         state.hasDoubleJumped = true;
         state.canDoubleJump = false;
         state.cooldown = cooldownTicks;

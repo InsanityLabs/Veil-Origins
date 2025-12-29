@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "B"
+  ],
+  "key": {
+    "B": "minecraft:glass_bottle"
+  },
+  "result": {
+    "id": "veil_origins:blood_bottle_empty",
+    "count": 1
+  }
+}

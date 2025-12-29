@@ -6,7 +6,7 @@ plugins {
     id 'net.neoforged.gradle.userdev' version '7.0.163'
 }
 
-version = '1.0.3'
+version = '1.0.4'
 group = 'com.veilorigins'
 
 base {
@@ -20,6 +20,7 @@ java {
 // Fallback to system Java if toolchain not found
 tasks.withType(JavaCompile).configureEach {
     options.release = 21
+    options.encoding = 'UTF-8'
 }
 
 repositories {
