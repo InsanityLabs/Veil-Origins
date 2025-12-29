@@ -53,13 +53,13 @@ public class DryadWeaknessesPassive extends OriginPassive {
             if (level.dimension() == Level.NETHER) {
                 player.hurt(level.damageSources().onFire(), 1.0f);
                 player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 1, true, false));
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, true, false));
+                player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 0, true, false));
             }
 
             // Check for complete darkness - wither effect
             int lightLevel = level.getBrightness(LightLayer.BLOCK, playerPos);
             int skyLight = level.getBrightness(LightLayer.SKY, playerPos);
-            if (lightLevel <= 1 && skyLight <= 1 && !level.isDay()) {
+            if (lightLevel <= 1 && skyLight <= 1 && !(level.getDayTime() < 13000)) {
                 // Complete darkness - plant wilts
                 player.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, 0, true, false));
                 player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 0, true, false));
@@ -73,7 +73,7 @@ public class DryadWeaknessesPassive extends OriginPassive {
         // Check desert tag
         // Unfortunately there's no IS_DESERT tag, so we check by name
         ResourceLocation biomeKey = level.registryAccess()
-                .registryOrThrow(Registries.BIOME)
+                .lookup(Registries.BIOME).orElseThrow()
                 .getKey(biomeHolder.value());
         if (biomeKey != null) {
             String biomeName = biomeKey.getPath().toLowerCase();
@@ -87,9 +87,9 @@ public class DryadWeaknessesPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
                 ChatFormatting.RED
-                        + "Warning: As a Dryad, fire deals 50% more damage. Desert biomes and the Nether are hostile to you."));
+                        + "Warning: As a Dryad, fire deals 50% more damage. Desert biomes and the Nether are hostile to you."), false);
     }
 
     @Override

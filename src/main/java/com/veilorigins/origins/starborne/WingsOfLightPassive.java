@@ -46,22 +46,22 @@ public class WingsOfLightPassive extends OriginPassive {
 
                     // Warning when food is low
                     if (currentFood <= 6 && currentFood > 0) {
-                        player.sendSystemMessage(
+                        player.displayClientMessage(
                                 Component.literal(
-                                        ChatFormatting.YELLOW + "Your wings of light are draining your energy..."));
+                                        ChatFormatting.YELLOW + "Your wings of light are draining your energy..."), false);
                     }
                 }
 
                 // If out of food, disable flight
                 if (food.getFoodLevel() <= 0) {
-                    player.sendSystemMessage(Component.literal(
-                            ChatFormatting.RED + "" + ChatFormatting.BOLD + "You're too hungry to maintain flight!"));
+                    player.displayClientMessage(Component.literal(
+                            ChatFormatting.RED + "" + ChatFormatting.BOLD + "You're too hungry to maintain flight!"), false);
                     player.getAbilities().flying = false;
                     player.onUpdateAbilities();
 
                     // Give fall damage warning
-                    if (!player.onGround() && player.getY() > player.level().getMinBuildHeight() + 5) {
-                        player.sendSystemMessage(Component.literal(ChatFormatting.RED + "Find ground quickly!"));
+                    if (!player.onGround() && player.getY() > player.level().dimensionType().minY() + 5) {
+                        player.displayClientMessage(Component.literal(ChatFormatting.RED + "Find ground quickly!"), false);
                     }
                 }
             }
@@ -76,10 +76,10 @@ public class WingsOfLightPassive extends OriginPassive {
         if (!player.isCreative() && !player.isSpectator()) {
             player.getAbilities().mayfly = true;
             player.onUpdateAbilities();
-            player.sendSystemMessage(
+            player.displayClientMessage(
                     Component.literal(
                             ChatFormatting.YELLOW + "" + ChatFormatting.BOLD + "Wings of Light: " + ChatFormatting.RESET
-                                    + "You can fly! " + ChatFormatting.GRAY + "(Drains 1 hunger every 10 seconds)"));
+                                    + "You can fly! " + ChatFormatting.GRAY + "(Drains 1 hunger every 10 seconds)"), false);
         }
     }
 

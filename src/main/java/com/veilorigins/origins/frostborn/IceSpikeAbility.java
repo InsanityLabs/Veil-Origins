@@ -60,7 +60,7 @@ public class IceSpikeAbility extends OriginAbility {
         if (hitEntity != null) {
             // Damage and slow target
             hitEntity.hurt(level.damageSources().magic(), 3.0f);
-            hitEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
+            hitEntity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 1));
         }
         
         // Freeze water at impact

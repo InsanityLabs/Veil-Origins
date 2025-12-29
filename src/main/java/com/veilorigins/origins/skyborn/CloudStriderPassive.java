@@ -22,7 +22,7 @@ public class CloudStriderPassive extends OriginPassive {
 
         // Speed at high altitude (> Y=100)
         if (player.getY() > 100) {
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 0, false, false)); // Speed I implies
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 20, 0, false, false)); // Speed I implies
                                                                                                      // +20%
         }
 
@@ -44,6 +44,6 @@ public class CloudStriderPassive extends OriginPassive {
     @Override
     public void onRemove(Player player) {
         player.removeEffect(MobEffects.SLOW_FALLING);
-        player.removeEffect(MobEffects.MOVEMENT_SPEED);
+        player.removeEffect(MobEffects.SPEED);
     }
 }

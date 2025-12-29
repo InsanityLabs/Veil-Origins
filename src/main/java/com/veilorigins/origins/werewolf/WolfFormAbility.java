@@ -25,9 +25,9 @@ public class WolfFormAbility extends OriginAbility {
         isActive = true;
         activeDuration = DURATION;
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.GOLD + "You transform into a werewolf!"));
+        player.displayClientMessage(Component.literal(ChatFormatting.GOLD + "You transform into a werewolf!"), false);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.WOLF_GROWL, SoundSource.PLAYERS, 2.0f, 0.7f);
+                SoundEvents.ENDER_DRAGON_GROWL, SoundSource.PLAYERS, 2.0f, 0.7f);
 
         startCooldown();
     }
@@ -37,18 +37,18 @@ public class WolfFormAbility extends OriginAbility {
         if (isActive && activeDuration > 0) {
             activeDuration--;
 
-            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 5, 2, false, false));
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 5, 2, false, false));
-            player.addEffect(new MobEffectInstance(MobEffects.JUMP, 5, 1, false, false));
-            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 5, 1, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 5, 2, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 5, 2, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 5, 1, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 5, 1, false, false));
 
             if (activeDuration == 5 * 20) {
-                player.sendSystemMessage(Component.literal(ChatFormatting.YELLOW + "Wolf form ending in 5 seconds..."));
+                player.displayClientMessage(Component.literal(ChatFormatting.YELLOW + "Wolf form ending in 5 seconds..."), false);
             }
 
             if (activeDuration == 0) {
                 isActive = false;
-                player.sendSystemMessage(Component.literal(ChatFormatting.GOLD + "You return to human form."));
+                player.displayClientMessage(Component.literal(ChatFormatting.GOLD + "You return to human form."), false);
             }
         }
     }

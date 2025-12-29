@@ -47,7 +47,7 @@ public class AquaBubbleAbility extends OriginAbility {
 
     @Override
     public void onActivate(Player player, Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         if (player.isInWater() || player.isUnderWater()) {
@@ -104,15 +104,15 @@ public class AquaBubbleAbility extends OriginAbility {
 
         // Message
         if (playersBuffed > 0) {
-            player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Aqua Bubble! "
+            player.displayClientMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Aqua Bubble! "
                     + ChatFormatting.RESET + ChatFormatting.GRAY + "Water Breathing shared with " + ChatFormatting.AQUA
                     +
-                    playersBuffed + ChatFormatting.GRAY + " nearby player" + (playersBuffed > 1 ? "s" : "") + "!"));
+                    playersBuffed + ChatFormatting.GRAY + " nearby player" + (playersBuffed > 1 ? "s" : "") + "!"), false);
         } else {
-            player.sendSystemMessage(Component
+            player.displayClientMessage(Component
                     .literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Aqua Bubble! " + ChatFormatting.RESET
                             + ChatFormatting.GRAY + "Water Breathing for 60 seconds. " + ChatFormatting.DARK_GRAY
-                            + "(Stay near allies to share!)"));
+                            + "(Stay near allies to share!)"), false);
         }
     }
 
@@ -129,8 +129,8 @@ public class AquaBubbleAbility extends OriginAbility {
             nearbyPlayer.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, duration, 0, false, true));
             nearbyPlayer.setAirSupply(nearbyPlayer.getMaxAirSupply());
             nearbyPlayer
-                    .sendSystemMessage(Component.literal(ChatFormatting.AQUA + "" + tidecaller.getName().getString() +
-                            ChatFormatting.GRAY + " is sharing their Aqua Bubble with you!"));
+                    .displayClientMessage(Component.literal(ChatFormatting.AQUA + "" + tidecaller.getName().getString() +
+                            ChatFormatting.GRAY + " is sharing their Aqua Bubble with you!"), false);
             count++;
 
             // Particles on buffed player
@@ -210,7 +210,7 @@ public class AquaBubbleAbility extends OriginAbility {
                 living.extinguishFire();
 
                 // Apply slowness
-                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1, false, true));
+                living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 1, false, true));
 
                 // Knockback from impact
                 Vec3 knockback = living.position().subtract(hitPos).normalize().scale(0.5);
@@ -229,17 +229,17 @@ public class AquaBubbleAbility extends OriginAbility {
         }
 
         if (entitiesHit > 0) {
-            player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Water Ball! "
-                    + ChatFormatting.RESET + ChatFormatting.GRAY + "Hit " + entitiesHit + " enemies!"));
+            player.displayClientMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Water Ball! "
+                    + ChatFormatting.RESET + ChatFormatting.GRAY + "Hit " + entitiesHit + " enemies!"), false);
         } else {
-            player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "Water Ball fired!"));
+            player.displayClientMessage(Component.literal(ChatFormatting.AQUA + "Water Ball fired!"), false);
         }
     }
 
     @Override
     public void tick(Player player) {
         Level level = player.level();
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         UUID id = player.getUUID();

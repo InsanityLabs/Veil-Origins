@@ -2,9 +2,11 @@ package com.veilorigins.origins.stoneheart;
 
 import com.veilorigins.api.OriginPassive;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.ChatFormatting;
 
@@ -40,13 +42,13 @@ public class StoneheartWeaknessesPassive extends OriginPassive {
         }
 
         // Elytra flight impossible EVERY TICK (too heavy - cannot bypass by spamming)
-        ItemStack chestplate = player.getInventory().getArmor(2);
-        if (chestplate.getItem() instanceof ElytraItem && player.isFallFlying()) {
+        ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
+        if (chestplate.is(Items.ELYTRA) && player.isFallFlying()) {
             player.stopFallFlying();
             // Only show warning once per second to avoid chat spam
             if (!hasWarnedElytra) {
-                player.sendSystemMessage(
-                        Component.literal(ChatFormatting.RED + "You're too heavy to fly with elytra!"));
+                player.displayClientMessage(
+                        Component.literal(ChatFormatting.RED + "You're too heavy to fly with elytra!"), false);
                 hasWarnedElytra = true;
             }
         } else if (!player.isFallFlying()) {
@@ -66,9 +68,12 @@ public class StoneheartWeaknessesPassive extends OriginPassive {
                 // If boat is in water, it sinks - eject player and destroy boat
                 if (vehicle.isInWater()) {
                     player.stopRiding();
-                    vehicle.kill();
-                    player.sendSystemMessage(
-                            Component.literal(ChatFormatting.RED + "You're too heavy! The boat sinks beneath you!"));
+                    // In 1.21.10, kill requires ServerLevel
+                    if (level instanceof ServerLevel serverLevel) {
+                        vehicle.kill(serverLevel);
+                    }
+                    player.displayClientMessage(
+                            Component.literal(ChatFormatting.RED + "You're too heavy! The boat sinks beneath you!"), false);
                 } else {
                     // On land, boat just can't move - freeze it in place
                     vehicle.setDeltaMovement(0, vehicle.getDeltaMovement().y, 0);
@@ -79,8 +84,8 @@ public class StoneheartWeaknessesPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(Component
-                .literal(ChatFormatting.GRAY + "As Stoneheart, you cannot swim, use boats, or fly with elytra."));
+        player.displayClientMessage(Component
+                .literal(ChatFormatting.GRAY + "As Stoneheart, you cannot swim, use boats, or fly with elytra."), false);
     }
 
     @Override

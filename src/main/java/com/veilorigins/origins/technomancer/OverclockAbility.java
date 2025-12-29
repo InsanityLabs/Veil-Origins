@@ -35,11 +35,11 @@ public class OverclockAbility extends OriginAbility {
     }
 
     private void applyEffects(Player player) {
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 2, false, false)); // Speed III
-        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 40, 2, false, false)); // Haste III
+        player.addEffect(new MobEffectInstance(MobEffects.SPEED, 40, 2, false, false)); // Speed III
+        player.addEffect(new MobEffectInstance(MobEffects.HASTE, 40, 2, false, false)); // Haste III
         // +50% damage handled in EventHandler or via Strength? Strength II gives +6
         // damage (3 hearts) approx 50-100%.
-        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 1, false, false)); // Strength II
+        player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 40, 1, false, false)); // Strength II
     }
 
     @Override
@@ -56,8 +56,8 @@ public class OverclockAbility extends OriginAbility {
                 activeOverclocks.remove(id);
                 // Overheat penalty
                 player.hurt(player.damageSources().magic(), 6.0f); // 3 hearts
-                player.sendSystemMessage(net.minecraft.network.chat.Component
-                        .literal(ChatFormatting.RED + "System Overheat! Discharging thermal energy..."));
+                player.displayClientMessage(net.minecraft.network.chat.Component
+                        .literal(ChatFormatting.RED + "System Overheat! Discharging thermal energy..."), false);
             }
         }
     }

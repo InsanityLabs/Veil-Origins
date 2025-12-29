@@ -17,7 +17,7 @@ public class TidecallerWeaknessesPassive extends OriginPassive {
         if (player.getMainHandItem().is(Items.FLINT_AND_STEEL) || player.getOffhandItem().is(Items.FLINT_AND_STEEL) ||
             player.getMainHandItem().is(Items.LAVA_BUCKET) || player.getOffhandItem().is(Items.LAVA_BUCKET)) {
             player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 1, false, false));
-            player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 40, 2, false, false)); // Mining Fatigue makes it hard to use
+            player.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, 40, 2, false, false)); // Mining Fatigue makes it hard to use
         }
     }
 

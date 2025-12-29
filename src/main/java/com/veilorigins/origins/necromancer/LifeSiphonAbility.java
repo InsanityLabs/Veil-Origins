@@ -55,61 +55,60 @@ public class LifeSiphonAbility extends OriginAbility {
         }
 
         if (target != null) {
-            // Deal damage
-            float actualDamage = target.hurt(level.damageSources().magic(), DAMAGE) ? DAMAGE : 0;
+            // Deal damage - in 1.21.10 hurt returns void
+            target.hurt(level.damageSources().magic(), DAMAGE);
+            float actualDamage = DAMAGE;
 
-            if (actualDamage > 0) {
-                // Apply wither effect
-                target.addEffect(new MobEffectInstance(MobEffects.WITHER, 60, 0)); // 3 seconds
-                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 80, 0)); // 4 seconds
+            // Apply wither effect
+            target.addEffect(new MobEffectInstance(MobEffects.WITHER, 60, 0)); // 3 seconds
+            target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 80, 0)); // 4 seconds
 
-                // Heal player
-                float healAmount = actualDamage * HEAL_RATIO;
-                player.heal(healAmount);
+            // Heal player
+            float healAmount = actualDamage * HEAL_RATIO;
+            player.heal(healAmount);
 
-                // Visual effect - drain beam from target to player
-                if (level instanceof ServerLevel serverLevel) {
-                    Vec3 targetPos = target.position().add(0, target.getBbHeight() / 2, 0);
-                    Vec3 playerCenter = player.position().add(0, player.getBbHeight() / 2, 0);
+            // Visual effect - drain beam from target to player
+            if (level instanceof ServerLevel serverLevel) {
+                Vec3 targetPos = target.position().add(0, target.getBbHeight() / 2, 0);
+                Vec3 playerCenter = player.position().add(0, player.getBbHeight() / 2, 0);
 
-                    // Beam particles
-                    int steps = (int) (closestDistance * 3);
-                    for (int i = 0; i <= steps; i++) {
-                        double progress = i / (double) steps;
-                        Vec3 particlePos = targetPos.lerp(playerCenter, progress);
+                // Beam particles
+                int steps = (int) (closestDistance * 3);
+                for (int i = 0; i <= steps; i++) {
+                    double progress = i / (double) steps;
+                    Vec3 particlePos = targetPos.lerp(playerCenter, progress);
 
-                        // Dark red soul-drain particles
-                        serverLevel.sendParticles(ParticleTypes.SOUL,
-                                particlePos.x, particlePos.y, particlePos.z,
-                                1, 0.05, 0.05, 0.05, 0.01);
-                        serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR,
-                                particlePos.x, particlePos.y, particlePos.z,
-                                1, 0.1, 0.1, 0.1, 0.01);
-                    }
-
-                    // Impact effect on target
+                    // Dark red soul-drain particles
                     serverLevel.sendParticles(ParticleTypes.SOUL,
-                            targetPos.x, targetPos.y, targetPos.z,
-                            15, 0.3, 0.3, 0.3, 0.1);
-                    serverLevel.sendParticles(ParticleTypes.SMOKE,
-                            targetPos.x, targetPos.y, targetPos.z,
-                            10, 0.3, 0.3, 0.3, 0.05);
-
-                    // Heal effect on player
-                    serverLevel.sendParticles(ParticleTypes.HEART,
-                            player.getX(), player.getY() + player.getBbHeight() + 0.5, player.getZ(),
-                            3, 0.3, 0.2, 0.3, 0.1);
-                    serverLevel.sendParticles(ParticleTypes.SOUL,
-                            player.getX(), player.getY() + player.getBbHeight() / 2, player.getZ(),
-                            10, 0.3, 0.5, 0.3, 0.05);
+                            particlePos.x, particlePos.y, particlePos.z,
+                            1, 0.05, 0.05, 0.05, 0.01);
+                    serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR,
+                            particlePos.x, particlePos.y, particlePos.z,
+                            1, 0.1, 0.1, 0.1, 0.01);
                 }
 
-                // Sound effects
-                level.playSound(null, target.getX(), target.getY(), target.getZ(),
-                        SoundEvents.WITHER_HURT, SoundSource.PLAYERS, 0.5f, 1.2f);
-                level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.PLAYER_BREATH, SoundSource.PLAYERS, 1.0f, 0.8f);
+                // Impact effect on target
+                serverLevel.sendParticles(ParticleTypes.SOUL,
+                        targetPos.x, targetPos.y, targetPos.z,
+                        15, 0.3, 0.3, 0.3, 0.1);
+                serverLevel.sendParticles(ParticleTypes.SMOKE,
+                        targetPos.x, targetPos.y, targetPos.z,
+                        10, 0.3, 0.3, 0.3, 0.05);
+
+                // Heal effect on player
+                serverLevel.sendParticles(ParticleTypes.HEART,
+                        player.getX(), player.getY() + player.getBbHeight() + 0.5, player.getZ(),
+                        3, 0.3, 0.2, 0.3, 0.1);
+                serverLevel.sendParticles(ParticleTypes.SOUL,
+                        player.getX(), player.getY() + player.getBbHeight() / 2, player.getZ(),
+                        10, 0.3, 0.5, 0.3, 0.05);
             }
+
+            // Sound effects
+            level.playSound(null, target.getX(), target.getY(), target.getZ(),
+                    SoundEvents.WITHER_HURT, SoundSource.PLAYERS, 0.5f, 1.2f);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.PLAYER_BREATH, SoundSource.PLAYERS, 1.0f, 0.8f);
         } else {
             // No target found - still show cast attempt
             if (level instanceof ServerLevel serverLevel) {

@@ -21,20 +21,20 @@ public class SkybornWeaknessesPassive extends OriginPassive {
 
             // Slowness underground < 40
             if (y < 40) {
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false));
+                player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 0, false, false));
                 // Mining Fatigure in caves (implied by "in caves", approximated by y < 40 and
                 // low light?)
                 // Spec says "Mining Fatigue I in caves". Let's stick to Y level + not seeing
                 // sky check?
                 if (!player.level().canSeeSky(player.blockPosition())) {
-                    player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 40, 0, false, false));
+                    player.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, 40, 0, false, false));
                 }
             }
 
             // Claustrophobia (Enclosed spaces)
             // Check if blocks around head are solid?
             if (isEnclosed(player)) {
-                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, false)); // Nausea
+                player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 100, 0, false, false)); // Nausea
             }
         }
     }
@@ -56,7 +56,7 @@ public class SkybornWeaknessesPassive extends OriginPassive {
 
     @Override
     public void onRemove(Player player) {
-        player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
-        player.removeEffect(MobEffects.DIG_SLOWDOWN);
+        player.removeEffect(MobEffects.SLOWNESS);
+        player.removeEffect(MobEffects.MINING_FATIGUE);
     }
 }

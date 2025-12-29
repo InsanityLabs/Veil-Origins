@@ -81,14 +81,14 @@ public class FlameBurstAbility extends OriginAbility {
 
         // Notify player if creepers were detonated
         if (creepersDetonated > 0) {
-            player.sendSystemMessage(
+            player.displayClientMessage(
                     Component.literal(ChatFormatting.RED + "" + ChatFormatting.BOLD + creepersDetonated + " Creeper" +
                             (creepersDetonated > 1 ? "s" : "") + " ignited! " + ChatFormatting.RESET
-                            + ChatFormatting.GRAY + "Run!"));
+                            + ChatFormatting.GRAY + "Run!"), false);
         }
 
         // Environmental Effects (Blocks)
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             for (BlockPos pos : BlockPos.betweenClosed(center.offset(-RADIUS, -2, -RADIUS),
                     center.offset(RADIUS, 2, RADIUS))) {
                 if (pos.distSqr(center) <= RADIUS * RADIUS) {
@@ -118,22 +118,22 @@ public class FlameBurstAbility extends OriginAbility {
     }
 
     private void smeltItem(ItemEntity itemEntity, Level level) {
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        
         ItemStack stack = itemEntity.getItem();
 
         // Simple smelting logic - look for smelting recipe
-        Optional<net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> recipe = level.getRecipeManager()
-                .getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level);
+        Optional<net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> recipe = serverLevel.recipeAccess()
+                .getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), serverLevel);
 
         if (recipe.isPresent()) {
-            ItemStack result = recipe.get().value().getResultItem(level.registryAccess()).copy();
+            ItemStack result = recipe.get().value().assemble(new SingleRecipeInput(stack), serverLevel.registryAccess()).copy();
             result.setCount(stack.getCount());
             itemEntity.setItem(result);
 
-            if (level instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                        itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
-                        5, 0.2, 0.2, 0.2, 0.1);
-            }
+            serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                    itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(),
+                    5, 0.2, 0.2, 0.2, 0.1);
         }
     }
 

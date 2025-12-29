@@ -30,7 +30,7 @@ public class SunlightPhotosynthesisPassive extends OriginPassive {
 
         // Check if in direct sunlight (sky visible and daytime)
         boolean inSunlight = level.canSeeSky(playerPos.above()) &&
-                level.isDay() &&
+                (level.getDayTime() < 13000) &&
                 !level.isRaining() &&
                 level.getBrightness(LightLayer.SKY, playerPos.above()) >= 15;
 
@@ -64,11 +64,11 @@ public class SunlightPhotosynthesisPassive extends OriginPassive {
             int nearbyFlowers = countNearbyFlowers(level, playerPos, 5);
             if (nearbyFlowers >= 5) {
                 // Many flowers = strength boost
-                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, true, false));
+                player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 40, 0, true, false));
             }
             if (nearbyFlowers >= 3) {
                 // Some flowers = speed boost
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 0, true, false));
+                player.addEffect(new MobEffectInstance(MobEffects.SPEED, 40, 0, true, false));
             }
         }
 
@@ -101,8 +101,8 @@ public class SunlightPhotosynthesisPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                ChatFormatting.GREEN + "As a Dryad, you photosynthesize in sunlight. Flowers empower you."));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                ChatFormatting.GREEN + "As a Dryad, you photosynthesize in sunlight. Flowers empower you."), false);
     }
 
     @Override

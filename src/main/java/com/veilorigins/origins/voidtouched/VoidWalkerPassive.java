@@ -53,8 +53,8 @@ public class VoidWalkerPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal(ChatFormatting.DARK_PURPLE + "The void has marked you. You are resistant to its embrace."));
+        player.displayClientMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.DARK_PURPLE + "The void has marked you. You are resistant to its embrace."), false);
     }
 
     @Override

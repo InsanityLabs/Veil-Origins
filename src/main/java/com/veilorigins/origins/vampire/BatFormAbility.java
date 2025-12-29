@@ -25,7 +25,7 @@ import java.util.UUID;
  * bats
  */
 public class BatFormAbility extends OriginAbility {
-    private static final int RESOURCE_COST = 5;
+    private static final int RESOURCE_COST = 25; // Costs 25 blood
     private static final int DURATION = 15 * 20; // 15 seconds
     private static final int COOLDOWN = 60 * 20; // 60 seconds
 
@@ -48,7 +48,7 @@ public class BatFormAbility extends OriginAbility {
 
     @Override
     public void onActivate(Player player, Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         UUID playerId = player.getUUID();
@@ -107,8 +107,8 @@ public class BatFormAbility extends OriginAbility {
                     30, 0.5, 0.5, 0.5, 0.1);
         }
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.DARK_PURPLE + "" + ChatFormatting.BOLD + "Bat Form! "
-                + ChatFormatting.RESET + ChatFormatting.GRAY + "You transform into a bat! (15 seconds)"));
+        player.displayClientMessage(Component.literal(ChatFormatting.DARK_PURPLE + "" + ChatFormatting.BOLD + "Bat Form! "
+                + ChatFormatting.RESET + ChatFormatting.GRAY + "You transform into a bat! (15 seconds)"), false);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.BAT_AMBIENT, SoundSource.PLAYERS, 1.5f, 1.0f);
 
@@ -159,7 +159,7 @@ public class BatFormAbility extends OriginAbility {
 
     @Override
     public void tick(Player player) {
-        if (player.level().isClientSide)
+        if (player.level().isClientSide())
             return;
 
         UUID playerId = player.getUUID();
@@ -198,7 +198,7 @@ public class BatFormAbility extends OriginAbility {
             }
 
             // Speed boost while in bat form
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 5, 2, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 5, 2, false, false));
 
             // Bat sounds occasionally
             if (currentTime % 40 == 0) {
@@ -209,10 +209,10 @@ public class BatFormAbility extends OriginAbility {
             // Warning before ending
             long remaining = state.endTime - currentTime;
             if (remaining == 3 * 20) {
-                player.sendSystemMessage(Component.literal(ChatFormatting.YELLOW + "Bat form ending in 3 seconds..."));
+                player.displayClientMessage(Component.literal(ChatFormatting.YELLOW + "Bat form ending in 3 seconds..."), false);
             } else if (remaining == 1 * 20) {
-                player.sendSystemMessage(Component.literal(
-                        ChatFormatting.RED + "" + ChatFormatting.BOLD + "Bat form ending! Find a safe landing!"));
+                player.displayClientMessage(Component.literal(
+                        ChatFormatting.RED + "" + ChatFormatting.BOLD + "Bat form ending! Find a safe landing!"), false);
             }
         }
     }
@@ -241,7 +241,7 @@ public class BatFormAbility extends OriginAbility {
                     30, 0.5, 0.5, 0.5, 0.1);
         }
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "You return to your normal form."));
+        player.displayClientMessage(Component.literal(ChatFormatting.GRAY + "You return to your normal form."), false);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.BAT_DEATH, SoundSource.PLAYERS, 0.8f, 1.0f);
     }

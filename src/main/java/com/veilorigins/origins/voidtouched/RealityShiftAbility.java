@@ -52,7 +52,7 @@ public class RealityShiftAbility extends OriginAbility {
         }
 
         if (target == null) {
-            player.sendSystemMessage(Component.literal(ChatFormatting.RED + "No valid target found!"));
+            player.displayClientMessage(Component.literal(ChatFormatting.RED + "No valid target found!"), false);
             return;
         }
 
@@ -65,7 +65,7 @@ public class RealityShiftAbility extends OriginAbility {
         target.teleportTo(playerPos.x, playerPos.y, playerPos.z);
 
         // Disorient target
-        target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0));
+        target.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 100, 0));
 
         // Effects
         level.playSound(null, playerPos.x, playerPos.y, playerPos.z,
@@ -81,7 +81,7 @@ public class RealityShiftAbility extends OriginAbility {
                     targetPos.x, targetPos.y + 1, targetPos.z, 50, 0.5, 0.5, 0.5, 0.3);
         }
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.DARK_PURPLE + "Reality shifted!"));
+        player.displayClientMessage(Component.literal(ChatFormatting.DARK_PURPLE + "Reality shifted!"), false);
 
         startCooldown();
     }

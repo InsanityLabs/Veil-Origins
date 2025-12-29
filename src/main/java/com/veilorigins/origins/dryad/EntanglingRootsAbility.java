@@ -39,9 +39,9 @@ public class EntanglingRootsAbility extends OriginAbility {
             entity.hurt(level.damageSources().magic(), DAMAGE);
 
             // Apply root effect (immobilization via slow + no jump)
-            entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 4)); // 5 seconds, level 5
+            entity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 4)); // 5 seconds, level 5
                                                                                            // (rooted)
-            entity.addEffect(new MobEffectInstance(MobEffects.JUMP, 100, 128)); // Negative jump = can't jump
+            entity.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 100, 128)); // Negative jump = can't jump
             entity.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 0)); // Minor poison for 3 seconds
 
             // Spawn vine particles around each trapped entity

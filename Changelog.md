@@ -1,5 +1,89 @@
 # Changelog
 
+## v1.0.4 (2025-12-29)
+
+### Updated
+
+- **Backported to Minecraft 1.21.8 with NeoForge 21.8.47**
+- Parchment mappings updated to 2025.07.20 for 1.21.8
+
+### Added
+
+#### Vampire Blood System Overhaul
+- **Blood Bar replaces Hunger Bar** - Vampires now have a blood bar that replaces the vanilla hunger bar
+  - Blood drains slowly over time (faster when sprinting or healing)
+  - High blood (80+) enables natural regeneration
+  - Empty blood causes starvation damage
+  - Blood syncs to hunger level for compatibility
+
+- **Blood Bottle Items** - New consumable items for vampires
+  - Empty Blood Bottle - craft from glass bottle
+  - Half Blood Bottle - restores 50 blood
+  - Full Blood Bottle - restores 100 blood
+  - Drinking gives regeneration effect
+  - Only vampires can drink blood bottles
+
+- **Bottle Filling Mechanic** - Fill blood bottles while draining animals
+  - Hold empty/half bottle in offhand while using Blood Drain ability
+  - Hold empty/half bottle in offhand while using Blood Drain Gaze passive
+  - Empty → Half → Full progression
+
+#### Vampire Ability Blood Costs
+- **Bat Form** - Costs 25 blood to activate
+- **Vampiric Leap** - Costs 5 blood per leap
+- **Blood Drain** - Free (gives +15 blood per drain)
+
+#### Sun Damage Fix
+- Fixed vampire sun damage not working properly
+- Now correctly checks daytime (0-12500 or 23500-24000)
+- Rain provides protection from sun
+- Visual fire effect when burning
+
+#### Custom Resource Bar API
+- **CustomResourceBar** - New API class for configuring custom resource bars
+  - Multiple styles: ICONS, SOLID_BAR, SEGMENTED_BAR, REPLACE_HUNGER, REPLACE_HEALTH
+  - Configurable positions: HOTBAR_LEFT, HOTBAR_RIGHT, corners, custom
+  - Custom colors (primary, secondary, critical, background, border)
+  - Sprite support for icon-based bars
+  - Animation options (pulse when low, bounce when critical)
+  - Threshold settings for low/critical states
+  - Factory methods: `bloodBar()`, `manaBar()`, `heatBar()`, `hydrationBar()`, `stellarBar()`
+
+- **ResourceType** - Updated with custom bar support
+  - `setCustomBar(CustomResourceBar)` - attach custom bar configuration
+  - Factory methods for common resource types
+
+- **CustomBarRenderer** - New renderer for custom bars
+
+### Fixed
+
+#### Radial Menu Clickability (1.21.8)
+- **Fixed radial menu not responding to mouse clicks**
+  - Root cause: Custom `handleMouseClick`, `handleKeyPress`, and `handleKeyRelease` methods were not being called
+  - Added proper `@Override` annotations for `mouseClicked`, `keyPressed`, and `keyReleased` methods
+  - Menu now correctly handles segment clicks, subsection clicks, and center clicks
+  - ESC key properly closes the menu
+  - R key refreshes origins in origin select mode
+
+#### Keybind Registration Crash (1.21.8)
+- **Fixed crash on startup due to duplicate keybind registration**
+  - Root cause: Keybindings were being registered twice:
+    - Once via `@EventBusSubscriber` in `KeyBindings.java`
+    - Again via `modEventBus.addListener(this::registerKeyMappings)` in `VeilOrigins.java`
+  - Removed duplicate registration from `VeilOrigins.java`
+  - Keybinds are now registered only once via `@EventBusSubscriber`
+
+#### API Compatibility (1.21.8)
+- Fixed `FMLEnvironment.getDist()` → `FMLEnvironment.dist` for NeoForge 21.8
+- Fixed `DeferredRegister.Items.registerItem()` to use direct `Item.Properties` instead of `Supplier<Item.Properties>`
+- Fixed `KeyMapping` constructor to use String-based categories instead of `KeyMapping.Category`
+
+### Other Fixes
+- Vampire sun damage now works correctly
+- Blood bar sprites render properly using `blitSprite` with `RenderPipelines.GUI_TEXTURED`
+
+---
+
 ## v1.0.3 (2025-12-21) - RELEASED
 
 ### Added

@@ -34,22 +34,24 @@ public class HeatAffinityPassive extends OriginPassive {
         }
 
         // Food cooking - every 5 seconds (100 ticks) to not be too OP/laggy
-        if (tickCounter % 100 == 0 && !player.level().isClientSide) {
+        if (tickCounter % 100 == 0 && !player.level().isClientSide()) {
             cookOneItem(player);
         }
     }
 
     private void cookOneItem(Player player) {
         Level level = player.level();
+        if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
+        
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
             if (!stack.isEmpty()) {
-                Optional<net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> recipe = level
-                        .getRecipeManager()
-                        .getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level);
+                Optional<net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> recipe = serverLevel
+                        .recipeAccess()
+                        .getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), serverLevel);
 
                 if (recipe.isPresent()) {
-                    ItemStack result = recipe.get().value().getResultItem(level.registryAccess()).copy();
+                    ItemStack result = recipe.get().value().assemble(new SingleRecipeInput(stack), serverLevel.registryAccess()).copy();
                     // Only cook if it's food? Spec says "Food automatically cooks", but logic
                     // "Smelts dropped items" in FlameBurst implies any item.
                     // "Food automatically cooks in inventory"

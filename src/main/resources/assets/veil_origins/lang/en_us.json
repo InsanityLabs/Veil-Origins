@@ -7,6 +7,11 @@
   "key.veil_origins.hud_config": "HUD Settings",
   "screen.veil_origins.radial_menu": "Origin Menu",
   
+  "itemGroup.veil_origins": "Veil Origins",
+  "item.veil_origins.blood_bottle_empty": "Empty Blood Bottle",
+  "item.veil_origins.blood_bottle_half": "Blood Bottle (Half)",
+  "item.veil_origins.blood_bottle_full": "Blood Bottle",
+  
   "veil_origins.screen.hud_config.title": "Veil Origins HUD Settings",
   "veil_origins.screen.hud_config.subtitle": "Toggle HUD elements on or off",
   "veil_origins.screen.hud_config.main_elements": "Main Elements",

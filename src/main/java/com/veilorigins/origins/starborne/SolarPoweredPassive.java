@@ -14,7 +14,7 @@ public class SolarPoweredPassive extends OriginPassive {
     @Override
     public void onTick(Player player) {
         Level level = player.level();
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         long time = level.getDayTime() % 24000;
@@ -24,12 +24,12 @@ public class SolarPoweredPassive extends OriginPassive {
         if (isDay && canSeeSky) {
             // Direct sunlight
             player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0, false, false));
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 0, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 40, 0, false, false));
         } else {
             // Check for light darkness
             int light = level.getMaxLocalRawBrightness(player.blockPosition());
             if (light == 0) {
-                player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 40, 0, false, false));
+                player.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, 40, 0, false, false));
                 player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 0, false, false));
                 // Damage handled in weaknesses
             }
@@ -43,8 +43,8 @@ public class SolarPoweredPassive extends OriginPassive {
     @Override
     public void onRemove(Player player) {
         player.removeEffect(MobEffects.REGENERATION);
-        player.removeEffect(MobEffects.MOVEMENT_SPEED);
-        player.removeEffect(MobEffects.DIG_SLOWDOWN);
+        player.removeEffect(MobEffects.SPEED);
+        player.removeEffect(MobEffects.MINING_FATIGUE);
         player.removeEffect(MobEffects.WEAKNESS);
     }
 }

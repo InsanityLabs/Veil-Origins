@@ -38,8 +38,8 @@ public class MycomorphWeaknessesPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal(ChatFormatting.DARK_GREEN + "As Mycomorph, fire is death, but nature is your ally."));
+        player.displayClientMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.DARK_GREEN + "As Mycomorph, fire is death, but nature is your ally."), false);
     }
 
     @Override

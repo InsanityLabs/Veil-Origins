@@ -24,7 +24,7 @@ public class VeilbornWeaknessesPassive extends OriginPassive {
             Level level = player.level();
             
             // Sunlight weakness - applies Weakness I in sunlight
-            if (level.isDay() && level.canSeeSky(player.blockPosition())) {
+            if ((level.getDayTime() < 13000) && level.canSeeSky(player.blockPosition())) {
                 int lightLevel = level.getMaxLocalRawBrightness(player.blockPosition());
                 if (lightLevel >= 12) {
                     player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 0, false, false));

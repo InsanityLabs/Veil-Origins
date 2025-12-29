@@ -39,7 +39,7 @@ public class BlizzardAbility extends OriginAbility {
         activeDuration = DURATION;
         blizzardCenter = player.position();
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "You summon a blizzard!"));
+        player.displayClientMessage(Component.literal(ChatFormatting.AQUA + "You summon a blizzard!"), false);
 
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.SNOW_GOLEM_HURT, SoundSource.PLAYERS, 2.0f, 0.5f);
@@ -97,11 +97,11 @@ public class BlizzardAbility extends OriginAbility {
                 for (LivingEntity entity : entities) {
                     if (entity == player) {
                         // Player gets buffs
-                        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, 1, false, false));
+                        entity.addEffect(new MobEffectInstance(MobEffects.SPEED, 25, 1, false, false));
                         entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 25, 0, false, false));
                     } else {
                         // Enemies get slowed
-                        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 1, false, false));
+                        entity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 25, 1, false, false));
                     }
                 }
 
@@ -122,7 +122,7 @@ public class BlizzardAbility extends OriginAbility {
                         BlockState belowState = level.getBlockState(pos);
 
                         // Check if we can place snow (air above solid block)
-                        if (aboveState.isAir() && belowState.isSolidRender(level, pos)) {
+                        if (aboveState.isAir() && belowState.isSolidRender()) {
                             // Random chance to place snow (30% per check)
                             if (Math.random() < 0.3) {
                                 level.setBlock(abovePos, Blocks.SNOW.defaultBlockState(), 3);
@@ -142,13 +142,13 @@ public class BlizzardAbility extends OriginAbility {
 
             // Warning when ending
             if (activeDuration == 5 * 20) {
-                player.sendSystemMessage(Component.literal(ChatFormatting.YELLOW + "Blizzard ending in 5 seconds..."));
+                player.displayClientMessage(Component.literal(ChatFormatting.YELLOW + "Blizzard ending in 5 seconds..."), false);
             }
 
             if (activeDuration == 0) {
                 isActive = false;
                 blizzardCenter = null;
-                player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "Blizzard ended."));
+                player.displayClientMessage(Component.literal(ChatFormatting.AQUA + "Blizzard ended."), false);
             }
         }
     }

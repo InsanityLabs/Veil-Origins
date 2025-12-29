@@ -92,8 +92,8 @@ public class PermafrostPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal(ChatFormatting.AQUA + "As Frostborn, you freeze water and are immune to cold."));
+        player.displayClientMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.AQUA + "As Frostborn, you freeze water and are immune to cold."), false);
     }
 
     @Override

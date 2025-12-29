@@ -41,8 +41,7 @@ public class PocketDimensionChunkGenerator extends ChunkGenerator {
     @Override
     public void applyCarvers(WorldGenRegion region, long seed, RandomState randomState, 
                             net.minecraft.world.level.biome.BiomeManager biomeManager, 
-                            StructureManager structureManager, ChunkAccess chunk, 
-                            GenerationStep.Carving carving) {
+                            StructureManager structureManager, ChunkAccess chunk) {
         // No carvers in pocket dimension
     }
 
@@ -57,11 +56,11 @@ public class PocketDimensionChunkGenerator extends ChunkGenerator {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     BlockPos pos = new BlockPos(chunkPos.getMinBlockX() + x, 63, chunkPos.getMinBlockZ() + z);
-                    chunk.setBlockState(pos, Blocks.END_STONE.defaultBlockState(), false);
+                    chunk.setBlockState(pos, Blocks.END_STONE.defaultBlockState(), 0);
                     
                     // Add some glowstone for light
                     if ((x == 4 || x == 11) && (z == 4 || z == 11)) {
-                        chunk.setBlockState(pos.above(), Blocks.GLOWSTONE.defaultBlockState(), false);
+                        chunk.setBlockState(pos.above(), Blocks.GLOWSTONE.defaultBlockState(), 0);
                     }
                 }
             }
@@ -107,7 +106,7 @@ public class PocketDimensionChunkGenerator extends ChunkGenerator {
         for (int i = 0; i < states.length; i++) {
             states[i] = Blocks.AIR.defaultBlockState();
         }
-        return new NoiseColumn(level.getMinBuildHeight(), states);
+        return new NoiseColumn(level.getMinY(), states);
     }
 
     @Override

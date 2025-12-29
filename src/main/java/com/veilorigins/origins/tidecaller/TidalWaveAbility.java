@@ -44,7 +44,7 @@ public class TidalWaveAbility extends OriginAbility {
 
     @Override
     public void onActivate(Player player, Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         BlockPos center = player.blockPosition();
@@ -133,7 +133,7 @@ public class TidalWaveAbility extends OriginAbility {
 
                 // Find ground level
                 BlockPos waterPos = new BlockPos(x, center.getY(), z);
-                while (level.isEmptyBlock(waterPos) && waterPos.getY() > level.getMinBuildHeight()) {
+                while (level.isEmptyBlock(waterPos) && waterPos.getY() > level.dimensionType().minY()) {
                     waterPos = waterPos.below();
                 }
                 waterPos = waterPos.above();
@@ -147,9 +147,9 @@ public class TidalWaveAbility extends OriginAbility {
 
         // Feedback message
         if (enemiesHit > 0 || firesExtinguished > 0) {
-            player.sendSystemMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Tidal Wave! "
+            player.displayClientMessage(Component.literal(ChatFormatting.AQUA + "" + ChatFormatting.BOLD + "Tidal Wave! "
                     + ChatFormatting.RESET + ChatFormatting.GRAY + "Hit " + enemiesHit + " enemies" +
-                    (firesExtinguished > 0 ? ", extinguished " + firesExtinguished + " fires" : "")));
+                    (firesExtinguished > 0 ? ", extinguished " + firesExtinguished + " fires" : "")), false);
         }
 
         player.causeFoodExhaustion(HUNGER_COST);
@@ -158,7 +158,7 @@ public class TidalWaveAbility extends OriginAbility {
 
     @Override
     public void tick(Player player) {
-        if (player.level().isClientSide)
+        if (player.level().isClientSide())
             return;
 
         Level level = player.level();

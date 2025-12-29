@@ -135,7 +135,7 @@ public class OriginCommand {
                     () -> Component.literal("Reset all cooldowns for " + player.getName().getString()),
                     true);
 
-            player.sendSystemMessage(Component.literal("All ability cooldowns reset!").withStyle(ChatFormatting.GREEN));
+            player.displayClientMessage(Component.literal("All ability cooldowns reset!").withStyle(ChatFormatting.GREEN), false);
 
             return 1;
         } catch (Exception e) {

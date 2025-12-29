@@ -29,7 +29,7 @@ public class VamplingPassive extends OriginPassive {
 
         // Mild sunlight weakness (not burning, just weakness)
         if (tickCounter % 20 == 0) {
-            boolean isDay = level.isDay();
+            boolean isDay = (level.getDayTime() < 13000);
             boolean canSeeSky = level.canSeeSky(player.blockPosition());
 
             if (isDay && canSeeSky && lightLevel > 12) {
@@ -39,14 +39,14 @@ public class VamplingPassive extends OriginPassive {
 
         // Minor strength at night
         if (lightLevel < 7) {
-            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 25, 0, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 25, 0, false, false));
         }
     }
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal(ChatFormatting.RED + " As a Vampling, you are stronger at night but weakened in sunlight."));
+        player.displayClientMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.RED + " As a Vampling, you are stronger at night but weakened in sunlight."), false);
     }
 
     @Override
