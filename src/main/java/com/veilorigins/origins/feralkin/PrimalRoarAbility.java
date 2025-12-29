@@ -43,11 +43,11 @@ public class PrimalRoarAbility extends OriginAbility {
             if (entity instanceof Monster monster) {
                 // Fear enemies - they flee
                 monster.setLastHurtByMob(player);
-                monster.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 160, 1));
+                monster.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 160, 1));
             } else if (entity instanceof Animal animal) {
                 // Rally animals to fight for you
                 animal.setLastHurtByMob(null);
-                animal.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 200, 0));
+                animal.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 200, 0));
             }
         }
 

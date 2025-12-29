@@ -38,7 +38,7 @@ public class FungalNetworkAbility extends OriginAbility {
 
     @Override
     public void onActivate(Player player, Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         // Mode 1: Tag Node (Check what player is looking at)
@@ -64,39 +64,39 @@ public class FungalNetworkAbility extends OriginAbility {
             // Check if sneaking to remove an existing node
             if (player.isCrouching() && nodes.contains(lookedPos)) {
                 nodes.remove(lookedPos);
-                player.sendSystemMessage(
+                player.displayClientMessage(
                         Component.literal(ChatFormatting.YELLOW + "Fungal Node removed! (" + nodes.size() + "/"
-                                + MAX_NODES + ")"));
+                                + MAX_NODES + ")"), false);
                 return;
             }
 
             // Tagging
             if (nodes.contains(lookedPos)) {
-                player.sendSystemMessage(
-                        Component.literal(ChatFormatting.RED + "Node already tagged! Sneak to remove it."));
+                player.displayClientMessage(
+                        Component.literal(ChatFormatting.RED + "Node already tagged! Sneak to remove it."), false);
             } else {
                 if (nodes.size() >= MAX_NODES) {
                     nodes.remove(0); // Remove oldest
-                    player.sendSystemMessage(
-                            Component.literal(ChatFormatting.GRAY + "(Oldest node was removed to make room)"));
+                    player.displayClientMessage(
+                            Component.literal(ChatFormatting.GRAY + "(Oldest node was removed to make room)"), false);
                 }
                 nodes.add(lookedPos);
-                player.sendSystemMessage(
+                player.displayClientMessage(
                         Component.literal(
                                 ChatFormatting.GREEN + "Fungal Node tagged! (" + nodes.size() + "/" + MAX_NODES
-                                        + ") Sneak to remove."));
+                                        + ") Sneak to remove."), false);
             }
             // Low cost for tagging - no cooldown
         } else {
             // Pinging Network
             if (nodes.isEmpty()) {
-                player.sendSystemMessage(
-                        Component.literal(ChatFormatting.YELLOW + "No nodes tagged. Look at a mushroom to tag it."));
+                player.displayClientMessage(
+                        Component.literal(ChatFormatting.YELLOW + "No nodes tagged. Look at a mushroom to tag it."), false);
                 return;
             }
 
             player.causeFoodExhaustion(HUNGER_COST);
-            player.sendSystemMessage(Component.literal(ChatFormatting.DARK_GREEN + "--- Fungal Network Status ---"));
+            player.displayClientMessage(Component.literal(ChatFormatting.DARK_GREEN + "--- Fungal Network Status ---"), false);
 
             // Validate nodes still exist and remove destroyed ones
             List<BlockPos> invalidNodes = new ArrayList<>();
@@ -111,14 +111,14 @@ public class FungalNetworkAbility extends OriginAbility {
             // Remove invalid nodes
             if (!invalidNodes.isEmpty()) {
                 nodes.removeAll(invalidNodes);
-                player.sendSystemMessage(
+                player.displayClientMessage(
                         Component.literal(
-                                ChatFormatting.GRAY + "(" + invalidNodes.size() + " destroyed node(s) removed)"));
+                                ChatFormatting.GRAY + "(" + invalidNodes.size() + " destroyed node(s) removed)"), false);
             }
 
             if (nodes.isEmpty()) {
-                player.sendSystemMessage(
-                        Component.literal(ChatFormatting.YELLOW + "All your nodes have been destroyed!"));
+                player.displayClientMessage(
+                        Component.literal(ChatFormatting.YELLOW + "All your nodes have been destroyed!"), false);
                 return;
             }
 
@@ -129,13 +129,13 @@ public class FungalNetworkAbility extends OriginAbility {
                         new net.minecraft.world.phys.AABB(pos).inflate(10));
 
                 String status = nearby.isEmpty() ? "Silent" : nearby.size() + " beings detected";
-                player.sendSystemMessage(
-                        Component.literal("Node " + (i + 1) + " [" + pos.toShortString() + "]: " + status));
+                player.displayClientMessage(
+                        Component.literal("Node " + (i + 1) + " [" + pos.toShortString() + "]: " + status), false);
 
                 for (Player p : nearby) {
                     if (p != player) {
-                        p.sendSystemMessage(Component
-                                .literal(ChatFormatting.LIGHT_PURPLE + "You feel a fungal presence watching you..."));
+                        p.displayClientMessage(Component
+                                .literal(ChatFormatting.LIGHT_PURPLE + "You feel a fungal presence watching you..."), false);
                     }
                 }
             }

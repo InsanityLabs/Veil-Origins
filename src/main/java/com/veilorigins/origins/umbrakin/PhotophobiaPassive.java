@@ -28,9 +28,9 @@ public class PhotophobiaPassive extends OriginPassive {
             int lightLevel = level.getMaxLocalRawBrightness(player.blockPosition());
 
             // Sunlight damage (1 HP per second)
-            if (level.isDay() && level.canSeeSky(player.blockPosition()) && lightLevel >= 12) {
+            if ((level.getDayTime() < 13000) && level.canSeeSky(player.blockPosition()) && lightLevel >= 12) {
                 // Check if wearing helmet
-                if (player.getInventory().getArmor(3).isEmpty()) {
+                if (player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).isEmpty()) {
                     player.hurt(level.damageSources().onFire(), 1.0f);
                 }
             }
@@ -42,7 +42,7 @@ public class PhotophobiaPassive extends OriginPassive {
 
             // Torches/lanterns nearby cause discomfort
             if (hasNearbyLightSources(player, level)) {
-                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 40, 0, false, false));
+                player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 40, 0, false, false));
             }
 
             // Glowstone/sea lanterns deal proximity damage
@@ -93,13 +93,13 @@ public class PhotophobiaPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                ChatFormatting.DARK_GRAY + "As Umbrakin, sunlight burns you and bright lights cause discomfort."));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                ChatFormatting.DARK_GRAY + "As Umbrakin, sunlight burns you and bright lights cause discomfort."), false);
     }
 
     @Override
     public void onRemove(Player player) {
         player.removeEffect(MobEffects.WEAKNESS);
-        player.removeEffect(MobEffects.CONFUSION);
+        player.removeEffect(MobEffects.NAUSEA);
     }
 }

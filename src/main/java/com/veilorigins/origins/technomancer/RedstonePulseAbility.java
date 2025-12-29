@@ -47,8 +47,8 @@ public class RedstonePulseAbility extends OriginAbility {
             }
         }
 
-        player.sendSystemMessage(
-                Component.literal(ChatFormatting.RED + "Redstone Pulse sent! (" + count + " activated)"));
+        player.displayClientMessage(
+                Component.literal(ChatFormatting.RED + "Redstone Pulse sent! (" + count + " activated)"), false);
         startCooldown();
     }
 

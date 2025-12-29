@@ -1,7 +1,5 @@
 package com.veilorigins.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import com.veilorigins.VeilOrigins;
 import com.veilorigins.api.Origin;
 import com.veilorigins.api.OriginAbility;
@@ -12,12 +10,10 @@ import com.veilorigins.network.packet.SelectOriginPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -348,9 +344,7 @@ public class RadialMenuScreen extends Screen {
         if (menuItems.isEmpty())
             return;
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        // Blend is now handled by GuiGraphics internally in 1.21.10
 
         int segmentCount = menuItems.size();
         float segmentAngle = 360f / segmentCount;
@@ -392,8 +386,6 @@ public class RadialMenuScreen extends Screen {
             boolean isHovered = hoveredSegment == i;
             renderSegmentContent(guiGraphics, centerX, centerY, i, segmentAngle, menuItems.get(i), isHovered);
         }
-
-        RenderSystem.disableBlend();
     }
 
     private void renderSegment(GuiGraphics guiGraphics, int cx, int cy, int index, float segmentAngle,
@@ -453,15 +445,9 @@ public class RadialMenuScreen extends Screen {
             textColor = 0xFF555555; // Dimmed for cooldown
         }
 
-        // Draw the icon - larger for visibility
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(iconX, iconY, 0);
-        guiGraphics.pose().scale(1.5f, 1.5f, 1.0f); // Make icons bigger
-
+        // Draw the icon centered at position - no transforms needed in 1.21.10
         int iconWidth = this.font.width(icon);
-        guiGraphics.drawString(this.font, icon, -iconWidth / 2, -4, textColor, false);
-
-        guiGraphics.pose().popPose();
+        guiGraphics.drawString(this.font, icon, iconX - iconWidth / 2, iconY - 4, textColor, false);
     }
 
     private void renderCircle(GuiGraphics guiGraphics, int cx, int cy, int radius, int color) {
@@ -473,25 +459,16 @@ public class RadialMenuScreen extends Screen {
     }
 
     private void renderCircleOutline(GuiGraphics guiGraphics, int cx, int cy, int radius, int color, int width) {
-        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP,
-                DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f matrix = guiGraphics.pose().last().pose();
-
-        float r = ((color >> 16) & 0xFF) / 255f;
-        float g = ((color >> 8) & 0xFF) / 255f;
-        float b = (color & 0xFF) / 255f;
-        float a = ((color >> 24) & 0xFF) / 255f;
-
-        RenderSystem.lineWidth(width);
-
-        for (int i = 0; i <= 64; i++) {
-            float angle = (float) (i * 2 * Math.PI / 64);
-            buffer.addVertex(matrix, cx + radius * Mth.cos(angle), cy + radius * Mth.sin(angle), 0)
-                    .setColor(r, g, b, a);
+        // Draw circle outline using simple lines in 1.21.10
+        for (int i = 0; i < 64; i++) {
+            float angle1 = (float) (i * 2 * Math.PI / 64);
+            float angle2 = (float) ((i + 1) * 2 * Math.PI / 64);
+            int x1 = (int) (cx + radius * Mth.cos(angle1));
+            int y1 = (int) (cy + radius * Mth.sin(angle1));
+            int x2 = (int) (cx + radius * Mth.cos(angle2));
+            int y2 = (int) (cy + radius * Mth.sin(angle2));
+            drawLine(guiGraphics, x1, y1, x2, y2, color);
         }
-
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     private void renderCenterText(GuiGraphics guiGraphics, int cx, int cy) {
@@ -608,38 +585,6 @@ public class RadialMenuScreen extends Screen {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) { // Left click
-            int centerX = this.width / 2;
-            int centerY = this.height / 2;
-
-            double dx = mouseX - centerX;
-            double dy = mouseY - centerY;
-            double distance = Math.sqrt(dx * dx + dy * dy);
-
-            // Check if clicking center to close
-            if (distance < CENTER_RADIUS) {
-                onClose();
-                return true;
-            }
-
-            // Check subsection click
-            if (hoveredSubsection >= 0 && expandedSegment >= 0) {
-                handleSubsectionClick(expandedSegment, hoveredSubsection);
-                return true;
-            }
-
-            // Check segment click
-            if (hoveredSegment >= 0 && hoveredSegment < menuItems.size()) {
-                handleSegmentClick(hoveredSegment);
-                return true;
-            }
-        }
-
-        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private void handleSegmentClick(int index) {
@@ -776,41 +721,6 @@ public class RadialMenuScreen extends Screen {
         return false;
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-
-        // Allow player movement while radial menu is open
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && mc.player.input != null) {
-            long window = mc.getWindow().getWindow();
-
-            // Check raw key states using GLFW and apply movement input
-            boolean keyW = org.lwjgl.glfw.GLFW.glfwGetKey(window,
-                    org.lwjgl.glfw.GLFW.GLFW_KEY_W) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-            boolean keyS = org.lwjgl.glfw.GLFW.glfwGetKey(window,
-                    org.lwjgl.glfw.GLFW.GLFW_KEY_S) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-            boolean keyA = org.lwjgl.glfw.GLFW.glfwGetKey(window,
-                    org.lwjgl.glfw.GLFW.GLFW_KEY_A) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-            boolean keyD = org.lwjgl.glfw.GLFW.glfwGetKey(window,
-                    org.lwjgl.glfw.GLFW.GLFW_KEY_D) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-            boolean keySpace = org.lwjgl.glfw.GLFW.glfwGetKey(window,
-                    org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-            boolean keyShift = org.lwjgl.glfw.GLFW.glfwGetKey(window,
-                    org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-
-            // Apply to player input
-            mc.player.input.up = keyW;
-            mc.player.input.down = keyS;
-            mc.player.input.left = keyA;
-            mc.player.input.right = keyD;
-            mc.player.input.forwardImpulse = (keyW ? 1 : 0) - (keyS ? 1 : 0);
-            mc.player.input.leftImpulse = (keyA ? 1 : 0) - (keyD ? 1 : 0);
-            mc.player.input.jumping = keySpace;
-            mc.player.input.shiftKeyDown = keyShift;
-        }
-    }
-
     /**
      * Brighten a color by a given amount.
      */
@@ -822,46 +732,71 @@ public class RadialMenuScreen extends Screen {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
+    // Track previous mouse button state for edge detection
+    private boolean wasMousePressed = false;
+    private boolean wasRPressed = false;
+    private boolean wasEscPressed = false;
+
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        // Close on ESC
-        if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+    public void tick() {
+        super.tick();
+
+        // Poll mouse button state directly using GLFW (workaround for changed API in 1.21.10)
+        // Use glfwGetCurrentContext() to get the GLFW window handle since Window.getWindow() may not exist
+        long windowHandle = org.lwjgl.glfw.GLFW.glfwGetCurrentContext();
+        boolean isMousePressed = org.lwjgl.glfw.GLFW.glfwGetMouseButton(windowHandle, org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
+
+        // Detect mouse click (rising edge - was not pressed, now is pressed)
+        if (isMousePressed && !wasMousePressed) {
+            // Get mouse position
+            double mouseX = Minecraft.getInstance().mouseHandler.xpos() * width / Minecraft.getInstance().getWindow().getWidth();
+            double mouseY = Minecraft.getInstance().mouseHandler.ypos() * height / Minecraft.getInstance().getWindow().getHeight();
+
+            handleMouseClickInternal(mouseX, mouseY);
+        }
+
+        wasMousePressed = isMousePressed;
+
+        // Handle ESC key
+        if (org.lwjgl.glfw.GLFW.glfwGetKey(windowHandle, org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) == org.lwjgl.glfw.GLFW.GLFW_PRESS) {
             onClose();
-            return true;
-        }
-        // Refresh origins on R key (only in origin select mode)
-        if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_R && mode == MenuMode.ORIGIN_SELECT) {
-            refreshOrigins();
-            return true;
         }
 
-        // Let movement keys pass through to allow player to move
-        // WASD, Space (jump), Shift (sneak)
-        if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_W ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_A ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_S ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_D ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL) {
-            return false; // Don't consume - let game handle it
+        // Handle R key for refresh (in origin select mode)
+        if (mode == MenuMode.ORIGIN_SELECT) {
+            if (org.lwjgl.glfw.GLFW.glfwGetKey(windowHandle, org.lwjgl.glfw.GLFW.GLFW_KEY_R) == org.lwjgl.glfw.GLFW.GLFW_PRESS) {
+                refreshOrigins();
+            }
         }
-
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        // Let movement key releases pass through
-        if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_W ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_A ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_S ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_D ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT ||
-                keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL) {
-            return false;
+    /**
+     * Internal method to handle mouse clicks.
+     */
+    private void handleMouseClickInternal(double mouseX, double mouseY) {
+        int centerX = this.width / 2;
+        int centerY = this.height / 2;
+
+        double dx = mouseX - centerX;
+        double dy = mouseY - centerY;
+        double distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Check if clicking center to close
+        if (distance < CENTER_RADIUS) {
+            onClose();
+            return;
         }
-        return super.keyReleased(keyCode, scanCode, modifiers);
+
+        // Check subsection click
+        if (hoveredSubsection >= 0 && expandedSegment >= 0) {
+            handleSubsectionClick(expandedSegment, hoveredSubsection);
+            return;
+        }
+
+        // Check segment click
+        if (hoveredSegment >= 0 && hoveredSegment < menuItems.size()) {
+            handleSegmentClick(hoveredSegment);
+        }
     }
 }
+

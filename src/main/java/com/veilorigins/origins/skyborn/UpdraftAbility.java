@@ -48,7 +48,7 @@ public class UpdraftAbility extends OriginAbility {
 
     @Override
     public void tick(Player player) {
-        if (player.level().isClientSide)
+        if (player.level().isClientSide())
             return;
 
         UUID id = player.getUUID();

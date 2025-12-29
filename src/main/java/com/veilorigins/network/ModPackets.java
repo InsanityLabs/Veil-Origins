@@ -5,6 +5,7 @@ import com.veilorigins.network.packet.ActivateAbilityPacket;
 import com.veilorigins.network.packet.DoubleJumpPacket;
 import com.veilorigins.network.packet.SelectOriginPacket;
 import com.veilorigins.network.packet.SyncOriginDataPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -37,13 +38,11 @@ public class ModPackets {
                                 SyncOriginDataPacket::handle);
         }
 
-        public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToServer(
-                        T packet) {
-                PacketDistributor.sendToServer(packet);
+        public static <T extends CustomPacketPayload> void sendToServer(T packet) {
+                net.minecraft.client.Minecraft.getInstance().getConnection().send(packet);
         }
 
-        public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToPlayer(
-                        ServerPlayer player, T packet) {
-                PacketDistributor.sendToPlayer(player, packet);
+        public static <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T packet) {
+                player.connection.send(packet);
         }
 }

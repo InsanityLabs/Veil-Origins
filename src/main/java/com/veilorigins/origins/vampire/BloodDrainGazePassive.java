@@ -2,6 +2,7 @@ package com.veilorigins.origins.vampire;
 
 import com.veilorigins.api.OriginPassive;
 import com.veilorigins.data.OriginData;
+import com.veilorigins.registry.ModItems;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -18,6 +19,7 @@ import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
@@ -333,6 +335,11 @@ public class BloodDrainGazePassive extends OriginPassive {
         // Restore blood essence resource
         OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
         data.addResource(resourcePerTick);
+        
+        // Try to fill blood bottle in offhand if draining an animal (every 20 ticks)
+        if (target instanceof Animal && state.ticksLooking % 20 == 0) {
+            tryFillBloodBottle(player);
+        }
 
         // Visual effects every 10 ticks
         if (state.ticksLooking % 10 == 0) {
@@ -347,12 +354,40 @@ public class BloodDrainGazePassive extends OriginPassive {
 
         // Apply weakness to the target
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 1, false, false));
-        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 2, false, false));
+        target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 2, false, false));
 
         // Check if target died
         if (target.isDeadOrDying()) {
             onTargetDrained(player, target);
             resetDrainState(player, state);
+        }
+    }
+    
+    /**
+     * Tries to fill a blood bottle in the player's offhand.
+     */
+    private void tryFillBloodBottle(Player player) {
+        ItemStack offhand = player.getOffhandItem();
+        if (offhand.getItem() == ModItems.BLOOD_BOTTLE_EMPTY.get()) {
+            // Fill empty -> half
+            offhand.shrink(1);
+            ItemStack filledStack = new ItemStack(ModItems.BLOOD_BOTTLE_HALF.get());
+            if (!player.getInventory().add(filledStack)) {
+                player.drop(filledStack, false);
+            }
+            player.displayClientMessage(
+                    Component.literal(ChatFormatting.GRAY + "(Bottle filling...)"),
+                    true);
+        } else if (offhand.getItem() == ModItems.BLOOD_BOTTLE_HALF.get()) {
+            // Fill half -> full
+            offhand.shrink(1);
+            ItemStack filledStack = new ItemStack(ModItems.BLOOD_BOTTLE_FULL.get());
+            if (!player.getInventory().add(filledStack)) {
+                player.drop(filledStack, false);
+            }
+            player.displayClientMessage(
+                    Component.literal(ChatFormatting.DARK_RED + "(Bottle filled!)"),
+                    true);
         }
     }
 
@@ -401,7 +436,7 @@ public class BloodDrainGazePassive extends OriginPassive {
         // Bonus effects for fully draining a target
         int duration = isFullVampire ? 200 : 100;
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, duration, 1, false, true));
-        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, duration, 0, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, duration, 0, false, true));
 
         // Sound effect
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -428,9 +463,9 @@ public class BloodDrainGazePassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(Component.literal(
+        player.displayClientMessage(Component.literal(
                 ChatFormatting.DARK_RED + "\u263D Blood Gaze: " + ChatFormatting.GRAY
-                        + "Crouch and stare at a creature with blood for 5 seconds to drain it!"));
+                        + "Crouch and stare at a creature with blood for 5 seconds to drain it!"), false);
     }
 
     @Override

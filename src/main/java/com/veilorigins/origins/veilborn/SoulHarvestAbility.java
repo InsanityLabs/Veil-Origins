@@ -69,8 +69,8 @@ public class SoulHarvestAbility extends OriginAbility {
 
         // Notify about soulless creatures
         if (soullessCount > 0 && soulEssenceGained == 0) {
-            player.sendSystemMessage(
-                    Component.literal(ChatFormatting.GRAY + "These creatures have no souls to harvest..."));
+            player.displayClientMessage(
+                    Component.literal(ChatFormatting.GRAY + "These creatures have no souls to harvest..."), false);
         }
 
         // Grant soul essence to player (add to resource bar)

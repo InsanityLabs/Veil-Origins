@@ -51,9 +51,9 @@ public record SelectOriginPacket(String originId) implements CustomPacketPayload
                                 if (requestedOrigin == null) {
                                         VeilOrigins.LOGGER.warn("Player {} tried to select unknown origin: {}",
                                                         player.getName().getString(), packet.originId());
-                                        player.sendSystemMessage(
+                                        player.displayClientMessage(
                                                         Component.literal("Unknown origin: " + packet.originId())
-                                                                        .withStyle(ChatFormatting.RED));
+                                                                        .withStyle(ChatFormatting.RED), false);
                                         return;
                                 }
 
@@ -65,21 +65,21 @@ public record SelectOriginPacket(String originId) implements CustomPacketPayload
                                         syncOriginToClient(player, requestedOrigin);
 
                                         String star = UnicodeFontHandler.getSymbol(UnicodeFontHandler.SYMBOL_STAR, "*");
-                                        player.sendSystemMessage(Component.literal(
+                                        player.displayClientMessage(Component.literal(
                                                         star + " You have become a ")
                                                         .withStyle(ChatFormatting.GREEN)
                                                         .append(Component.literal(requestedOrigin.getDisplayName())
                                                                         .withStyle(ChatFormatting.GOLD))
                                                         .append(Component.literal("! " + star)
-                                                                        .withStyle(ChatFormatting.GREEN)));
-                                        player.sendSystemMessage(Component.literal(
+                                                                        .withStyle(ChatFormatting.GREEN)), false);
+                                        player.displayClientMessage(Component.literal(
                                                         requestedOrigin.getDescription())
-                                                        .withStyle(ChatFormatting.GRAY));
+                                                        .withStyle(ChatFormatting.GRAY), false);
 
                                         // Notify player about their abilities
                                         int abilityCount = requestedOrigin.getAbilities().size();
                                         int passiveCount = requestedOrigin.getPassives().size();
-                                        player.sendSystemMessage(Component.literal("You have ")
+                                        player.displayClientMessage(Component.literal("You have ")
                                                         .withStyle(ChatFormatting.YELLOW)
                                                         .append(Component.literal(String.valueOf(abilityCount))
                                                                         .withStyle(ChatFormatting.WHITE))
@@ -88,8 +88,8 @@ public record SelectOriginPacket(String originId) implements CustomPacketPayload
                                                         .append(Component.literal(String.valueOf(passiveCount))
                                                                         .withStyle(ChatFormatting.WHITE))
                                                         .append(Component.literal(" passives.")
-                                                                        .withStyle(ChatFormatting.YELLOW)));
-                                        player.sendSystemMessage(Component.literal("Press ")
+                                                                        .withStyle(ChatFormatting.YELLOW)), false);
+                                        player.displayClientMessage(Component.literal("Press ")
                                                         .withStyle(ChatFormatting.GRAY)
                                                         .append(Component.literal("[R]").withStyle(ChatFormatting.AQUA))
                                                         .append(Component.literal(" for Ability 1, ")
@@ -99,21 +99,21 @@ public record SelectOriginPacket(String originId) implements CustomPacketPayload
                                                                         .withStyle(ChatFormatting.GRAY))
                                                         .append(Component.literal("[G]").withStyle(ChatFormatting.AQUA))
                                                         .append(Component.literal(" for the Ability Menu.")
-                                                                        .withStyle(ChatFormatting.GRAY)));
+                                                                        .withStyle(ChatFormatting.GRAY)), false);
 
                                         VeilOrigins.LOGGER.info("Player {} selected origin: {}",
                                                         player.getName().getString(), requestedOrigin.getId());
                                 } else {
                                         // Origin change - check config
                                         if (!VeilOriginsConfig.allowOriginChange) {
-                                                player.sendSystemMessage(Component.literal(
+                                                player.displayClientMessage(Component.literal(
                                                                 "Origin changes are disabled on this server. You are a ")
                                                                 .withStyle(ChatFormatting.RED)
                                                                 .append(Component
                                                                                 .literal(currentOrigin.getDisplayName())
                                                                                 .withStyle(ChatFormatting.YELLOW))
                                                                 .append(Component.literal(".")
-                                                                                .withStyle(ChatFormatting.RED)));
+                                                                                .withStyle(ChatFormatting.RED)), false);
                                                 VeilOrigins.LOGGER.debug(
                                                                 "Player {} tried to change origin but changes are disabled",
                                                                 player.getName().getString());
@@ -126,12 +126,12 @@ public record SelectOriginPacket(String originId) implements CustomPacketPayload
                                         // Sync the new origin to the client - critical for multiplayer!
                                         syncOriginToClient(player, requestedOrigin);
 
-                                        player.sendSystemMessage(Component.literal(
+                                        player.displayClientMessage(Component.literal(
                                                         "Your origin has been changed to ")
                                                         .withStyle(ChatFormatting.GOLD)
                                                         .append(Component.literal(requestedOrigin.getDisplayName())
                                                                         .withStyle(ChatFormatting.YELLOW))
-                                                        .append(Component.literal("!").withStyle(ChatFormatting.GOLD)));
+                                                        .append(Component.literal("!").withStyle(ChatFormatting.GOLD)), false);
 
                                         VeilOrigins.LOGGER.info("Player {} changed origin from {} to {}",
                                                         player.getName().getString(),

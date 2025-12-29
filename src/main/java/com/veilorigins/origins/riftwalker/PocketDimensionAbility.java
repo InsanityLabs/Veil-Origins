@@ -18,6 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
 
+import java.util.Set;
+
 public class PocketDimensionAbility extends OriginAbility {
     private static final int RESOURCE_COST = 10;
     private static final int MAX_DURATION = 60 * 20; // 60 seconds in ticks
@@ -33,8 +35,11 @@ public class PocketDimensionAbility extends OriginAbility {
     public void onActivate(Player player, Level level) {
         if (!(player instanceof ServerPlayer serverPlayer))
             return;
+        
+        if (!(level instanceof ServerLevel serverLevel))
+            return;
 
-        MinecraftServer server = serverPlayer.getServer();
+        MinecraftServer server = serverLevel.getServer();
         if (server == null)
             return;
 
@@ -59,32 +64,30 @@ public class PocketDimensionAbility extends OriginAbility {
         // Get or create pocket dimension
         ServerLevel pocketDim = server.getLevel(PocketDimensionTeleporter.POCKET_DIMENSION);
         if (pocketDim == null) {
-            player.sendSystemMessage(Component.literal(ChatFormatting.RED + "Pocket dimension not available!"));
+            player.displayClientMessage(Component.literal(ChatFormatting.RED + "Pocket dimension not available!"), false);
             return;
         }
 
-        // Teleport to pocket dimension
+        // Teleport to pocket dimension using 1.21.10 API
         Vec3 spawnPos = new Vec3(0.5, 64, 0.5);
-        player.teleportTo(pocketDim, spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);
+        player.teleportTo(pocketDim, spawnPos.x, spawnPos.y, spawnPos.z, Set.of(), 0f, 0f, true);
 
         // Effects
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.PORTAL_TRAVEL, SoundSource.PLAYERS, 1.0f, 1.0f);
 
-        if (pocketDim instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.PORTAL,
-                    spawnPos.x, spawnPos.y + 1, spawnPos.z, 100, 1, 1, 1, 0.5);
-        }
+        pocketDim.sendParticles(ParticleTypes.PORTAL,
+                spawnPos.x, spawnPos.y + 1, spawnPos.z, 100, 1, 1, 1, 0.5);
 
-        player.sendSystemMessage(
-                Component.literal(ChatFormatting.LIGHT_PURPLE + "Entered Pocket Dimension - Time remaining: 60s"));
+        player.displayClientMessage(
+                Component.literal(ChatFormatting.LIGHT_PURPLE + "Entered Pocket Dimension - Time remaining: 60s"), false);
     }
 
     private void returnFromPocketDimension(ServerPlayer player, MinecraftServer server) {
         if (returnDimension == null || returnPos == null) {
-            // Default to overworld spawn
+            // Default to overworld spawn (0, 64, 0 as fallback)
             returnDimension = Level.OVERWORLD;
-            returnPos = server.overworld().getSharedSpawnPos();
+            returnPos = BlockPos.ZERO.above(64);
         }
 
         ServerLevel returnLevel = server.getLevel(returnDimension);
@@ -98,20 +101,18 @@ public class PocketDimensionAbility extends OriginAbility {
             resetPocketDimension(pocketDim);
         }
 
-        // Teleport back
+        // Teleport back using 1.21.10 API
         player.teleportTo(returnLevel, returnPos.getX() + 0.5, returnPos.getY(), returnPos.getZ() + 0.5,
-                player.getYRot(), player.getXRot());
+                Set.of(), player.getYRot(), player.getXRot(), true);
 
         // Effects
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.PORTAL_TRAVEL, SoundSource.PLAYERS, 1.0f, 1.2f);
 
-        if (returnLevel instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.REVERSE_PORTAL,
-                    player.getX(), player.getY() + 1, player.getZ(), 50, 0.5, 0.5, 0.5, 0.3);
-        }
+        returnLevel.sendParticles(ParticleTypes.REVERSE_PORTAL,
+                player.getX(), player.getY() + 1, player.getZ(), 50, 0.5, 0.5, 0.5, 0.3);
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.LIGHT_PURPLE + "Returned from Pocket Dimension"));
+        player.displayClientMessage(Component.literal(ChatFormatting.LIGHT_PURPLE + "Returned from Pocket Dimension"), false);
 
         // Reset
         returnPos = null;
@@ -158,26 +159,26 @@ public class PocketDimensionAbility extends OriginAbility {
                 int secondsLeft = dimensionTimer / 20;
                 // Only show countdown every 10 seconds
                 if (secondsLeft % 10 == 0 && secondsLeft > 10) {
-                    player.sendSystemMessage(Component
-                            .literal(ChatFormatting.GRAY + "Pocket Dimension: " + secondsLeft + "s remaining"));
+                    player.displayClientMessage(Component
+                            .literal(ChatFormatting.GRAY + "Pocket Dimension: " + secondsLeft + "s remaining"), false);
                 }
             }
 
             // Warning messages
             if (dimensionTimer == 10 * 20) {
-                player.sendSystemMessage(Component.literal(ChatFormatting.RED + "" + ChatFormatting.BOLD
-                        + "WARNING: 10 seconds remaining in Pocket Dimension!"));
+                player.displayClientMessage(Component.literal(ChatFormatting.RED + "" + ChatFormatting.BOLD
+                        + "WARNING: 10 seconds remaining in Pocket Dimension!"), false);
             } else if (dimensionTimer == 5 * 20) {
-                player.sendSystemMessage(Component
-                        .literal(ChatFormatting.RED + "" + ChatFormatting.BOLD + "WARNING: 5 seconds remaining!"));
+                player.displayClientMessage(Component
+                        .literal(ChatFormatting.RED + "" + ChatFormatting.BOLD + "WARNING: 5 seconds remaining!"), false);
             } else if (dimensionTimer == 0) {
                 // Force return
-                if (player instanceof ServerPlayer serverPlayer) {
-                    MinecraftServer server = serverPlayer.getServer();
+                if (player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel serverLevel) {
+                    MinecraftServer server = serverLevel.getServer();
                     if (server != null) {
                         returnFromPocketDimension(serverPlayer, server);
-                        player.sendSystemMessage(Component.literal(
-                                ChatFormatting.RED + "" + ChatFormatting.BOLD + "FORCED RETURN: Time expired!"));
+                        player.displayClientMessage(Component.literal(
+                                ChatFormatting.RED + "" + ChatFormatting.BOLD + "FORCED RETURN: Time expired!"), false);
                     }
                 }
             }

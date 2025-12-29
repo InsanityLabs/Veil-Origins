@@ -35,11 +35,11 @@ public class HowlAbility extends OriginAbility {
         
         for (LivingEntity entity : entities) {
             if (entity == player) {
-                entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 200, 1, false, false));
-                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 200, 1, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 200, 1, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.SPEED, 200, 1, false, false));
             } else {
                 entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false));
-                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 0, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 0, false, false));
             }
         }
 
@@ -57,7 +57,7 @@ public class HowlAbility extends OriginAbility {
         }
 
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.WOLF_HOWL, SoundSource.PLAYERS, 3.0f, 0.8f);
+                SoundEvents.ENDER_DRAGON_GROWL, SoundSource.PLAYERS, 3.0f, 0.8f);
         
         startCooldown();
     }

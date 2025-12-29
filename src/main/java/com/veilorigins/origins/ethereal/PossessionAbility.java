@@ -57,7 +57,7 @@ public class PossessionAbility extends OriginAbility {
 
     @Override
     public void onActivate(Player player, Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         // Check if already possessing
@@ -125,26 +125,26 @@ public class PossessionAbility extends OriginAbility {
                         30, 0.5, 0.5, 0.5, 0.1);
             }
 
-            player.sendSystemMessage(
+            player.displayClientMessage(
                     Component.literal(ChatFormatting.DARK_PURPLE + "" + ChatFormatting.BOLD + "Possessing "
                             + target.getName().getString() + "! " + ChatFormatting.RESET + ChatFormatting.GRAY
-                            + "(30 seconds)"));
-            player.sendSystemMessage(
+                            + "(30 seconds)"), false);
+            player.displayClientMessage(
                     Component.literal(
-                            ChatFormatting.GRAY + "WASD to move the mob. Press R/V again or wait to end possession."));
+                            ChatFormatting.GRAY + "WASD to move the mob. Press R/V again or wait to end possession."), false);
 
             player.causeFoodExhaustion(HUNGER_COST);
             startCooldown();
         } else {
-            player.sendSystemMessage(
-                    Component.literal(ChatFormatting.RED + "No possessable mob found! Look at a mob to possess it."));
+            player.displayClientMessage(
+                    Component.literal(ChatFormatting.RED + "No possessable mob found! Look at a mob to possess it."), false);
         }
     }
 
     @Override
     public void tick(Player player) {
         Level level = player.level();
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         UUID id = player.getUUID();
@@ -211,8 +211,8 @@ public class PossessionAbility extends OriginAbility {
             // Warning when time is running out
             long remaining = state.endTime - currentTime;
             if (remaining == 5 * 20) {
-                player.sendSystemMessage(
-                        Component.literal(ChatFormatting.YELLOW + "Possession ending in 5 seconds..."));
+                player.displayClientMessage(
+                        Component.literal(ChatFormatting.YELLOW + "Possession ending in 5 seconds..."), false);
             }
         }
     }
@@ -249,7 +249,7 @@ public class PossessionAbility extends OriginAbility {
                         20, 0.5, 0.5, 0.5, 0.1);
             }
 
-            player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Possession ended."));
+            player.displayClientMessage(Component.literal(ChatFormatting.GRAY + "Possession ended."), false);
         }
     }
 

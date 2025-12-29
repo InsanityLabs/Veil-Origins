@@ -40,7 +40,7 @@ public class ColdAuraPassive extends OriginPassive {
                 entity -> entity != player);
             
             for (LivingEntity entity : entities) {
-                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 0, false, false));
             }
             
             // Fire in vicinity has 50% chance to extinguish

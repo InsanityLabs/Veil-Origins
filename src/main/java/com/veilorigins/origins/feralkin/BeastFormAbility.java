@@ -19,13 +19,13 @@ public class BeastFormAbility extends OriginAbility {
     @Override
     public void onActivate(Player player, Level level) {
         // Play transformation sound
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WOLF_GROWL,
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDER_DRAGON_GROWL,
                 SoundSource.PLAYERS, 1.5f, 0.7f);
 
         // Apply beast form effects
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, DURATION, 1)); // Speed II
-        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, DURATION, 1)); // Strength II (+4 damage)
-        player.addEffect(new MobEffectInstance(MobEffects.JUMP, DURATION, 1)); // Jump boost for climbing
+        player.addEffect(new MobEffectInstance(MobEffects.SPEED, DURATION, 1)); // Speed II
+        player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, DURATION, 1)); // Strength II (+4 damage)
+        player.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, DURATION, 1)); // Jump boost for climbing
 
         startCooldown();
     }

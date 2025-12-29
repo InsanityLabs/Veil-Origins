@@ -16,6 +16,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
+@SuppressWarnings("deprecation")
 @EventBusSubscriber(modid = VeilOrigins.MOD_ID)
 public class OriginEventHandler {
 
@@ -43,12 +44,12 @@ public class OriginEventHandler {
                     player.getName().getString(), originId);
 
             if (origin != null) {
-                player.sendSystemMessage(Component.literal("Welcome back, " + origin.getDisplayName() + "!")
-                        .withStyle(ChatFormatting.GREEN));
+                player.displayClientMessage(Component.literal("Welcome back, " + origin.getDisplayName() + "!")
+                        .withStyle(ChatFormatting.GREEN), false);
             } else {
-                player.sendSystemMessage(Component
+                player.displayClientMessage(Component
                         .literal("You haven't chosen an origin yet. Use /origin select <origin> to choose one!")
-                        .withStyle(ChatFormatting.YELLOW));
+                        .withStyle(ChatFormatting.YELLOW), false);
             }
         }
     }
@@ -143,6 +144,51 @@ public class OriginEventHandler {
             }
         }
 
+        // Vampire/Vampling blood-hunger sync
+        // Blood replaces hunger - keep hunger full based on blood level
+        String originPath = origin.getId().getPath();
+        if (originPath.equals("vampire") || originPath.equals("vampling")) {
+            float bloodValue = data.getResourceBar();
+            
+            // Convert blood (0-100) to hunger (0-20)
+            int hungerFromBlood = (int) (bloodValue / 5.0f);
+            hungerFromBlood = Math.min(20, Math.max(0, hungerFromBlood));
+            
+            // Set hunger to match blood level
+            player.getFoodData().setFoodLevel(hungerFromBlood);
+            
+            // Set saturation based on blood level (high blood = high saturation)
+            float saturationFromBlood = bloodValue > 80 ? 5.0f : (bloodValue > 50 ? 2.0f : 0.0f);
+            player.getFoodData().setSaturation(saturationFromBlood);
+            
+            // Drain blood slowly over time (simulates hunger drain)
+            // Faster drain when sprinting or taking damage
+            float drainRate = 0.01f; // Base drain per tick (~0.5 per second)
+            if (player.isSprinting()) {
+                drainRate *= 2.0f; // Double drain when sprinting
+            }
+            if (player.getHealth() < player.getMaxHealth()) {
+                drainRate *= 1.5f; // More drain when healing
+            }
+            data.consumeResource(drainRate);
+            
+            // Natural regeneration from blood (replaces food-based regen)
+            if (bloodValue > 80 && player.getHealth() < player.getMaxHealth()) {
+                // Heal slowly when blood is high
+                if (player.tickCount % 80 == 0) { // Every 4 seconds
+                    player.heal(1.0f);
+                    data.consumeResource(5.0f); // Costs blood to heal
+                }
+            }
+            
+            // Starvation damage when blood is critically low
+            if (bloodValue <= 0) {
+                if (player.tickCount % 80 == 0) { // Every 4 seconds
+                    player.hurt(player.damageSources().starve(), 1.0f);
+                }
+            }
+        }
+
         // Cindersoul resource logic (Internal Heat)
         if (origin.getId().getPath().equals("cindersoul")) {
             boolean nearHeat = player.isInLava() || player.isOnFire() ||
@@ -151,7 +197,7 @@ public class OriginEventHandler {
                     player.level().getBlockState(player.blockPosition())
                             .is(net.minecraft.world.level.block.Blocks.MAGMA_BLOCK);
             boolean inCold = player.isInWaterOrRain() || player.isInPowderSnow ||
-                    (player.level().getBiome(player.blockPosition()).value().coldEnoughToSnow(player.blockPosition()));
+                    (player.level().getBiome(player.blockPosition()).value().coldEnoughToSnow(player.blockPosition(), player.level().getSeaLevel()));
 
             if (nearHeat) {
                 data.addResource(1.0f); // Fast recharge
@@ -176,7 +222,7 @@ public class OriginEventHandler {
 
         // Starborne resource (Stellar Energy)
         if (origin.getId().getPath().equals("starborne")) {
-            boolean isDay = player.level().isDay();
+            boolean isDay = player.level().getSunAngle(1.0F) < 0.5F;
             boolean canSeeSky = player.level().canSeeSky(player.blockPosition());
 
             if (isDay && canSeeSky) {
@@ -200,7 +246,7 @@ public class OriginEventHandler {
         // Crystalline (Crystal Charge)
         if (origin.getId().getPath().equals("crystalline")) {
             // Recharges from sunlight
-            if (player.level().isDay() && player.level().canSeeSky(player.blockPosition())) {
+            if (player.level().getSunAngle(1.0F) < 0.5F && player.level().canSeeSky(player.blockPosition())) {
                 data.addResource(0.5f);
             }
         }
@@ -392,8 +438,8 @@ public class OriginEventHandler {
 
             if (lightLevel >= 8) {
                 event.setCanceled(true);
-                player.sendSystemMessage(
-                        Component.literal("You cannot place such bright light sources!").withStyle(ChatFormatting.RED));
+                player.displayClientMessage(
+                        Component.literal("You cannot place such bright light sources!").withStyle(ChatFormatting.RED), false);
             }
         }
     }
@@ -417,9 +463,9 @@ public class OriginEventHandler {
                 event.setCanceled(true);
                 player.level().explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         5.0f, net.minecraft.world.level.Level.ExplosionInteraction.BLOCK);
-                player.sendSystemMessage(
+                player.displayClientMessage(
                         Component.literal("Reality is too unstable - the bed explodes!")
-                                .withStyle(ChatFormatting.DARK_PURPLE));
+                                .withStyle(ChatFormatting.DARK_PURPLE), false);
             }
         }
     }

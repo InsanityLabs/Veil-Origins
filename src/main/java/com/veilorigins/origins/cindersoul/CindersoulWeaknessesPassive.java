@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
+@SuppressWarnings("deprecation")
 public class CindersoulWeaknessesPassive extends OriginPassive {
     private int tickCounter = 0;
 
@@ -37,14 +38,14 @@ public class CindersoulWeaknessesPassive extends OriginPassive {
             // Rain Check
             BlockPos pos = player.blockPosition();
             if (level.isRainingAt(pos)) {
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1, false, false)); // Slowness
+                player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 1, false, false)); // Slowness
                                                                                                             // II
                 player.causeFoodExhaustion(0.3f); // Drains hunger faster (approx 3x normal rate when accumulated)
             }
 
             // Cold Biome / Snow damage
             Biome biome = level.getBiome(pos).value();
-            if (biome.coldEnoughToSnow(pos)) { // Checks if biome is cold at position (accounts for height)
+            if (biome.coldEnoughToSnow(pos, level.getSeaLevel())) { // Checks if biome is cold at position (accounts for height)
                 // continuous 0.5 HP per second -> 0.5 damage
                 player.hurt(player.damageSources().freeze(), 0.5f);
             }
@@ -62,6 +63,6 @@ public class CindersoulWeaknessesPassive extends OriginPassive {
 
     @Override
     public void onRemove(Player player) {
-        player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        player.removeEffect(MobEffects.SLOWNESS);
     }
 }

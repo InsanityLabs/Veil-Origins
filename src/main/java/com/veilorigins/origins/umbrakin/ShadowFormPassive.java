@@ -39,7 +39,7 @@ public class ShadowFormPassive extends OriginPassive {
         
         // Speed II at night (light level below 7)
         if (lightLevel < 7) {
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, 1, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 25, 1, false, false));
         }
         
         // Check every 20 ticks (1 second)
@@ -84,6 +84,6 @@ public class ShadowFormPassive extends OriginPassive {
     @Override
     public void onRemove(Player player) {
         player.removeEffect(MobEffects.NIGHT_VISION);
-        player.removeEffect(MobEffects.MOVEMENT_SPEED);
+        player.removeEffect(MobEffects.SPEED);
     }
 }

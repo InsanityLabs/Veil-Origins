@@ -21,7 +21,7 @@ public class WolflingPassive extends OriginPassive {
 
         // Minor enhanced abilities at night
         if (isNight) {
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, 0, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 25, 0, false, false));
             player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 220, 0, false, false));
         } else {
             if (player.hasEffect(MobEffects.NIGHT_VISION)) {
@@ -37,8 +37,8 @@ public class WolflingPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal(ChatFormatting.YELLOW + "As a Wolfling, you are faster at night with enhanced senses."));
+        player.displayClientMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.YELLOW + "As a Wolfling, you are faster at night with enhanced senses."), false);
     }
 
     @Override

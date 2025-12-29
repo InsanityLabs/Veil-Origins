@@ -88,9 +88,10 @@ public class FoodEventHandler {
 
     /**
      * Handles food effects for vampires and vamplings.
+     * Vampires can only properly digest raw meat - other foods cause nausea.
      */
     private static void handleVampireFood(Player player, ItemStack item, boolean isFullVampire) {
-        // Raw meat gives regeneration (blood still in the meat)
+        // Raw meat gives regeneration (blood still in the meat) - this is their primary food
         if (isRawMeat(item)) {
             int regenLevel = isFullVampire ? 1 : 0;
             int duration = isFullVampire ? 80 : 40;
@@ -104,17 +105,51 @@ public class FoodEventHandler {
 
             // Vampires also get slight strength boost from the blood
             if (isFullVampire) {
-                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 100, 0, false, true));
+                player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 100, 0, false, true));
             }
+            return;
         }
 
-        // Cooked meat provides less benefit (blood is gone)
+        // Rotten flesh is tolerable (undead affinity)
+        if (item.is(Items.ROTTEN_FLESH)) {
+            player.displayClientMessage(
+                    Component.literal("The rotten flesh is barely tolerable...").withStyle(ChatFormatting.GRAY),
+                    true);
+            return;
+        }
+
+        // Cooked meat provides less benefit (blood is gone) and causes mild nausea
         if (isCookedMeat(item)) {
             player.displayClientMessage(
-                    Component.literal("The cooked meat provides little nourishment...").withStyle(ChatFormatting.GRAY),
+                    Component.literal("The cooked meat provides little nourishment... you feel sick.")
+                            .withStyle(ChatFormatting.GRAY),
                     true);
-            // Apply slight weakness as cooked food doesn't satisfy vampires
-            player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 0, false, false));
+            // Nausea and weakness - cooked food doesn't satisfy vampires
+            int nauseaDuration = isFullVampire ? 200 : 100; // 10 or 5 seconds
+            player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, nauseaDuration, 0, false, true));
+            player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false));
+            return;
+        }
+
+        // All other foods (bread, vegetables, fruits, etc.) cause strong nausea
+        // Vampires cannot digest normal food at all
+        if (isFood(item)) {
+            String cross = UnicodeFontHandler.getSymbol(UnicodeFontHandler.SYMBOL_CROSS, "X");
+            player.displayClientMessage(
+                    Component.literal(cross + " Your vampiric body rejects this food!")
+                            .withStyle(ChatFormatting.RED),
+                    true);
+            
+            // Strong nausea, hunger (to negate the food benefit), and weakness
+            int nauseaDuration = isFullVampire ? 400 : 200; // 20 or 10 seconds
+            player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, nauseaDuration, 1, false, true));
+            player.addEffect(new MobEffectInstance(MobEffects.HUNGER, nauseaDuration, 1, false, true));
+            player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, nauseaDuration, 0, false, true));
+            
+            // Full vampires may even vomit (lose some hunger)
+            if (isFullVampire) {
+                player.getFoodData().setFoodLevel(Math.max(0, player.getFoodData().getFoodLevel() - 2));
+            }
         }
     }
 
@@ -169,5 +204,12 @@ public class FoodEventHandler {
                 item.is(Items.COOKED_RABBIT) ||
                 item.is(Items.COOKED_COD) ||
                 item.is(Items.COOKED_SALMON);
+    }
+
+    /**
+     * Checks if the item is any food (has food component).
+     */
+    private static boolean isFood(ItemStack item) {
+        return item.has(net.minecraft.core.component.DataComponents.FOOD);
     }
 }

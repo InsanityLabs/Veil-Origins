@@ -22,13 +22,13 @@ public class WerewolfPassive extends OriginPassive {
 
         // Enhanced abilities at night
         if (isNight) {
-            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 25, 0, false, false));
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, 0, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 25, 0, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 25, 0, false, false));
             player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 220, 0, false, false));
 
             // Extra power during full moon
             if (isFullMoon) {
-                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 25, 1, false, false));
+                player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 25, 1, false, false));
                 player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 25, 0, false, false));
             }
         } else {
@@ -45,9 +45,9 @@ public class WerewolfPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component
+        player.displayClientMessage(net.minecraft.network.chat.Component
                 .literal(ChatFormatting.GOLD
-                        + "As a Werewolf, you are most powerful at night, especially during the full moon."));
+                        + "As a Werewolf, you are most powerful at night, especially during the full moon."), false);
     }
 
     @Override

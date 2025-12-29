@@ -34,13 +34,13 @@ public class DeathAuraPassive extends OriginPassive {
             tickCounter = 0;
 
             // Check if it's night time
-            boolean isNight = !level.isDay();
+            boolean isNight = !(level.getDayTime() < 13000);
 
             // Night time bonuses
             if (isNight) {
                 // Speed and strength at night
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 0, true, false));
-                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, true, false));
+                player.addEffect(new MobEffectInstance(MobEffects.SPEED, 40, 0, true, false));
+                player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 40, 0, true, false));
                 player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 400, 0, true, false));
             }
 
@@ -111,8 +111,8 @@ public class DeathAuraPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                ChatFormatting.DARK_PURPLE + "Your death aura damages nearby enemies. You are stronger at night."));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                ChatFormatting.DARK_PURPLE + "Your death aura damages nearby enemies. You are stronger at night."), false);
     }
 
     @Override

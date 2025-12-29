@@ -1,8 +1,6 @@
 package com.veilorigins.origins.mycomorph;
 
 import com.veilorigins.api.OriginPassive;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
 public class PhotosynthesisPassive extends OriginPassive {
@@ -16,7 +14,7 @@ public class PhotosynthesisPassive extends OriginPassive {
     public void onTick(Player player) {
         tickCounter++;
 
-        boolean inSun = player.level().isDay() && player.level().canSeeSky(player.blockPosition());
+        boolean inSun = player.level().getSunAngle(1.0F) < 0.5F && player.level().canSeeSky(player.blockPosition());
 
         if (inSun) {
             // Regen health slowly (0.5 HP per 5 seconds = 100 ticks)
@@ -25,16 +23,11 @@ public class PhotosynthesisPassive extends OriginPassive {
                     player.heal(1.0f);
                 }
             }
-            // Freeze hunger (Sat + Hunger)
-            // Just add saturation to counter exhaustion? Or setFoodLevel constant?
-            // "Hunger frozen"
+            // Freeze hunger - just add saturation to counter exhaustion
+            // In 1.21.10 FoodData API changed, so we use addExhaustion with negative value or just heal food
             if (player.getFoodData().getFoodLevel() < 20) {
-                // Slowly restore or just maintain? "Don't need to eat"
-                // Let's prevent drain.
-                // We can simply set exhaustion to 0 constantly or add small saturation.
-                if (player.getFoodData().getExhaustionLevel() > 0) {
-                    player.getFoodData().setExhaustion(0);
-                }
+                // Slowly restore food by adding small saturation
+                player.getFoodData().setSaturation(player.getFoodData().getSaturationLevel() + 0.1f);
             }
         }
     }

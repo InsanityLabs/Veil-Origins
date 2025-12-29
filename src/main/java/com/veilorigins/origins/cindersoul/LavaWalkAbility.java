@@ -53,7 +53,7 @@ public class LavaWalkAbility extends OriginAbility {
 
     @Override
     public void onActivate(Player player, Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         UUID id = player.getUUID();
@@ -71,8 +71,8 @@ public class LavaWalkAbility extends OriginAbility {
                     30, 0.5, 0.3, 0.5, 0.1);
         }
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.GOLD + "" + ChatFormatting.BOLD
-                + "Lava Walk activated! " + ChatFormatting.RESET + ChatFormatting.GRAY + "(20 seconds)"));
+        player.displayClientMessage(Component.literal(ChatFormatting.GOLD + "" + ChatFormatting.BOLD
+                + "Lava Walk activated! " + ChatFormatting.RESET + ChatFormatting.GRAY + "(20 seconds)"), false);
 
         // Immediately convert lava under player
         convertLavaAroundPlayer(player, level);
@@ -83,7 +83,7 @@ public class LavaWalkAbility extends OriginAbility {
     @Override
     public void tick(Player player) {
         Level level = player.level();
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         UUID id = player.getUUID();
@@ -98,10 +98,10 @@ public class LavaWalkAbility extends OriginAbility {
             // Warning when time is running out
             long remaining = endTime - currentTime;
             if (remaining == 5 * 20) { // 5 seconds left
-                player.sendSystemMessage(Component.literal(ChatFormatting.YELLOW + "Lava Walk ending in 5 seconds..."));
+                player.displayClientMessage(Component.literal(ChatFormatting.YELLOW + "Lava Walk ending in 5 seconds..."), false);
             } else if (remaining == 2 * 20) { // 2 seconds left
-                player.sendSystemMessage(Component.literal(
-                        ChatFormatting.RED + "" + ChatFormatting.BOLD + "Lava Walk ending soon! Get to safety!"));
+                player.displayClientMessage(Component.literal(
+                        ChatFormatting.RED + "" + ChatFormatting.BOLD + "Lava Walk ending soon! Get to safety!"), false);
             }
 
             // Particle trail while active
@@ -113,7 +113,7 @@ public class LavaWalkAbility extends OriginAbility {
         } else if (endTime != null) {
             // Ability just ended
             activeUntil.remove(id);
-            player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Lava Walk ended."));
+            player.displayClientMessage(Component.literal(ChatFormatting.GRAY + "Lava Walk ended."), false);
         }
 
         // Handle reverting obsidian back to lava

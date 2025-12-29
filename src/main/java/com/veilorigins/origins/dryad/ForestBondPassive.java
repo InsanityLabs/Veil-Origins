@@ -45,11 +45,11 @@ public class ForestBondPassive extends OriginPassive {
 
             if (inForest || nearTrees) {
                 // Speed boost in forest areas
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 30, 0, true, false));
+                player.addEffect(new MobEffectInstance(MobEffects.SPEED, 30, 0, true, false));
 
                 // Extra jump in forests
                 if (inForest) {
-                    player.addEffect(new MobEffectInstance(MobEffects.JUMP, 30, 0, true, false));
+                    player.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 30, 0, true, false));
                 }
 
                 // Ambient forest particles
@@ -67,7 +67,7 @@ public class ForestBondPassive extends OriginPassive {
                 // Animals trust the dryad
                 if (!animal.isBaby()) {
                     // Apply peaceful effect - they won't flee
-                    animal.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 0, true, false));
+                    animal.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 10, 0, true, false));
                 }
             }
         }
@@ -97,7 +97,7 @@ public class ForestBondPassive extends OriginPassive {
         }
         // Manual check for forest-type biomes by name
         ResourceLocation biomeKey = level.registryAccess()
-                .registryOrThrow(Registries.BIOME)
+                .lookup(Registries.BIOME).orElseThrow()
                 .getKey(biomeHolder.value());
         if (biomeKey != null) {
             String biomeName = biomeKey.getPath().toLowerCase();
@@ -135,8 +135,8 @@ public class ForestBondPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                ChatFormatting.DARK_GREEN + "As a Dryad, forests empower you and animals trust you."));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                ChatFormatting.DARK_GREEN + "As a Dryad, forests empower you and animals trust you."), false);
     }
 
     @Override

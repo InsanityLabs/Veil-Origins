@@ -32,25 +32,30 @@ public class VampirePassive extends OriginPassive {
             tickCounter = 0;
 
             // Sunlight damage (2 HP per second) - helmet protects
-            if (level.isDay() && level.canSeeSky(player.blockPosition()) && lightLevel >= 12) {
+            // Day time: 0-12000 is day, 12000-13000 is sunset, 13000-23000 is night, 23000-24000 is sunrise
+            long dayTime = level.getDayTime() % 24000;
+            boolean isDaytime = dayTime < 12500 || dayTime > 23500; // Day or sunrise
+            
+            if (isDaytime && level.canSeeSky(player.blockPosition()) && !level.isRaining()) {
                 // Check if wearing helmet
-                if (player.getInventory().getArmor(3).isEmpty()) {
+                if (player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).isEmpty()) {
                     player.hurt(level.damageSources().onFire(), 2.0f);
+                    player.setRemainingFireTicks(20); // Set on fire briefly for visual effect
                 }
             }
         }
 
         // Strength at night
         if (lightLevel < 7) {
-            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 25, 1, false, false));
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, 0, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 25, 1, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SPEED, 25, 0, false, false));
         }
     }
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(ChatFormatting.DARK_RED
-                + "As a Vampire, you are powerful at night but burn in sunlight. Wear a helmet for protection!"));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(ChatFormatting.DARK_RED
+                + "As a Vampire, you are powerful at night but burn in sunlight. Wear a helmet for protection!"), false);
     }
 
     @Override

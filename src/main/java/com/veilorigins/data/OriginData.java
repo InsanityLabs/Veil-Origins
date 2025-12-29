@@ -1,10 +1,11 @@
 package com.veilorigins.data;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import com.veilorigins.VeilOrigins;
@@ -16,8 +17,42 @@ public class OriginData {
         DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, VeilOrigins.MOD_ID);
 
     public static final Supplier<AttachmentType<PlayerOriginData>> PLAYER_ORIGIN = ATTACHMENT_TYPES.register(
-        "player_origin", () -> AttachmentType.builder(PlayerOriginData::new).serialize(new PlayerOriginData.Codec()).build()
+        "player_origin", () -> AttachmentType.builder(PlayerOriginData::new)
+            .serialize(new IAttachmentSerializer<PlayerOriginData>() {
+                @Override
+                public PlayerOriginData read(IAttachmentHolder holder, ValueInput input) {
+                    PlayerOriginData data = new PlayerOriginData();
+                    String originIdStr = input.getStringOr("originId", "");
+                    if (originIdStr != null && !originIdStr.isEmpty()) {
+                        data.originId = ResourceLocation.parse(originIdStr);
+                    }
+                    data.originLevel = input.getIntOr("originLevel", 1);
+                    data.originXP = input.getIntOr("originXP", 0);
+                    data.prestigeLevel = input.getIntOr("prestigeLevel", 0);
+                    data.resourceBar = input.getFloatOr("resourceBar", 100.0f);
+                    return data;
+                }
+
+                @Override
+                public boolean write(PlayerOriginData data, ValueOutput output) {
+                    if (data.originId != null) {
+                        output.putString("originId", data.originId.toString());
+                    } else {
+                        output.putString("originId", "");
+                    }
+                    output.putInt("originLevel", data.originLevel);
+                    output.putInt("originXP", data.originXP);
+                    output.putInt("prestigeLevel", data.prestigeLevel);
+                    output.putFloat("resourceBar", data.resourceBar);
+                    return true;
+                }
+            })
+            .build()
     );
+
+    public static PlayerOriginData get(net.minecraft.world.entity.player.Player player) {
+        return player.getData(PLAYER_ORIGIN);
+    }
 
     public static class PlayerOriginData {
         private ResourceLocation originId;
@@ -27,34 +62,6 @@ public class OriginData {
         private float resourceBar = 100.0f;
 
         public PlayerOriginData() {}
-        
-        public static class Codec implements net.neoforged.neoforge.attachment.IAttachmentSerializer<CompoundTag, PlayerOriginData> {
-            @Override
-            public PlayerOriginData read(net.neoforged.neoforge.attachment.IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider provider) {
-                PlayerOriginData data = new PlayerOriginData();
-                if (tag.contains("originId")) {
-                    data.originId = ResourceLocation.parse(tag.getString("originId"));
-                }
-                data.originLevel = tag.getInt("originLevel");
-                data.originXP = tag.getInt("originXP");
-                data.prestigeLevel = tag.getInt("prestigeLevel");
-                data.resourceBar = tag.getFloat("resourceBar");
-                return data;
-            }
-
-            @Override
-            public CompoundTag write(PlayerOriginData data, HolderLookup.Provider provider) {
-                CompoundTag tag = new CompoundTag();
-                if (data.originId != null) {
-                    tag.putString("originId", data.originId.toString());
-                }
-                tag.putInt("originLevel", data.originLevel);
-                tag.putInt("originXP", data.originXP);
-                tag.putInt("prestigeLevel", data.prestigeLevel);
-                tag.putFloat("resourceBar", data.resourceBar);
-                return tag;
-            }
-        }
 
         public ResourceLocation getOriginId() { return originId; }
         public void setOriginId(ResourceLocation id) { this.originId = id; }

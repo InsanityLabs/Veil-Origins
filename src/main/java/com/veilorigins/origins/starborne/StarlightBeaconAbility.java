@@ -51,9 +51,9 @@ public class StarlightBeaconAbility extends OriginAbility {
         BlockPos beaconPos = player.blockPosition();
         beacons.put(player.getUUID(), new BeaconData(beaconPos, level.getGameTime() + DURATION));
 
-        player.sendSystemMessage(
+        player.displayClientMessage(
                 Component.literal(ChatFormatting.YELLOW + "" + ChatFormatting.BOLD + "Starlight Beacon placed! "
-                        + ChatFormatting.RESET + "Hostile mobs will be killed or pushed away."));
+                        + ChatFormatting.RESET + "Hostile mobs will be killed or pushed away."), false);
 
         // Initial burst effect
         if (level instanceof ServerLevel serverLevel) {
@@ -85,7 +85,7 @@ public class StarlightBeaconAbility extends OriginAbility {
         if (data != null) {
             if (level.getGameTime() > data.endTime) {
                 beacons.remove(id);
-                player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Starlight Beacon faded."));
+                player.displayClientMessage(Component.literal(ChatFormatting.GRAY + "Starlight Beacon faded."), false);
                 return;
             }
 
@@ -189,7 +189,7 @@ public class StarlightBeaconAbility extends OriginAbility {
                         // Apply weakness and slowness
                         livingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false));
                         livingEntity
-                                .addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 0, false, false));
+                                .addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 0, false, false));
                     }
                 }
             }
