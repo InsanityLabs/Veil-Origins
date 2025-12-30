@@ -1,7 +1,7 @@
 package com.veilorigins.origins.feralkin;
 
 import com.veilorigins.api.OriginPassive;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,7 +25,7 @@ public class NaturalWeaponsPassive extends OriginPassive {
         AttributeInstance attack = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attack != null) {
             attack.addPermanentModifier(new AttributeModifier(
-                ResourceLocation.fromNamespaceAndPath("veil_origins", ATTACK_UUID),
+                Identifier.fromNamespaceAndPath("veil_origins", ATTACK_UUID),
                 2.0,
                 AttributeModifier.Operation.ADD_VALUE
             ));
@@ -36,7 +36,7 @@ public class NaturalWeaponsPassive extends OriginPassive {
     public void onRemove(Player player) {
         AttributeInstance attack = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attack != null) {
-            attack.removeModifier(ResourceLocation.fromNamespaceAndPath("veil_origins", ATTACK_UUID));
+            attack.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", ATTACK_UUID));
         }
     }
 }

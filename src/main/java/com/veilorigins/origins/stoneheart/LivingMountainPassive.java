@@ -1,7 +1,7 @@
 package com.veilorigins.origins.stoneheart;
 
 import com.veilorigins.api.OriginPassive;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -27,7 +27,7 @@ public class LivingMountainPassive extends OriginPassive {
         AttributeInstance health = player.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
             health.addPermanentModifier(new AttributeModifier(
-                ResourceLocation.fromNamespaceAndPath("veil_origins", HEALTH_UUID),
+                Identifier.fromNamespaceAndPath("veil_origins", HEALTH_UUID),
                 0.5,
                 AttributeModifier.Operation.ADD_MULTIPLIED_BASE
             ));
@@ -37,7 +37,7 @@ public class LivingMountainPassive extends OriginPassive {
         AttributeInstance armor = player.getAttribute(Attributes.ARMOR);
         if (armor != null) {
             armor.addPermanentModifier(new AttributeModifier(
-                ResourceLocation.fromNamespaceAndPath("veil_origins", ARMOR_UUID),
+                Identifier.fromNamespaceAndPath("veil_origins", ARMOR_UUID),
                 6.0,
                 AttributeModifier.Operation.ADD_VALUE
             ));
@@ -47,7 +47,7 @@ public class LivingMountainPassive extends OriginPassive {
         AttributeInstance knockback = player.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (knockback != null) {
             knockback.addPermanentModifier(new AttributeModifier(
-                ResourceLocation.fromNamespaceAndPath("veil_origins", KNOCKBACK_UUID),
+                Identifier.fromNamespaceAndPath("veil_origins", KNOCKBACK_UUID),
                 1.0,
                 AttributeModifier.Operation.ADD_VALUE
             ));
@@ -60,17 +60,17 @@ public class LivingMountainPassive extends OriginPassive {
     public void onRemove(Player player) {
         AttributeInstance health = player.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            health.removeModifier(ResourceLocation.fromNamespaceAndPath("veil_origins", HEALTH_UUID));
+            health.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", HEALTH_UUID));
         }
         
         AttributeInstance armor = player.getAttribute(Attributes.ARMOR);
         if (armor != null) {
-            armor.removeModifier(ResourceLocation.fromNamespaceAndPath("veil_origins", ARMOR_UUID));
+            armor.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", ARMOR_UUID));
         }
         
         AttributeInstance knockback = player.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (knockback != null) {
-            knockback.removeModifier(ResourceLocation.fromNamespaceAndPath("veil_origins", KNOCKBACK_UUID));
+            knockback.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", KNOCKBACK_UUID));
         }
     }
 }

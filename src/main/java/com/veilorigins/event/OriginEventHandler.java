@@ -222,7 +222,7 @@ public class OriginEventHandler {
 
         // Starborne resource (Stellar Energy)
         if (origin.getId().getPath().equals("starborne")) {
-            boolean isDay = player.level().getSunAngle(1.0F) < 0.5F;
+            boolean isDay = (player.level().getDayTime() % 24000L < 12000L);
             boolean canSeeSky = player.level().canSeeSky(player.blockPosition());
 
             if (isDay && canSeeSky) {
@@ -246,7 +246,7 @@ public class OriginEventHandler {
         // Crystalline (Crystal Charge)
         if (origin.getId().getPath().equals("crystalline")) {
             // Recharges from sunlight
-            if (player.level().getSunAngle(1.0F) < 0.5F && player.level().canSeeSky(player.blockPosition())) {
+            if ((player.level().getDayTime() % 24000L < 12000L) && player.level().canSeeSky(player.blockPosition())) {
                 data.addResource(0.5f);
             }
         }

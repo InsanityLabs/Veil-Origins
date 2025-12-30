@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 public class OriginSizeHandler {
 
     // Unique ID for our scale modifier
-    private static final ResourceLocation ORIGIN_SCALE_MODIFIER_ID = ResourceLocation
+    private static final Identifier ORIGIN_SCALE_MODIFIER_ID = Identifier
             .fromNamespaceAndPath(VeilOrigins.MOD_ID, "origin_scale");
 
     // Cache to track if we've applied the scale this session

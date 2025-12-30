@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +31,7 @@ public class PossessionAbility extends OriginAbility {
     private static final int COOLDOWN = 60 * 20; // 60 seconds (reduced from 180)
     private static final int HUNGER_COST = 8;
     private static final int POSSESSION_DURATION = 30 * 20; // 30 seconds
-    private static final ResourceLocation SPEED_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath("veil_origins",
+    private static final Identifier SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath("veil_origins",
             "possession_speed");
 
     // Track possession state per player

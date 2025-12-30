@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.0.4 - 1.21.11 (2025-12-29)
+
+### Updated
+
+- **Minecraft 1.21.11 with NeoForge 21.11.14-beta**
+- Parchment mappings updated to 2025.12.20 for 1.21.11
+
+### Migration Changes (1.21.10 → 1.21.11)
+
+Based on the [1.21.10 → 1.21.11 Migration Primer](https://github.com/ChampionAsh5357/minecraft-mod-migration-primer):
+
+- **MoonPhase API Change** - `Level#getMoonPhase()` removed, now calculated manually from day time
+  - Moon phase cycles every 8 days (192000 ticks), phase 0 is full moon
+  - Affects Werewolf full moon detection
+
+---
+
 ## v1.0.4 (2025-12-29)
 
 ### Updated

@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -20,7 +20,7 @@ public record SyncOriginDataPacket(
         float resourceBar) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<SyncOriginDataPacket> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(VeilOrigins.MOD_ID, "sync_origin_data"));
+            Identifier.fromNamespaceAndPath(VeilOrigins.MOD_ID, "sync_origin_data"));
 
     public static final StreamCodec<ByteBuf, SyncOriginDataPacket> CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

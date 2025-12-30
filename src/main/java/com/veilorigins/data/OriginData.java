@@ -1,6 +1,6 @@
 package com.veilorigins.data;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -24,7 +24,7 @@ public class OriginData {
                     PlayerOriginData data = new PlayerOriginData();
                     String originIdStr = input.getStringOr("originId", "");
                     if (originIdStr != null && !originIdStr.isEmpty()) {
-                        data.originId = ResourceLocation.parse(originIdStr);
+                        data.originId = Identifier.parse(originIdStr);
                     }
                     data.originLevel = input.getIntOr("originLevel", 1);
                     data.originXP = input.getIntOr("originXP", 0);
@@ -55,7 +55,7 @@ public class OriginData {
     }
 
     public static class PlayerOriginData {
-        private ResourceLocation originId;
+        private Identifier originId;
         private int originLevel = 1;
         private int originXP = 0;
         private int prestigeLevel = 0;
@@ -63,8 +63,8 @@ public class OriginData {
 
         public PlayerOriginData() {}
 
-        public ResourceLocation getOriginId() { return originId; }
-        public void setOriginId(ResourceLocation id) { this.originId = id; }
+        public Identifier getOriginId() { return originId; }
+        public void setOriginId(Identifier id) { this.originId = id; }
         
         public int getOriginLevel() { return originLevel; }
         public void setOriginLevel(int level) { this.originLevel = level; }
