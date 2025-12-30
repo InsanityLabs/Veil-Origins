@@ -17,13 +17,3 @@ Thumbs.db
 
 # Run directories
 run/
-.idea/
-
-.settings
-
-bin
-
-build/
-
-
-runs/

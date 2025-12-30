@@ -12,7 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class RadialMenuScreen extends Screen {
     }
 
     private void initOriginSelectMenu() {
-        Map<ResourceLocation, Origin> allOrigins = VeilOriginsAPI.getAllOrigins();
+        Map<Identifier, Origin> allOrigins = VeilOriginsAPI.getAllOrigins();
 
         // Convert to list and shuffle for random selection
         List<Origin> originList = new ArrayList<>(allOrigins.values());

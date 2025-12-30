@@ -8,7 +8,7 @@ import com.veilorigins.config.VeilOriginsConfig;
 import com.veilorigins.data.OriginData;
 import com.veilorigins.registry.ModItems;
 import com.veilorigins.registry.ModOrigins;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -91,7 +91,7 @@ public class VeilOrigins {
 
     private void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR,
-                ResourceLocation.fromNamespaceAndPath(MOD_ID, "origin_hud"),
+                Identifier.fromNamespaceAndPath(MOD_ID, "origin_hud"),
                 new OriginHudOverlay());
         LOGGER.info("Veil Origins: Registered HUD overlay");
     }

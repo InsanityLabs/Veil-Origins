@@ -1,6 +1,6 @@
 package com.veilorigins.api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Defines custom resource bar rendering configuration for origins.
@@ -56,11 +56,11 @@ public class CustomResourceBar {
     private int borderColor = 0xFF222222;
     
     // Sprite textures (for ICONS style)
-    private ResourceLocation spriteEmpty;
-    private ResourceLocation spriteFull;
-    private ResourceLocation spriteHalf;
-    private ResourceLocation spriteBackground;  // Optional background sprite
-    private ResourceLocation spriteOverlay;     // Optional overlay (like saturation)
+    private Identifier spriteEmpty;
+    private Identifier spriteFull;
+    private Identifier spriteHalf;
+    private Identifier spriteBackground;  // Optional background sprite
+    private Identifier spriteOverlay;     // Optional overlay (like saturation)
     
     // Icon configuration
     private int iconSize = 9;
@@ -112,19 +112,19 @@ public class CustomResourceBar {
         return this;
     }
     
-    public CustomResourceBar sprites(ResourceLocation empty, ResourceLocation full, ResourceLocation half) {
+    public CustomResourceBar sprites(Identifier empty, Identifier full, Identifier half) {
         this.spriteEmpty = empty;
         this.spriteFull = full;
         this.spriteHalf = half;
         return this;
     }
     
-    public CustomResourceBar backgroundSprite(ResourceLocation sprite) {
+    public CustomResourceBar backgroundSprite(Identifier sprite) {
         this.spriteBackground = sprite;
         return this;
     }
     
-    public CustomResourceBar overlaySprite(ResourceLocation sprite) {
+    public CustomResourceBar overlaySprite(Identifier sprite) {
         this.spriteOverlay = sprite;
         return this;
     }
@@ -177,11 +177,11 @@ public class CustomResourceBar {
     public int getBackgroundColor() { return backgroundColor; }
     public int getBorderColor() { return borderColor; }
     
-    public ResourceLocation getSpriteEmpty() { return spriteEmpty; }
-    public ResourceLocation getSpriteFull() { return spriteFull; }
-    public ResourceLocation getSpriteHalf() { return spriteHalf; }
-    public ResourceLocation getSpriteBackground() { return spriteBackground; }
-    public ResourceLocation getSpriteOverlay() { return spriteOverlay; }
+    public Identifier getSpriteEmpty() { return spriteEmpty; }
+    public Identifier getSpriteFull() { return spriteFull; }
+    public Identifier getSpriteHalf() { return spriteHalf; }
+    public Identifier getSpriteBackground() { return spriteBackground; }
+    public Identifier getSpriteOverlay() { return spriteOverlay; }
     
     public int getIconSize() { return iconSize; }
     public int getIconSpacing() { return iconSpacing; }
@@ -235,9 +235,9 @@ public class CustomResourceBar {
         return new CustomResourceBar("Blood", BarStyle.REPLACE_HUNGER, BarPosition.HOTBAR_RIGHT)
                 .colors(0xFF8B0000, 0xFFB22222, 0xFF4A0000)
                 .sprites(
-                    ResourceLocation.fromNamespaceAndPath(modId, "origins/vampire_blood/hud_bar/blood_empty"),
-                    ResourceLocation.fromNamespaceAndPath(modId, "origins/vampire_blood/hud_bar/blood_full"),
-                    ResourceLocation.fromNamespaceAndPath(modId, "origins/vampire_blood/hud_bar/blood_half")
+                    Identifier.fromNamespaceAndPath(modId, "origins/vampire_blood/hud_bar/blood_empty"),
+                    Identifier.fromNamespaceAndPath(modId, "origins/vampire_blood/hud_bar/blood_full"),
+                    Identifier.fromNamespaceAndPath(modId, "origins/vampire_blood/hud_bar/blood_half")
                 )
                 .thresholds(0.2f, 0.5f)
                 .animations(true, true);

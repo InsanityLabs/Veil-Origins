@@ -3,12 +3,12 @@ package com.veilorigins.api;
 import com.veilorigins.VeilOrigins;
 import com.veilorigins.data.OriginData;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import java.util.HashMap;
 import java.util.Map;
 
 public class VeilOriginsAPI {
-    private static final Map<ResourceLocation, Origin> ORIGINS = new HashMap<>();
+    private static final Map<Identifier, Origin> ORIGINS = new HashMap<>();
     // Runtime cache - repopulated from persistent data on login
     private static final Map<Player, Origin> PLAYER_ORIGINS = new HashMap<>();
 
@@ -17,10 +17,10 @@ public class VeilOriginsAPI {
     }
 
     public static Origin getOrigin(String id) {
-        return ORIGINS.get(ResourceLocation.parse(id));
+        return ORIGINS.get(Identifier.parse(id));
     }
 
-    public static Origin getOrigin(ResourceLocation id) {
+    public static Origin getOrigin(Identifier id) {
         return ORIGINS.get(id);
     }
 
@@ -133,7 +133,7 @@ public class VeilOriginsAPI {
         return getPlayerOrigin(player) != null;
     }
 
-    public static Map<ResourceLocation, Origin> getAllOrigins() {
+    public static Map<Identifier, Origin> getAllOrigins() {
         return new HashMap<>(ORIGINS);
     }
 }

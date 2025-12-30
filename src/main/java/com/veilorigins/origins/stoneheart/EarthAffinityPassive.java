@@ -1,7 +1,7 @@
 package com.veilorigins.origins.stoneheart;
 
 import com.veilorigins.api.OriginPassive;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,7 +25,7 @@ public class EarthAffinityPassive extends OriginPassive {
         AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
             speed.addPermanentModifier(new AttributeModifier(
-                ResourceLocation.fromNamespaceAndPath("veil_origins", SPEED_UUID),
+                Identifier.fromNamespaceAndPath("veil_origins", SPEED_UUID),
                 -0.5,
                 AttributeModifier.Operation.ADD_MULTIPLIED_BASE
             ));
@@ -36,7 +36,7 @@ public class EarthAffinityPassive extends OriginPassive {
     public void onRemove(Player player) {
         AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
-            speed.removeModifier(ResourceLocation.fromNamespaceAndPath("veil_origins", SPEED_UUID));
+            speed.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", SPEED_UUID));
         }
     }
 }

@@ -15,7 +15,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 
@@ -24,7 +24,7 @@ import net.neoforged.neoforge.client.gui.GuiLayer;
  * Implements GuiLayer for NeoForge 1.21.10 GUI layer registration.
  */
 public class OriginHudOverlay implements GuiLayer {
-    private static final ResourceLocation RESOURCE_BAR_TEXTURE = ResourceLocation
+    private static final Identifier RESOURCE_BAR_TEXTURE = Identifier
             .fromNamespaceAndPath(VeilOrigins.MOD_ID, "textures/gui/resource_bar.png");
 
     private static final int BAR_WIDTH = 81;

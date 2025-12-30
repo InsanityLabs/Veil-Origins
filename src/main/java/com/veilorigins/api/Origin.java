@@ -1,12 +1,12 @@
 package com.veilorigins.api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Origin {
-    private final ResourceLocation id;
+    private final Identifier id;
     private final String displayName;
     private final String description;
     private final ImpactLevel impactLevel;
@@ -17,7 +17,7 @@ public class Origin {
     private float damageModifier = 1.0f;
     private ResourceType resourceType;
 
-    public Origin(ResourceLocation id, String displayName, String description, ImpactLevel impactLevel) {
+    public Origin(Identifier id, String displayName, String description, ImpactLevel impactLevel) {
         this.id = id;
         this.displayName = displayName;
         this.description = description;
@@ -26,7 +26,7 @@ public class Origin {
         this.passives = new ArrayList<>();
     }
 
-    public ResourceLocation getId() { return id; }
+    public Identifier getId() { return id; }
     public String getDisplayName() { return displayName; }
     public String getDescription() { return description; }
     public ImpactLevel getImpactLevel() { return impactLevel; }

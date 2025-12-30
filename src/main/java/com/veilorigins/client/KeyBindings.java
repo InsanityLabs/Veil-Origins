@@ -2,7 +2,7 @@ package com.veilorigins.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -19,7 +19,7 @@ public class KeyBindings {
     
     // Custom category for our key bindings
     public static final KeyMapping.Category VEIL_ORIGINS_CATEGORY = new KeyMapping.Category(
-            ResourceLocation.fromNamespaceAndPath("veil_origins", "keys"));
+            Identifier.fromNamespaceAndPath("veil_origins", "keys"));
 
     // Ability 1 keybinding (default R)
     public static final KeyMapping ABILITY_1 = new KeyMapping(

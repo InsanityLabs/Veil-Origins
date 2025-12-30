@@ -1,0 +1,16 @@
+﻿To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :createMinecraftArtifacts UP-TO-DATE
+
+> Task :compileJava
+.\gradlew : Note: Some input files use or override a deprecated API.
+At line:1 char:1
++ .\gradlew compileJava --no-daemon --no-configuration-cache 2>&1 | Out ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Note: Some inpu...deprecated API.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Note: Recompile with -Xlint:deprecation for details.
+
+BUILD SUCCESSFUL in 24s
+2 actionable tasks: 1 executed, 1 up-to-date
