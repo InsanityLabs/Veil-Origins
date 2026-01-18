@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
 public class NaturalWeaponsPassive extends OriginPassive {
-    private static final String ATTACK_UUID = "feralkin_attack_boost";
+    private static final Identifier ATTACK_MODIFIER_ID = Identifier.fromNamespaceAndPath("veil_origins", "feralkin_attack_boost");
 
     public NaturalWeaponsPassive() {
         super("natural_weapons");
@@ -24,8 +24,10 @@ public class NaturalWeaponsPassive extends OriginPassive {
         // Boost unarmed attack damage
         AttributeInstance attack = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attack != null) {
+            // Always remove first to handle respawn (Minecraft copies modifiers to new entity)
+            attack.removeModifier(ATTACK_MODIFIER_ID);
             attack.addPermanentModifier(new AttributeModifier(
-                Identifier.fromNamespaceAndPath("veil_origins", ATTACK_UUID),
+                ATTACK_MODIFIER_ID,
                 2.0,
                 AttributeModifier.Operation.ADD_VALUE
             ));
@@ -36,7 +38,7 @@ public class NaturalWeaponsPassive extends OriginPassive {
     public void onRemove(Player player) {
         AttributeInstance attack = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attack != null) {
-            attack.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", ATTACK_UUID));
+            attack.removeModifier(ATTACK_MODIFIER_ID);
         }
     }
 }

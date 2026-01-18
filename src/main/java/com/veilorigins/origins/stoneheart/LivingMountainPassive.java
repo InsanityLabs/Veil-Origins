@@ -8,9 +8,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
 public class LivingMountainPassive extends OriginPassive {
-    private static final String HEALTH_UUID = "stoneheart_health_boost";
-    private static final String ARMOR_UUID = "stoneheart_armor_boost";
-    private static final String KNOCKBACK_UUID = "stoneheart_knockback_resist";
+    private static final Identifier HEALTH_MODIFIER_ID = Identifier.fromNamespaceAndPath("veil_origins", "stoneheart_health_boost");
+    private static final Identifier ARMOR_MODIFIER_ID = Identifier.fromNamespaceAndPath("veil_origins", "stoneheart_armor_boost");
+    private static final Identifier KNOCKBACK_MODIFIER_ID = Identifier.fromNamespaceAndPath("veil_origins", "stoneheart_knockback_resist");
 
     public LivingMountainPassive() {
         super("living_mountain");
@@ -26,8 +26,10 @@ public class LivingMountainPassive extends OriginPassive {
         // 50% more health (30 HP total)
         AttributeInstance health = player.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
+            // Always remove first to handle respawn (Minecraft copies modifiers to new entity)
+            health.removeModifier(HEALTH_MODIFIER_ID);
             health.addPermanentModifier(new AttributeModifier(
-                Identifier.fromNamespaceAndPath("veil_origins", HEALTH_UUID),
+                HEALTH_MODIFIER_ID,
                 0.5,
                 AttributeModifier.Operation.ADD_MULTIPLIED_BASE
             ));
@@ -36,8 +38,9 @@ public class LivingMountainPassive extends OriginPassive {
         // Natural armor (equivalent to iron armor)
         AttributeInstance armor = player.getAttribute(Attributes.ARMOR);
         if (armor != null) {
+            armor.removeModifier(ARMOR_MODIFIER_ID);
             armor.addPermanentModifier(new AttributeModifier(
-                Identifier.fromNamespaceAndPath("veil_origins", ARMOR_UUID),
+                ARMOR_MODIFIER_ID,
                 6.0,
                 AttributeModifier.Operation.ADD_VALUE
             ));
@@ -46,8 +49,9 @@ public class LivingMountainPassive extends OriginPassive {
         // Knockback resistance
         AttributeInstance knockback = player.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (knockback != null) {
+            knockback.removeModifier(KNOCKBACK_MODIFIER_ID);
             knockback.addPermanentModifier(new AttributeModifier(
-                Identifier.fromNamespaceAndPath("veil_origins", KNOCKBACK_UUID),
+                KNOCKBACK_MODIFIER_ID,
                 1.0,
                 AttributeModifier.Operation.ADD_VALUE
             ));
@@ -60,17 +64,17 @@ public class LivingMountainPassive extends OriginPassive {
     public void onRemove(Player player) {
         AttributeInstance health = player.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            health.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", HEALTH_UUID));
+            health.removeModifier(HEALTH_MODIFIER_ID);
         }
         
         AttributeInstance armor = player.getAttribute(Attributes.ARMOR);
         if (armor != null) {
-            armor.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", ARMOR_UUID));
+            armor.removeModifier(ARMOR_MODIFIER_ID);
         }
         
         AttributeInstance knockback = player.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (knockback != null) {
-            knockback.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", KNOCKBACK_UUID));
+            knockback.removeModifier(KNOCKBACK_MODIFIER_ID);
         }
     }
 }

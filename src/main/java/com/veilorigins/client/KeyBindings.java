@@ -12,7 +12,7 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * Key bindings for the Veil Origins mod.
- * Updated for NeoForge 1.21.10 using proper KeyMapping.Category.
+ * Updated for NeoForge 1.21.11 using proper KeyMapping.Category.
  */
 @EventBusSubscriber(modid = "veil_origins", value = Dist.CLIENT)
 public class KeyBindings {
@@ -67,6 +67,17 @@ public class KeyBindings {
             GLFW.GLFW_KEY_H,
             VEIL_ORIGINS_CATEGORY);
 
+    /**
+     * Opens the Skill Tree screen.
+     * Default: K key
+     */
+    public static final KeyMapping SKILL_TREE = new KeyMapping(
+            "key.veil_origins.skill_tree",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_K,
+            VEIL_ORIGINS_CATEGORY);
+
     @SubscribeEvent
     public static void registerBindings(RegisterKeyMappingsEvent event) {
         // Register our custom category
@@ -78,5 +89,6 @@ public class KeyBindings {
         event.register(RESOURCE_INFO);
         event.register(RADIAL_MENU);
         event.register(HUD_CONFIG);
+        event.register(SKILL_TREE);
     }
 }

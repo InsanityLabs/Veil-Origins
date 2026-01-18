@@ -11,11 +11,12 @@ public abstract class OriginAbility {
     public OriginAbility(String id, int cooldownSeconds) {
         this.id = id;
         this.baseCooldown = cooldownSeconds * 20;
-        this.cooldown = baseCooldown;
+        this.cooldown = 0; // Start with no cooldown
     }
 
     public String getId() { return id; }
     public int getCooldown() { return cooldown; }
+    public int getMaxCooldown() { return baseCooldown; }
     public void setCooldown(int ticks) { this.cooldown = ticks; }
 
     public abstract void onActivate(Player player, Level level);

@@ -5,6 +5,7 @@
   "key.veil_origins.resource_info": "Show Origin Info",
   "key.veil_origins.radial_menu": "Open Ability Menu",
   "key.veil_origins.hud_config": "HUD Settings",
+  "key.veil_origins.skill_tree": "Open Skill Tree",
   "screen.veil_origins.radial_menu": "Origin Menu",
   
   "itemGroup.veil_origins": "Veil Origins",
@@ -20,6 +21,8 @@
   "veil_origins.screen.hud_config.disable_all": "Disable All",
   "veil_origins.screen.hud_config.description": "Changes are saved automatically",
   "veil_origins.screen.hud_config.hint": "Press H in-game to open this screen",
+  
+  "veil_origins.screen.skill_tree.title": "Skill Tree",
   
   "veil_origins.config.enableSizeScaling": "Enable Size Scaling",
   "veil_origins.config.enableWeaknesses": "Enable Weaknesses",

@@ -1,5 +1,213 @@
 # Changelog
 
+## v1.0.5 - The Progression Update (2026-01-06)
+
+### Added
+
+#### New Origin Selection Screen - Card Carousel
+- **Replaced radial menu with card carousel** for origin selection
+  - 8 origin cards displayed in horizontal carousel with smooth scrolling
+  - Cards scale based on distance from center (3D depth effect)
+  - Each card shows: origin name, impact level (stars), description, abilities, passives
+  - Color-coded accent bars based on origin theme
+  - Navigation: arrow keys, mouse scroll, click arrows, or click cards directly
+  - Shuffle button (R key) to get new random origin options
+  - Smooth animations and hover effects
+
+#### New Ability Dashboard
+- **Completely redesigned ability menu** with comprehensive origin information
+- **Three-column layout:**
+  - **Left Column - Origin Info & Stats:**
+    - Origin name with theme color accent
+    - Impact level with stars (★☆☆, ★★☆, ★★★)
+    - Full description (word-wrapped)
+    - Resource bar with origin-specific name (Blood, Rage, Soul Energy, Heat, etc.)
+    - Stat modifiers display (Health, Speed, Damage) with +/- percentages
+  - **Center Column - Abilities:**
+    - Detailed ability slots with icon, keybind badge, name
+    - Description and stats (cost, cooldown)
+    - Status indicator (READY in green, countdown in red)
+    - Color-coded accent bar showing ability state
+    - Hover highlighting with origin theme color
+  - **Right Column - Passives & Progression:**
+    - List of passive abilities with thematic icons
+    - Level display
+    - XP progress bar with current/needed values
+    - Skill points available
+    - Unlocked skills count
+- Press [T] from ability menu to jump directly to skill tree
+- Smooth open animation
+
+#### Complete Skill Tree System
+- **22 Unique Skill Trees** - Each origin has a detailed skill tree with 25-35 skills
+  - Tiered progression (Tier 1-5) with level requirements
+  - Mutually exclusive branches for meaningful choices
+  - Synergy skills that require multiple paths
+  - Forbidden skills with powerful effects but drawbacks
+  - Ascended skills that transcend origin weaknesses
+
+- **Skill Tree GUI** - Press the skill tree keybind to open
+  - Zoomable and pannable tree view
+  - Color-coded branches (Offense, Defense, Utility, Elemental, etc.)
+  - Visual indicators for unlocked, available, and locked skills
+  - Detailed tooltips with effects, requirements, and exclusions
+  - Click to unlock skills with skill points
+
+- **Skill Effects System** - Skills now apply real gameplay effects
+  - Attribute modifiers (health, armor, speed, damage, attack speed)
+  - Special effects (lifesteal, stealth damage, summons, etc.)
+  - Resource modifiers (regen rate, max resource)
+  - Cooldown reduction bonuses
+  - Damage type bonuses and resistances
+
+#### Complete Progression System
+- **Origin Leveling (1-50)** - Gain XP through combat, exploration, and origin-themed activities
+  - XP scales exponentially with level
+  - Each level grants +1 Skill Point
+  - Milestone rewards at levels 10, 25, and 50
+  - Level 10: 10% cooldown reduction
+  - Level 25: 15% ability power increase
+  - Level 50: Unlocks Legendary Ability and Hybrid Mode
+
+- **Prestige System (0-10)** - Reset to level 1 with permanent bonuses after reaching level 50
+  - Each prestige grants +5% to all origin stats permanently
+  - Cosmetic aura changes with prestige level
+  - +10% XP gain bonus per prestige level
+  - Maximum 10 prestiges per origin
+
+- **Skill Points** - Earned on level up, used for skill tree talents
+  - 1 skill point per level (50 total before prestige)
+  - Persists across sessions and server restarts
+
+#### Legendary Abilities
+- **Ultimate powers unlocked at Level 50** - Activated by holding R + Attack
+- Each origin has a unique legendary ability with powerful effects:
+  - **Veilborn - Veil Mastery**: Become invulnerable and drain life from all nearby enemies
+  - **Vampire - Blood Moon Rising**: Transform into a bat swarm, draining all nearby creatures
+  - **Werewolf - Alpha's Fury**: Summon a wolf pack and unleash a devastating howl
+  - **Stoneheart - Mountain's Wrath**: Create a massive earthquake, becoming invulnerable
+  - **Frostborn - Absolute Zero**: Freeze everything in a massive radius
+  - **Cindersoul - Volcanic Eruption**: Rain fire and destruction on enemies
+  - **Tidecaller - Tsunami**: Summon a devastating tidal wave
+  - **Starborne - Supernova**: Explode with stellar energy, blinding and damaging all
+  - **Skyborn - Eye of the Storm**: Become the center of a devastating tornado
+  - **Umbrakin - Eternal Night**: Plunge the area into darkness, becoming invisible and deadly
+  - **Riftwalker - Dimensional Collapse**: Tear reality apart, scattering enemies
+  - **Voidtouched - Void Singularity**: Create a black hole that pulls and destroys
+  - **Mycomorph - Fungal Apocalypse**: Release devastating spores that infect all enemies
+  - **Crystalline - Prismatic Burst**: Release stored crystal energy in an explosion
+  - **Technomancer - System Overload**: Overclock all systems with an EMP blast
+  - **Ethereal - Spectral Dominion**: Become fully ethereal and terrify enemies
+  - **Dryad - Nature's Wrath**: Summon nature's fury to heal allies and punish enemies
+  - **Necromancer - Army of the Dead**: Raise a massive undead army
+  - **Vampling - Blood Frenzy**: Enter a blood frenzy with speed and lifesteal
+  - **Wolfling - Pack Leader**: Summon wolves and gain pack bonuses
+
+#### Origin Hybrid System
+- **Combine two origins at Level 50** - Activate via command or future GUI
+  - Duration: 300 seconds (5 minutes)
+  - Cooldown: 1 hour after deactivation
+  - Combines first ability and first passive from each origin
+  - Warning messages at 60s, 30s, 10s, and 5s remaining
+  - Cannot hybrid with the same origin
+
+#### Passive XP Gains
+- Origins now gain XP passively based on themed activities:
+  - Cindersoul: XP in the Nether
+  - Tidecaller: XP while in water
+  - Starborne: XP in sunlight during day
+  - Umbrakin: XP at night or in darkness
+  - Frostborn: XP in cold biomes
+  - Skyborn: XP at high altitude (Y > 150)
+  - Stoneheart: XP underground (Y < 50)
+  - Dryad: XP during photosynthesis (sunlight)
+  - Werewolf/Wolfling: XP at night
+  - Vampire/Vampling: XP at night
+
+#### New Admin Commands
+- `/veilorigins setlevel <player> <1-50>` - Set player's origin level
+- `/veilorigins addxp <player> <amount>` - Add XP to player
+- `/veilorigins setprestige <player> <0-10>` - Set prestige level
+- `/veilorigins addskillpoints <player> <amount>` - Add skill points
+- `/veilorigins info <player>` - Show detailed progression info
+- `/veilorigins hybrid activate <player> <origin>` - Force activate hybrid mode
+- `/veilorigins hybrid deactivate <player>` - Force deactivate hybrid mode
+
+### Fixed
+
+#### UI Blur Rendering Issue
+- **Fixed blur rendering over UI elements** in Minecraft 1.21.11
+  - Default `renderBackground()` adds blur effect that was rendering ON TOP of custom UI
+  - Added `renderBackground()` override to all custom screens to prevent blur
+  - Affected screens: SkillTreeScreen, OriginCardCarouselScreen, AbilityBarScreen, RadialMenuScreen, HudConfigScreen
+
+#### Dedicated Server Crash - NoClassDefFoundError: LocalPlayer
+- **Fixed server crash when players join dedicated servers**
+  - Root cause: Client-only class `LocalPlayer` was referenced in network packet handlers
+  - Created `ClientPacketSender.java` to isolate client-side packet sending code
+  - Created `SyncOriginDataPacketHandler.java` for client-side packet handling
+  - Server now properly handles all network packets without client class references
+
+#### "Modifier is already applied" Error on Respawn
+- **Fixed crash when players respawn after dying**
+  - Root cause: Player entity is replaced on respawn, but UUID stays the same
+  - Changed `PLAYER_ORIGINS` cache from `Map<Player, Origin>` to `Map<UUID, Origin>`
+  - Updated all passive classes to remove modifiers before adding (prevents duplicates)
+  - Added `.copyOnDeath()` to attachment type to preserve data across respawns
+
+#### Ethereal Possession Ability
+- **Fixed possession not working correctly**
+  - Rewrote possession so mob follows player (not player teleporting to mob)
+  - Player moves normally with WASD, possessed mob syncs to player position
+  - Player gets invisibility effect while possessing
+  - Fixed mob AI restoration after possession ends
+  - Properly clears targets, recomputes navigation, gives movement impulse to "wake up" mob
+
+#### HUD Sync and Data Bleeding
+- **Fixed HUD not syncing level, XP, resource bar, cooldowns on dedicated server**
+  - Created `ClientOriginData.java` for client-side cache of synced data
+  - Sync interval changed from 20 ticks to 5 ticks (4x faster updates)
+  - Now tracks and syncs level/XP changes immediately
+  
+- **Fixed data bleeding between servers/worlds**
+  - Added `ClientOriginData.clear()` and `ClientPossessionHandler.clear()` on login AND logout
+  - Added `VeilOriginsAPI.clearClientCache()` to clear origin cache when switching servers
+  - Client now properly clears all cached data before receiving new server data
+
+#### Skill Tree Persistence and Functionality
+- **Fixed skills not saving/syncing on dedicated servers**
+  - Added `unlockedSkills` field to `SyncOriginDataPacket` (comma-separated string)
+  - Skills now persist in world data via player data attachments
+  - Skills sync from server to client on login, respawn, and skill unlock
+
+- **Fixed "Skill not found" warnings on dedicated server**
+  - Root cause: `SkillTrees.initialize()` was called in `commonSetup` which runs asynchronously
+  - Moved initialization to mod constructor to ensure trees are ready before players join
+  - Added `synchronized` guard and logging to prevent double-initialization
+
+- **Fixed skills not applying actual effects**
+  - Unified skill system to use `SkillTrees.java` (detailed skills with effects)
+  - `SkillEffectHandler` now properly applies attribute modifiers from skill definitions
+  - Skills apply health, armor, speed, damage, attack speed, and special effects
+
+### Technical
+- Added `SkillTrees.java` - Registry of 22 detailed skill trees with 25-35 skills each
+- Added `SkillTreeData.java` - Data structure for skill tree with connections
+- Added `Skill.java` - Skill node with tiers, branches, prerequisites, exclusions, effects
+- Added `SkillEffect.java` - Effect definitions (attribute modifiers, special effects)
+- Added `SkillEffectHandler.java` - Applies/removes skill effects to players
+- Added `SkillTreeScreen.java` - Interactive GUI for viewing and unlocking skills
+- Added `ClientOriginData.java` - Client-side cache for synced origin data
+- Added `ClientPacketSender.java` - Client-side packet sending isolation
+- Added `SyncOriginDataPacketHandler.java` - Client-side sync packet handling
+- Updated `UnlockSkillPacket.java` - Uses `SkillTrees` for skill lookup and validation
+- Updated `SyncOriginDataPacket.java` - Added `unlockedSkills` field
+- Updated `OriginEventHandler.java` - Uses `SkillEffectHandler` for skill effects
+- Updated `VeilOriginsAPI.java` - Added `clearClientCache()` method
+- Updated `ClientEventHandler.java` - Clears all caches on login/logout
+
+---
+
 ## v1.0.4 - 1.21.11 (2025-12-29)
 
 ### Updated

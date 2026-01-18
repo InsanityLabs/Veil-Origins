@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import com.veilorigins.VeilOrigins;
 
+import java.util.*;
 import java.util.function.Supplier;
 
 public class OriginData {
@@ -30,6 +31,24 @@ public class OriginData {
                     data.originXP = input.getIntOr("originXP", 0);
                     data.prestigeLevel = input.getIntOr("prestigeLevel", 0);
                     data.resourceBar = input.getFloatOr("resourceBar", 100.0f);
+                    data.skillPoints = input.getIntOr("skillPoints", 0);
+                    data.totalXPEarned = input.getLongOr("totalXPEarned", 0L);
+                    
+                    // Read unlocked skills
+                    String skillsStr = input.getStringOr("unlockedSkills", "");
+                    if (skillsStr != null && !skillsStr.isEmpty()) {
+                        String[] skills = skillsStr.split(",");
+                        for (String skill : skills) {
+                            String trimmed = skill.trim();
+                            if (!trimmed.isEmpty()) {
+                                data.unlockedSkills.add(trimmed);
+                            }
+                        }
+                    }
+                    
+                    VeilOrigins.LOGGER.debug("Loaded origin data: origin={}, level={}, xp={}, skills={}", 
+                        data.originId, data.originLevel, data.originXP, data.unlockedSkills);
+                    
                     return data;
                 }
 
@@ -44,9 +63,20 @@ public class OriginData {
                     output.putInt("originXP", data.originXP);
                     output.putInt("prestigeLevel", data.prestigeLevel);
                     output.putFloat("resourceBar", data.resourceBar);
+                    output.putInt("skillPoints", data.skillPoints);
+                    output.putLong("totalXPEarned", data.totalXPEarned);
+                    
+                    // Save unlocked skills as comma-separated string
+                    String skillsStr = String.join(",", data.unlockedSkills);
+                    output.putString("unlockedSkills", skillsStr);
+                    
+                    VeilOrigins.LOGGER.debug("Saved origin data: origin={}, level={}, xp={}, skills={}", 
+                        data.originId, data.originLevel, data.originXP, skillsStr);
+                    
                     return true;
                 }
             })
+            .copyOnDeath() // CRITICAL: Copy data when player dies/respawns
             .build()
     );
 
@@ -60,6 +90,9 @@ public class OriginData {
         private int originXP = 0;
         private int prestigeLevel = 0;
         private float resourceBar = 100.0f;
+        private int skillPoints = 0;
+        private long totalXPEarned = 0;
+        private final Set<String> unlockedSkills = new HashSet<>();
 
         public PlayerOriginData() {}
 
@@ -77,9 +110,34 @@ public class OriginData {
         
         public float getResourceBar() { return resourceBar; }
         public void setResourceBar(float value) { this.resourceBar = Math.max(0, Math.min(100, value)); }
+        
+        public int getSkillPoints() { return skillPoints; }
+        public void setSkillPoints(int points) { this.skillPoints = points; }
+        public void addSkillPoints(int points) { this.skillPoints += points; }
+        public boolean spendSkillPoints(int cost) {
+            if (skillPoints >= cost) {
+                skillPoints -= cost;
+                return true;
+            }
+            return false;
+        }
+        
+        public long getTotalXPEarned() { return totalXPEarned; }
+        
+        public Set<String> getUnlockedSkills() { return Collections.unmodifiableSet(unlockedSkills); }
+        public boolean hasSkill(String skillId) { return unlockedSkills.contains(skillId); }
+        public void unlockSkill(String skillId) { 
+            unlockedSkills.add(skillId);
+            VeilOrigins.LOGGER.debug("Unlocked skill: {} (total: {})", skillId, unlockedSkills.size());
+        }
+        public void resetSkills() { 
+            unlockedSkills.clear(); 
+            VeilOrigins.LOGGER.debug("Reset all skills");
+        }
 
         public void addXP(int amount) {
             this.originXP += amount;
+            this.totalXPEarned += amount;
         }
 
         public void addResource(float amount) {
