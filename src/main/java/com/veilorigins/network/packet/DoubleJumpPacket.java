@@ -7,7 +7,7 @@ import com.veilorigins.origins.vampire.VampiricDoubleJumpPassive;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record DoubleJumpPacket() implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<DoubleJumpPacket> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(VeilOrigins.MOD_ID, "double_jump"));
+            Identifier.fromNamespaceAndPath(VeilOrigins.MOD_ID, "double_jump"));
 
     public static final StreamCodec<ByteBuf, DoubleJumpPacket> CODEC = StreamCodec.unit(new DoubleJumpPacket());
 

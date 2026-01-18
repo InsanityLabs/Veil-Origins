@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
@@ -29,17 +29,17 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 public class VampireHudHandler {
 
     // Blood bar sprite textures (sprite path format - no textures/ prefix, no .png)
-    private static final ResourceLocation BLOOD_EMPTY = ResourceLocation.fromNamespaceAndPath(
+    private static final Identifier BLOOD_EMPTY = Identifier.fromNamespaceAndPath(
             VeilOrigins.MOD_ID, "origins/vampire_blood/hud_bar/blood_empty");
-    private static final ResourceLocation BLOOD_FULL = ResourceLocation.fromNamespaceAndPath(
+    private static final Identifier BLOOD_FULL = Identifier.fromNamespaceAndPath(
             VeilOrigins.MOD_ID, "origins/vampire_blood/hud_bar/blood_full");
-    private static final ResourceLocation BLOOD_HALF = ResourceLocation.fromNamespaceAndPath(
+    private static final Identifier BLOOD_HALF = Identifier.fromNamespaceAndPath(
             VeilOrigins.MOD_ID, "origins/vampire_blood/hud_bar/blood_half");
-    private static final ResourceLocation BLOOD_LESS_HALF = ResourceLocation.fromNamespaceAndPath(
+    private static final Identifier BLOOD_LESS_HALF = Identifier.fromNamespaceAndPath(
             VeilOrigins.MOD_ID, "origins/vampire_blood/hud_bar/blood_less_half");
-    private static final ResourceLocation BLOOD_WITHERED = ResourceLocation.fromNamespaceAndPath(
+    private static final Identifier BLOOD_WITHERED = Identifier.fromNamespaceAndPath(
             VeilOrigins.MOD_ID, "origins/vampire_blood/hud_bar/blood_withered");
-    private static final ResourceLocation BLOOD_ABSORPTION = ResourceLocation.fromNamespaceAndPath(
+    private static final Identifier BLOOD_ABSORPTION = Identifier.fromNamespaceAndPath(
             VeilOrigins.MOD_ID, "origins/vampire_blood/hud_bar/blood_absorption");
 
     // Sprite dimensions (standard Minecraft icon size)
@@ -122,7 +122,7 @@ public class VampireHudHandler {
             }
             
             // Determine which background texture to use
-            ResourceLocation bgTexture = hasHungerEffect ? BLOOD_WITHERED : BLOOD_EMPTY;
+            Identifier bgTexture = hasHungerEffect ? BLOOD_WITHERED : BLOOD_EMPTY;
             
             // Draw background (empty icon)
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, bgTexture, iconX, iconY, ICON_SIZE, ICON_SIZE);

@@ -2,9 +2,11 @@ package com.veilorigins.event;
 
 import com.veilorigins.VeilOrigins;
 import com.veilorigins.api.Origin;
+import com.veilorigins.api.OriginAbility;
 import com.veilorigins.api.VeilOriginsAPI;
 import com.veilorigins.data.OriginData;
 import com.veilorigins.network.ModPackets;
+import com.veilorigins.network.packet.SyncCooldownsPacket;
 import com.veilorigins.network.packet.SyncOriginDataPacket;
 import com.veilorigins.origins.vampire.VampiricDoubleJumpPassive;
 import net.minecraft.ChatFormatting;
@@ -15,6 +17,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("deprecation")
 @EventBusSubscriber(modid = VeilOrigins.MOD_ID)
@@ -31,17 +37,26 @@ public class OriginEventHandler {
 
             Origin origin = VeilOriginsAPI.getPlayerOrigin(player);
 
+            // Apply skill effects from unlocked skills
+            if (origin != null) {
+                com.veilorigins.progression.skill.SkillEffectHandler.applyAllSkillEffects(
+                    player, origin.getId().getPath());
+            }
+
             // Sync origin data to the client - this is critical for multiplayer!
             OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
             String originId = origin != null ? origin.getId().toString() : "";
+            String skillsStr = String.join(",", data.getUnlockedSkills());
             SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
                     originId,
                     data.getOriginLevel(),
                     data.getOriginXP(),
-                    data.getResourceBar());
+                    data.getResourceBar(),
+                    data.getSkillPoints(),
+                    skillsStr);
             ModPackets.sendToPlayer(serverPlayer, syncPacket);
-            VeilOrigins.LOGGER.info("Sent origin sync packet to player {}: {}",
-                    player.getName().getString(), originId);
+            VeilOrigins.LOGGER.info("Sent origin sync packet to player {}: {} (skills: {})",
+                    player.getName().getString(), originId, skillsStr);
 
             if (origin != null) {
                 player.displayClientMessage(Component.literal("Welcome back, " + origin.getDisplayName() + "!")
@@ -64,6 +79,10 @@ public class OriginEventHandler {
             VeilOriginsAPI.unloadPlayer(player);
             // Clean up sync tracking to prevent memory leaks
             lastSyncedResource.remove(player.getUUID());
+            lastSyncedLevel.remove(player.getUUID());
+            lastSyncedXP.remove(player.getUUID());
+            // Clean up skill effects (use the correct handler from skill package)
+            com.veilorigins.progression.skill.SkillEffectHandler.removeAllSkillEffects(player);
         }
     }
 
@@ -74,24 +93,40 @@ public class OriginEventHandler {
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
         if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            // Load origin again to reapply passive effects
-            VeilOriginsAPI.loadPlayerOrigin(player);
+            try {
+                // Don't call loadPlayerOrigin - the origin is already cached
+                // Just get the cached origin and sync to client
+                Origin origin = VeilOriginsAPI.getPlayerOrigin(player);
+                
+                // Re-apply skill effects after respawn (these are safe to re-apply)
+                if (origin != null) {
+                    com.veilorigins.progression.skill.SkillEffectHandler.applyAllSkillEffects(
+                        player, origin.getId().getPath());
+                }
 
-            // Re-sync origin data to the client after respawn
-            Origin origin = VeilOriginsAPI.getPlayerOrigin(player);
-            OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
-            String originId = origin != null ? origin.getId().toString() : "";
-            SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
-                    originId,
-                    data.getOriginLevel(),
-                    data.getOriginXP(),
-                    data.getResourceBar());
-            ModPackets.sendToPlayer(serverPlayer, syncPacket);
+                // Re-sync origin data to the client after respawn
+                OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
+                String originId = origin != null ? origin.getId().toString() : "";
+                String skillsStr = String.join(",", data.getUnlockedSkills());
+                SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
+                        originId,
+                        data.getOriginLevel(),
+                        data.getOriginXP(),
+                        data.getResourceBar(),
+                        data.getSkillPoints(),
+                        skillsStr);
+                ModPackets.sendToPlayer(serverPlayer, syncPacket);
+            } catch (Exception e) {
+                VeilOrigins.LOGGER.error("Error handling player respawn for {}: {}", 
+                    player.getName().getString(), e.getMessage(), e);
+            }
         }
     }
 
-    // Track last synced resource bar values per player to avoid excessive syncing
+    // Track last synced values per player to avoid excessive syncing
     private static final java.util.Map<java.util.UUID, Float> lastSyncedResource = new java.util.HashMap<>();
+    private static final java.util.Map<java.util.UUID, Integer> lastSyncedLevel = new java.util.HashMap<>();
+    private static final java.util.Map<java.util.UUID, Integer> lastSyncedXP = new java.util.HashMap<>();
     private static int syncTickCounter = 0;
 
     @SubscribeEvent
@@ -121,26 +156,43 @@ public class OriginEventHandler {
             data.addResource(regenRate / 20.0f); // Per tick
         }
 
-        // Periodic sync of resource bar to client (every 20 ticks / 1 second)
-        // Only sync if the value has changed significantly to reduce network traffic
+        // Periodic sync to client (every 5 ticks / 0.25 seconds for responsiveness)
         if (player instanceof ServerPlayer serverPlayer) {
             syncTickCounter++;
-            if (syncTickCounter >= 20) {
+            if (syncTickCounter >= 5) {
                 syncTickCounter = 0;
 
                 float currentResource = data.getResourceBar();
+                int currentLevel = data.getOriginLevel();
+                int currentXP = data.getOriginXP();
+                
                 Float lastResource = lastSyncedResource.get(player.getUUID());
+                Integer lastLevel = lastSyncedLevel.get(player.getUUID());
+                Integer lastXP = lastSyncedXP.get(player.getUUID());
 
-                // Sync if changed by more than 0.5 or if never synced
-                if (lastResource == null || Math.abs(currentResource - lastResource) > 0.5f) {
+                // Sync if resource changed by more than 0.5, or level/XP changed at all
+                boolean resourceChanged = lastResource == null || Math.abs(currentResource - lastResource) > 0.5f;
+                boolean levelChanged = lastLevel == null || !lastLevel.equals(currentLevel);
+                boolean xpChanged = lastXP == null || !lastXP.equals(currentXP);
+                
+                if (resourceChanged || levelChanged || xpChanged) {
+                    String skillsStr = String.join(",", data.getUnlockedSkills());
                     SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
                             origin.getId().toString(),
-                            data.getOriginLevel(),
-                            data.getOriginXP(),
-                            currentResource);
+                            currentLevel,
+                            currentXP,
+                            currentResource,
+                            data.getSkillPoints(),
+                            skillsStr);
                     ModPackets.sendToPlayer(serverPlayer, syncPacket);
+                    
                     lastSyncedResource.put(player.getUUID(), currentResource);
+                    lastSyncedLevel.put(player.getUUID(), currentLevel);
+                    lastSyncedXP.put(player.getUUID(), currentXP);
                 }
+                
+                // Sync ability cooldowns
+                syncAbilityCooldowns(serverPlayer, origin);
             }
         }
 
@@ -222,7 +274,7 @@ public class OriginEventHandler {
 
         // Starborne resource (Stellar Energy)
         if (origin.getId().getPath().equals("starborne")) {
-            boolean isDay = player.level().getSunAngle(1.0F) < 0.5F;
+            boolean isDay = (player.level().getDayTime() % 24000L < 12000L);
             boolean canSeeSky = player.level().canSeeSky(player.blockPosition());
 
             if (isDay && canSeeSky) {
@@ -246,7 +298,7 @@ public class OriginEventHandler {
         // Crystalline (Crystal Charge)
         if (origin.getId().getPath().equals("crystalline")) {
             // Recharges from sunlight
-            if (player.level().getSunAngle(1.0F) < 0.5F && player.level().canSeeSky(player.blockPosition())) {
+            if ((player.level().getDayTime() % 24000L < 12000L) && player.level().canSeeSky(player.blockPosition())) {
                 data.addResource(0.5f);
             }
         }
@@ -543,5 +595,24 @@ public class OriginEventHandler {
             // Strength II is +6 damage. Base is usually 1 (fist) or 7 (sword).
             // 7+6=13 (~+85%). Close enough.
         }
+    }
+
+    /**
+     * Sync ability cooldowns to client for HUD display.
+     */
+    private static void syncAbilityCooldowns(ServerPlayer player, Origin origin) {
+        List<OriginAbility> abilities = origin.getAbilities();
+        if (abilities.isEmpty()) return;
+        
+        Map<Integer, SyncCooldownsPacket.CooldownData> cooldowns = new HashMap<>();
+        
+        for (int i = 0; i < abilities.size(); i++) {
+            OriginAbility ability = abilities.get(i);
+            int remaining = ability.getCooldown();
+            int max = ability.getMaxCooldown();
+            cooldowns.put(i, new SyncCooldownsPacket.CooldownData(remaining, max));
+        }
+        
+        ModPackets.sendToPlayer(player, new SyncCooldownsPacket(cooldowns));
     }
 }

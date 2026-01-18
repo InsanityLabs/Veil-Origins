@@ -246,6 +246,14 @@ public class HudConfigScreen extends Screen {
     }
 
     /**
+     * Override to prevent the default blurred background from rendering.
+     */
+    @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        // Don't render the default blurred background - we draw our own
+    }
+
+    /**
      * Renders a simple dark semi-transparent overlay as the background.
      * This avoids the blur effect that was rendering on top of menu elements.
      */

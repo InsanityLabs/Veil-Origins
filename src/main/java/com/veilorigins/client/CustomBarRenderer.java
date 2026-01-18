@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Renders custom resource bars based on CustomResourceBar configuration.
@@ -274,7 +274,7 @@ public class CustomBarRenderer {
     /**
      * Helper to blit a sprite using the 1.21.10 API.
      */
-    private static void blitSprite(GuiGraphics graphics, ResourceLocation sprite, int x, int y, int width, int height) {
+    private static void blitSprite(GuiGraphics graphics, Identifier sprite, int x, int y, int width, int height) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height);
     }
     

@@ -3,7 +3,7 @@ package com.veilorigins.origins.dryad;
 import com.veilorigins.api.OriginPassive;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
@@ -72,7 +72,7 @@ public class DryadWeaknessesPassive extends OriginPassive {
 
         // Check desert tag
         // Unfortunately there's no IS_DESERT tag, so we check by name
-        ResourceLocation biomeKey = level.registryAccess()
+        Identifier biomeKey = level.registryAccess()
                 .lookup(Registries.BIOME).orElseThrow()
                 .getKey(biomeHolder.value());
         if (biomeKey != null) {

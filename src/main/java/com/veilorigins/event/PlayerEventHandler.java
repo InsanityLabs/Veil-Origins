@@ -4,7 +4,7 @@ import com.veilorigins.VeilOrigins;
 import com.veilorigins.api.Origin;
 import com.veilorigins.api.VeilOriginsAPI;
 import com.veilorigins.data.OriginData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,7 +18,7 @@ public class PlayerEventHandler {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         
         OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
-        ResourceLocation originId = data.getOriginId();
+        Identifier originId = data.getOriginId();
         
         if (originId != null) {
             // Restore origin from saved data

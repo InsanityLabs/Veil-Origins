@@ -4,7 +4,7 @@ import com.veilorigins.api.OriginPassive;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -96,7 +96,7 @@ public class ForestBondPassive extends OriginPassive {
             return true;
         }
         // Manual check for forest-type biomes by name
-        ResourceLocation biomeKey = level.registryAccess()
+        Identifier biomeKey = level.registryAccess()
                 .lookup(Registries.BIOME).orElseThrow()
                 .getKey(biomeHolder.value());
         if (biomeKey != null) {

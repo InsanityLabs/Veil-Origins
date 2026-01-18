@@ -18,7 +18,10 @@ public class WerewolfPassive extends OriginPassive {
         Level level = player.level();
         long dayTime = level.getDayTime() % 24000;
         boolean isNight = dayTime >= 13000 && dayTime <= 23000;
-        boolean isFullMoon = level.getMoonPhase() == 0;
+        // In 1.21.11, MoonPhase is an enum - calculate from day time
+        // Moon phase cycles every 8 days (192000 ticks), phase 0 is full moon
+        int moonPhaseIndex = (int) ((level.getDayTime() / 24000L) % 8L);
+        boolean isFullMoon = moonPhaseIndex == 0;
 
         // Enhanced abilities at night
         if (isNight) {

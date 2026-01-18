@@ -1,12 +1,12 @@
 package com.veilorigins.api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OriginBuilder {
-    private final ResourceLocation id;
+    private final Identifier id;
     private String displayName;
     private String description;
     private ImpactLevel impactLevel = ImpactLevel.MEDIUM;
@@ -19,7 +19,7 @@ public class OriginBuilder {
     private final List<ItemStack> startingItems = new ArrayList<>();
 
     public OriginBuilder(String id) {
-        this.id = ResourceLocation.parse(id);
+        this.id = Identifier.parse(id);
     }
 
     public OriginBuilder setDisplayName(String name) {

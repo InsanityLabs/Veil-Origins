@@ -44,7 +44,7 @@ public class PocketDimensionAbility extends OriginAbility {
             return;
 
         // Check if player is in pocket dimension
-        if (level.dimension().location().toString().equals("veil_origins:pocket_dimension")) {
+        if (level.dimension().identifier().toString().equals("veil_origins:pocket_dimension")) {
             // Return to overworld
             returnFromPocketDimension(serverPlayer, server);
         } else {

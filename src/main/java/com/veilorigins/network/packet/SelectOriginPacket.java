@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -24,7 +24,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record SelectOriginPacket(String originId) implements CustomPacketPayload {
 
         public static final CustomPacketPayload.Type<SelectOriginPacket> TYPE = new CustomPacketPayload.Type<>(
-                        ResourceLocation.fromNamespaceAndPath(VeilOrigins.MOD_ID, "select_origin"));
+                        Identifier.fromNamespaceAndPath(VeilOrigins.MOD_ID, "select_origin"));
 
         public static final StreamCodec<ByteBuf, SelectOriginPacket> STREAM_CODEC = StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
@@ -147,11 +147,14 @@ public record SelectOriginPacket(String originId) implements CustomPacketPayload
          */
         private static void syncOriginToClient(ServerPlayer player, Origin origin) {
                 OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
+                String skillsStr = String.join(",", data.getUnlockedSkills());
                 SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
                                 origin.getId().toString(),
                                 data.getOriginLevel(),
                                 data.getOriginXP(),
-                                data.getResourceBar());
+                                data.getResourceBar(),
+                                data.getSkillPoints(),
+                                skillsStr);
                 ModPackets.sendToPlayer(player, syncPacket);
                 VeilOrigins.LOGGER.debug("Synced origin {} to client for player {}",
                                 origin.getId(), player.getName().getString());

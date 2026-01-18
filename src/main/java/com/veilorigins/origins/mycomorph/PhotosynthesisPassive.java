@@ -14,7 +14,7 @@ public class PhotosynthesisPassive extends OriginPassive {
     public void onTick(Player player) {
         tickCounter++;
 
-        boolean inSun = player.level().getSunAngle(1.0F) < 0.5F && player.level().canSeeSky(player.blockPosition());
+        boolean inSun = (player.level().getDayTime() % 24000L < 12000L) && player.level().canSeeSky(player.blockPosition());
 
         if (inSun) {
             // Regen health slowly (0.5 HP per 5 seconds = 100 ticks)
