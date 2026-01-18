@@ -254,6 +254,11 @@ public class RadialMenuScreen extends Screen {
     }
 
     @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        // Don't render the default blurred background - we draw our own
+    }
+
+    @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         // Render custom dark transparent background overlay (no blur)
         renderCustomBackground(guiGraphics);

@@ -147,11 +147,14 @@ public record SelectOriginPacket(String originId) implements CustomPacketPayload
          */
         private static void syncOriginToClient(ServerPlayer player, Origin origin) {
                 OriginData.PlayerOriginData data = player.getData(OriginData.PLAYER_ORIGIN);
+                String skillsStr = String.join(",", data.getUnlockedSkills());
                 SyncOriginDataPacket syncPacket = new SyncOriginDataPacket(
                                 origin.getId().toString(),
                                 data.getOriginLevel(),
                                 data.getOriginXP(),
-                                data.getResourceBar());
+                                data.getResourceBar(),
+                                data.getSkillPoints(),
+                                skillsStr);
                 ModPackets.sendToPlayer(player, syncPacket);
                 VeilOrigins.LOGGER.debug("Synced origin {} to client for player {}",
                                 origin.getId(), player.getName().getString());

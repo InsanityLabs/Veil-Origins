@@ -3,12 +3,17 @@ package com.veilorigins.client;
 import com.veilorigins.VeilOrigins;
 import com.veilorigins.api.Origin;
 import com.veilorigins.api.VeilOriginsAPI;
+import com.veilorigins.client.gui.AbilityBarScreen;
 import com.veilorigins.client.gui.HudConfigScreen;
-import com.veilorigins.client.gui.RadialMenuScreen;
+import com.veilorigins.client.gui.OriginCardCarouselScreen;
+import com.veilorigins.client.gui.SkillTreeScreen;
+import com.veilorigins.data.OriginData;
 import com.veilorigins.network.ModPackets;
 import com.veilorigins.network.packet.ActivateAbilityPacket;
 import com.veilorigins.network.packet.DoubleJumpPacket;
+import com.veilorigins.network.packet.LegendaryAbilityPacket;
 import com.veilorigins.origins.vampire.VampiricDoubleJumpPassive;
+import com.veilorigins.progression.ProgressionSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +32,13 @@ public class KeyInputHandler {
     private static boolean wasSprintingOnGround = false;
     private static boolean jumpedWhileHoldingJump = false; // Track if player left ground while holding jump
     private static int jumpBufferTicks = 0; // Buffer to prevent accidental double jumps
+    
+    // Legendary ability state tracking (R + Attack combo)
+    private static boolean isAbility1Held = false;
+    private static boolean wasAttackPressed = false;
+    private static boolean ability1JustPressed = false;
+    private static int ability1HoldTimer = 0;
+    private static final int HOLD_THRESHOLD = 5; // 5 ticks (0.25 seconds) to distinguish tap vs hold
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -36,11 +48,17 @@ public class KeyInputHandler {
         if (player == null)
             return;
 
+        // Tick down cooldowns client-side for smooth HUD display
+        ClientOriginData.tickCooldowns();
+
         // Handle auto-open origin selection on first join
         ClientEventHandler.tickOriginSelectDelay();
 
         // Always process double jump detection, even with screens open
         processDoubleJumpInput(mc, player);
+        
+        // Always process possession movement sync (WASD controls for possessed mob)
+        processPossessionMovement(mc, player);
 
         // Don't process keybinds if a screen is open (except for closing radial menu)
         if (mc.screen != null)
@@ -61,6 +79,21 @@ public class KeyInputHandler {
             return;
         }
 
+        // Check Skill Tree key - opens skill tree screen
+        if (KeyBindings.SKILL_TREE.consumeClick()) {
+            Origin currentOrigin = VeilOriginsAPI.getPlayerOrigin(player);
+            if (currentOrigin != null) {
+                mc.setScreen(new SkillTreeScreen(null));
+                VeilOrigins.LOGGER.debug("Opening Skill Tree screen");
+            } else {
+                player.displayClientMessage(
+                    net.minecraft.network.chat.Component.literal(
+                        "§eYou need to select an origin first! Press §b[G]§e to choose."),
+                    true);
+            }
+            return;
+        }
+
         // Origin-specific keybinds only work if player has an origin
         if (origin == null) {
             // If player presses ability keys without an origin, prompt them to select one
@@ -73,14 +106,12 @@ public class KeyInputHandler {
             return;
         }
 
-        // Check ability 1 key
-        if (KeyBindings.ABILITY_1.consumeClick()) {
-            if (origin.getAbilities().size() > 0) {
-                ModPackets.sendToServer(new ActivateAbilityPacket(0));
-                VeilOrigins.LOGGER.debug("Sent ability 1 activation packet");
-            }
-        }
+        // Process legendary ability combo (R held + Attack)
+        processLegendaryAbilityCombo(mc, player, origin);
 
+        // Check ability 1 key - fires on release if it was a quick tap (not held for combo)
+        // The processLegendaryAbilityCombo handles the hold+attack case
+        
         // Check ability 2 key
         if (KeyBindings.ABILITY_2.consumeClick()) {
             if (origin.getAbilities().size() > 1) {
@@ -93,6 +124,66 @@ public class KeyInputHandler {
         if (KeyBindings.RESOURCE_INFO.consumeClick()) {
             displayOriginInfo(player, origin);
         }
+    }
+    
+    /**
+     * Process ability 1 and legendary ability combo:
+     * - Quick tap R = activate ability 1
+     * - Hold R + Attack = activate legendary ability
+     */
+    private static void processLegendaryAbilityCombo(Minecraft mc, Player player, Origin origin) {
+        Options options = mc.options;
+        boolean isAbility1Down = KeyBindings.ABILITY_1.isDown();
+        boolean isAttackDown = options.keyAttack.isDown();
+        
+        // Detect when R is first pressed
+        if (isAbility1Down && !isAbility1Held) {
+            isAbility1Held = true;
+            ability1JustPressed = true;
+            ability1HoldTimer = 0;
+        }
+        
+        // Track how long R has been held
+        if (isAbility1Held && isAbility1Down) {
+            ability1HoldTimer++;
+        }
+        
+        // Check for attack while R is held (legendary combo)
+        if (isAbility1Held && isAbility1Down && isAttackDown && !wasAttackPressed) {
+            // Check if player is level 50
+            OriginData.PlayerOriginData data = OriginData.get(player);
+            if (data.getOriginLevel() >= ProgressionSystem.MAX_LEVEL) {
+                // Send legendary ability packet
+                ModPackets.sendToServer(new LegendaryAbilityPacket());
+                VeilOrigins.LOGGER.debug("Sent legendary ability activation packet");
+                
+                // Mark that we used the combo so we don't also fire ability 1 on release
+                ability1JustPressed = false;
+            } else {
+                player.displayClientMessage(
+                    net.minecraft.network.chat.Component.literal(
+                        "§cLegendary ability requires Level 50! (Current: " + data.getOriginLevel() + ")"),
+                    true);
+            }
+        }
+        
+        // When R is released
+        if (!isAbility1Down && isAbility1Held) {
+            // If it was a quick tap (not used for combo), fire ability 1
+            if (ability1JustPressed && ability1HoldTimer < HOLD_THRESHOLD) {
+                if (origin.getAbilities().size() > 0) {
+                    ModPackets.sendToServer(new ActivateAbilityPacket(0));
+                    VeilOrigins.LOGGER.debug("Sent ability 1 activation packet (quick tap)");
+                }
+            }
+            
+            // Reset state
+            isAbility1Held = false;
+            ability1JustPressed = false;
+            ability1HoldTimer = 0;
+        }
+        
+        wasAttackPressed = isAttackDown;
     }
 
     /**
@@ -168,22 +259,28 @@ public class KeyInputHandler {
     }
 
     /**
-     * Opens the radial menu with the appropriate mode.
-     * If player has no origin, opens origin selection.
-     * If player has an origin, opens ability selection.
+     * Sends player movement input to server when possessing a mob.
+     * No longer needed - player moves normally and mob follows on server.
+     */
+    private static void processPossessionMovement(Minecraft mc, Player player) {
+        // Movement is now handled automatically - mob follows player position on server
+    }
+
+    /**
+     * Opens the appropriate menu based on origin status.
+     * If player has no origin, opens the card carousel for origin selection.
+     * If player has an origin, opens the ability bar for ability selection.
      */
     private static void openRadialMenu(Minecraft mc, Origin origin) {
-        RadialMenuScreen.MenuMode mode;
-
         if (origin == null) {
-            mode = RadialMenuScreen.MenuMode.ORIGIN_SELECT;
-            VeilOrigins.LOGGER.debug("Opening radial menu in ORIGIN_SELECT mode");
+            // Use the card carousel for origin selection
+            mc.setScreen(new OriginCardCarouselScreen());
+            VeilOrigins.LOGGER.debug("Opening card carousel for origin selection");
         } else {
-            mode = RadialMenuScreen.MenuMode.ABILITY_SELECT;
-            VeilOrigins.LOGGER.debug("Opening radial menu in ABILITY_SELECT mode for origin: {}", origin.getId());
+            // Use the new ability bar for ability selection
+            mc.setScreen(new AbilityBarScreen());
+            VeilOrigins.LOGGER.debug("Opening ability bar for origin: {}", origin.getId());
         }
-
-        mc.setScreen(new RadialMenuScreen(mode));
     }
 
     /**

@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
 public class EarthAffinityPassive extends OriginPassive {
-    private static final String SPEED_UUID = "stoneheart_speed_reduction";
+    private static final Identifier SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath("veil_origins", "stoneheart_speed_reduction");
 
     public EarthAffinityPassive() {
         super("earth_affinity");
@@ -24,8 +24,10 @@ public class EarthAffinityPassive extends OriginPassive {
         // 50% slower movement speed
         AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
+            // Always remove first to handle respawn (Minecraft copies modifiers to new entity)
+            speed.removeModifier(SPEED_MODIFIER_ID);
             speed.addPermanentModifier(new AttributeModifier(
-                Identifier.fromNamespaceAndPath("veil_origins", SPEED_UUID),
+                SPEED_MODIFIER_ID,
                 -0.5,
                 AttributeModifier.Operation.ADD_MULTIPLIED_BASE
             ));
@@ -36,7 +38,7 @@ public class EarthAffinityPassive extends OriginPassive {
     public void onRemove(Player player) {
         AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
-            speed.removeModifier(Identifier.fromNamespaceAndPath("veil_origins", SPEED_UUID));
+            speed.removeModifier(SPEED_MODIFIER_ID);
         }
     }
 }
