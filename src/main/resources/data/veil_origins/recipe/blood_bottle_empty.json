@@ -4,7 +4,9 @@
     "B"
   ],
   "key": {
-    "B": "minecraft:glass_bottle"
+    "B": {
+      "item": "minecraft:glass_bottle"
+    }
   },
   "result": {
     "id": "veil_origins:blood_bottle_empty",

@@ -317,9 +317,9 @@ public class VampiricDoubleJumpPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
                 ChatFormatting.DARK_RED + "\u26A1 Vampiric Leap: " + ChatFormatting.GRAY
-                        + "Sprint and double-tap jump while airborne to perform a damaging leap!"));
+                        + "Sprint and double-tap jump while airborne to perform a damaging leap!"), false);
     }
 
     @Override

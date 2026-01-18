@@ -123,7 +123,7 @@ public class VampireHudHandler {
             // Determine which background texture to use
             ResourceLocation bgTexture = hasHungerEffect ? BLOOD_WITHERED : BLOOD_EMPTY;
             
-            // Draw background (empty icon) - using 1.21.1 compatible blitSprite
+            // Draw background (empty icon)
             graphics.blitSprite(bgTexture, iconX, iconY, ICON_SIZE, ICON_SIZE);
             
             // Calculate fill state for this icon (each icon = 2 blood points)

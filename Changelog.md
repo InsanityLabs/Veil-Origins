@@ -1,5 +1,67 @@
 # Changelog
 
+## v1.0.5 (2026-01-06) - The UI Overhaul Update
+
+### Added
+
+#### New Origin Selection Screen - Card Carousel
+- **Replaced radial menu with card carousel** for origin selection
+  - 8 origin cards displayed in horizontal carousel with smooth scrolling
+  - Cards scale based on distance from center (3D depth effect)
+  - Each card shows: origin name, impact level (stars), description, abilities, passives
+  - Color-coded accent bars based on origin theme
+  - Navigation: arrow keys, mouse scroll, click arrows, or click cards directly
+  - Shuffle button (R key) to get new random origin options
+  - Smooth animations and hover effects
+
+#### New Ability Dashboard
+- **Completely redesigned ability menu** with comprehensive origin information
+- **Three-column layout:**
+  - **Left Column - Origin Info & Stats:**
+    - Origin name with theme color accent
+    - Impact level with stars (★☆☆, ★★☆, ★★★)
+    - Full description (word-wrapped)
+    - Resource bar with origin-specific name (Blood, Rage, Soul Energy, Heat, etc.)
+    - Stat modifiers display (Health, Speed, Damage) with +/- percentages
+  - **Center Column - Abilities:**
+    - Detailed ability slots with icon, keybind badge, name
+    - Description and stats (cost, cooldown)
+    - Status indicator (READY in green, countdown in red)
+    - Color-coded accent bar showing ability state
+    - Hover highlighting with origin theme color
+  - **Right Column - Passives & Progression:**
+    - List of passive abilities with thematic icons
+    - Level display
+    - XP progress bar with current/needed values
+    - Skill points available
+    - Unlocked skills count
+- Press [T] from ability menu to jump directly to skill tree
+- Smooth open animation
+
+### Fixed
+
+#### UI Blur Rendering Issue
+- **Fixed blur rendering over UI elements** in Minecraft 1.21.1
+  - Default `renderBackground()` in 1.21.1 adds blur effect that was rendering ON TOP of custom UI
+  - Added `renderBackground()` override to all custom screens to prevent blur
+  - Affected screens: SkillTreeScreen, OriginCardCarouselScreen, AbilityBarScreen, RadialMenuScreen, HudConfigScreen
+
+#### Dedicated Server Compatibility
+- **Fixed server crashes from client-only classes**
+  - Created `ClientSetup.java` to isolate client-only registration (HUD overlay, keybindings)
+  - Removed `UnicodeFontHandler` references from server-side code
+  - `FoodEventHandler.java` and `SelectOriginPacket.java` now use plain Unicode characters
+  - Main mod class only calls client setup on client distribution
+
+### Technical
+
+- Added `OriginCardCarouselScreen` - New card-based origin selection UI
+- Rewrote `AbilityBarScreen` - Comprehensive origin dashboard with three-column layout
+- Added `ClientSetup` - Client-only initialization isolated from server code
+- Updated all GUI screens with custom background rendering to prevent blur overlay
+
+---
+
 ## v1.0.4 (2025-12-29)
 
 ### Updated

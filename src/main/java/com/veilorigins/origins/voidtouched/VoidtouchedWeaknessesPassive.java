@@ -41,8 +41,8 @@ public class VoidtouchedWeaknessesPassive extends OriginPassive {
             // 1% chance per minute to take 2 HP void damage
             if (random.nextDouble() < (1.0 / 60.0 / 60.0)) { // Per second chance
                 player.hurt(level.damageSources().fellOutOfWorld(), 2.0f);
-                player.sendSystemMessage(net.minecraft.network.chat.Component
-                        .literal(ChatFormatting.DARK_PURPLE + "The void tears at your essence..."));
+                player.displayClientMessage(net.minecraft.network.chat.Component
+                        .literal(ChatFormatting.DARK_PURPLE + "The void tears at your essence..."), false);
             }
         }
 
@@ -79,14 +79,14 @@ public class VoidtouchedWeaknessesPassive extends OriginPassive {
                     newPos.x, newPos.y + 1, newPos.z, 20, 0.3, 0.5, 0.3, 0.1);
         }
 
-        player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal(ChatFormatting.DARK_PURPLE + "Reality shifts around you..."));
+        player.displayClientMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.DARK_PURPLE + "Reality shifts around you..."), false);
     }
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(ChatFormatting.DARK_PURPLE
-                + "As Voidtouched, reality is unstable around you. You randomly teleport and cannot use beds."));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(ChatFormatting.DARK_PURPLE
+                + "As Voidtouched, reality is unstable around you. You randomly teleport and cannot use beds."), false);
     }
 
     @Override

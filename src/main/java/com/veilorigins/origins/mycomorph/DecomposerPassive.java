@@ -18,7 +18,7 @@ public class DecomposerPassive extends OriginPassive {
         tickCounter++;
 
         // Convert grass to mycelium (1 block per 30 seconds = 600 ticks)
-        if (tickCounter % 600 == 0 && !player.level().isClientSide) {
+        if (tickCounter % 600 == 0 && !player.level().isClientSide()) {
             BlockPos pos = player.blockPosition().below();
             Level level = player.level();
             if (level.getBlockState(pos).is(Blocks.GRASS_BLOCK) || level.getBlockState(pos).is(Blocks.DIRT)) {
@@ -29,7 +29,7 @@ public class DecomposerPassive extends OriginPassive {
         // Grow nearby mushrooms fast?
         // 3x speed implies random tick boost. Hard to target specific blocks.
         // We can random tick blocks around player occasionally.
-        if (tickCounter % 20 == 0 && !player.level().isClientSide) {
+        if (tickCounter % 20 == 0 && !player.level().isClientSide()) {
             BlockPos pos = player.blockPosition();
             int range = 5;
             // Try 3 random attempts

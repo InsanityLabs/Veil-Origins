@@ -3,7 +3,6 @@ package com.veilorigins.dimension;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -14,7 +13,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
@@ -42,7 +40,7 @@ public class PocketDimensionChunkGenerator extends ChunkGenerator {
     public void applyCarvers(WorldGenRegion region, long seed, RandomState randomState, 
                             net.minecraft.world.level.biome.BiomeManager biomeManager, 
                             StructureManager structureManager, ChunkAccess chunk, 
-                            GenerationStep.Carving carving) {
+                            net.minecraft.world.level.levelgen.GenerationStep.Carving step) {
         // No carvers in pocket dimension
     }
 

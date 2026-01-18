@@ -61,8 +61,8 @@ public class FrostbornWeaknessesPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal(ChatFormatting.AQUA + "As Frostborn, fire and heat are lethal to you."));
+        player.displayClientMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.AQUA + "As Frostborn, fire and heat are lethal to you."), false);
     }
 
     @Override

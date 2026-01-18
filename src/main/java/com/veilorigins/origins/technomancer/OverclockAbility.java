@@ -12,7 +12,7 @@ import java.util.UUID;
 import net.minecraft.ChatFormatting;
 
 public class OverclockAbility extends OriginAbility {
-    private static final int COOLDOWN = 120 * 20;
+    private static final int COOLDOWN = 300;
     private static final int DURATION = 600; // 30s
     private static final int HUNGER_COST = 10;
 
@@ -56,8 +56,8 @@ public class OverclockAbility extends OriginAbility {
                 activeOverclocks.remove(id);
                 // Overheat penalty
                 player.hurt(player.damageSources().magic(), 6.0f); // 3 hearts
-                player.sendSystemMessage(net.minecraft.network.chat.Component
-                        .literal(ChatFormatting.RED + "System Overheat! Discharging thermal energy..."));
+                player.displayClientMessage(net.minecraft.network.chat.Component
+                        .literal(ChatFormatting.RED + "System Overheat! Discharging thermal energy..."), false);
             }
         }
     }

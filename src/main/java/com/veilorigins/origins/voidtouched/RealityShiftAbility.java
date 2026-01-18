@@ -52,7 +52,7 @@ public class RealityShiftAbility extends OriginAbility {
         }
 
         if (target == null) {
-            player.sendSystemMessage(Component.literal(ChatFormatting.RED + "No valid target found!"));
+            player.displayClientMessage(Component.literal(ChatFormatting.RED + "No valid target found!"), false);
             return;
         }
 
@@ -81,7 +81,7 @@ public class RealityShiftAbility extends OriginAbility {
                     targetPos.x, targetPos.y + 1, targetPos.z, 50, 0.5, 0.5, 0.5, 0.3);
         }
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.DARK_PURPLE + "Reality shifted!"));
+        player.displayClientMessage(Component.literal(ChatFormatting.DARK_PURPLE + "Reality shifted!"), false);
 
         startCooldown();
     }

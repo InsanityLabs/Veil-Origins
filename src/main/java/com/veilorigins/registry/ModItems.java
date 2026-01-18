@@ -8,7 +8,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -18,22 +18,22 @@ import java.util.function.Supplier;
  */
 public class ModItems {
     
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, VeilOrigins.MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(VeilOrigins.MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = 
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, VeilOrigins.MOD_ID);
     
     // Blood Bottle - empty, can be filled by vampires draining blood
-    public static final DeferredHolder<Item, BloodBottleItem> BLOOD_BOTTLE_EMPTY = ITEMS.register(
+    public static final DeferredItem<BloodBottleItem> BLOOD_BOTTLE_EMPTY = ITEMS.register(
             "blood_bottle_empty",
             () -> new BloodBottleItem(new Item.Properties().stacksTo(16), 0));
     
     // Blood Bottle - half full
-    public static final DeferredHolder<Item, BloodBottleItem> BLOOD_BOTTLE_HALF = ITEMS.register(
+    public static final DeferredItem<BloodBottleItem> BLOOD_BOTTLE_HALF = ITEMS.register(
             "blood_bottle_half",
             () -> new BloodBottleItem(new Item.Properties().stacksTo(16), 50));
     
     // Blood Bottle - full
-    public static final DeferredHolder<Item, BloodBottleItem> BLOOD_BOTTLE_FULL = ITEMS.register(
+    public static final DeferredItem<BloodBottleItem> BLOOD_BOTTLE_FULL = ITEMS.register(
             "blood_bottle_full",
             () -> new BloodBottleItem(new Item.Properties().stacksTo(16), 100));
     

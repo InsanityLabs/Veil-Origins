@@ -130,9 +130,9 @@ public class UndeadMasteryPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
                 ChatFormatting.DARK_PURPLE
-                        + "As a Necromancer, undead creatures will not harm you. You command the dead."));
+                        + "As a Necromancer, undead creatures will not harm you. You command the dead."), false);
     }
 
     @Override

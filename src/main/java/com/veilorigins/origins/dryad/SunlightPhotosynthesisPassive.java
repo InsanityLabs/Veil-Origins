@@ -30,7 +30,7 @@ public class SunlightPhotosynthesisPassive extends OriginPassive {
 
         // Check if in direct sunlight (sky visible and daytime)
         boolean inSunlight = level.canSeeSky(playerPos.above()) &&
-                level.isDay() &&
+                (level.getDayTime() < 13000) &&
                 !level.isRaining() &&
                 level.getBrightness(LightLayer.SKY, playerPos.above()) >= 15;
 
@@ -101,8 +101,8 @@ public class SunlightPhotosynthesisPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                ChatFormatting.GREEN + "As a Dryad, you photosynthesize in sunlight. Flowers empower you."));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                ChatFormatting.GREEN + "As a Dryad, you photosynthesize in sunlight. Flowers empower you."), false);
     }
 
     @Override

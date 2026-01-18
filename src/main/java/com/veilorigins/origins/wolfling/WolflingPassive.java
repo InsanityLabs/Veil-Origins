@@ -37,8 +37,8 @@ public class WolflingPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component
-                .literal(ChatFormatting.YELLOW + "As a Wolfling, you are faster at night with enhanced senses."));
+        player.displayClientMessage(net.minecraft.network.chat.Component
+                .literal(ChatFormatting.YELLOW + "As a Wolfling, you are faster at night with enhanced senses."), false);
     }
 
     @Override

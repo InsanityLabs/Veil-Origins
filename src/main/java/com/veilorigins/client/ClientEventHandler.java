@@ -2,7 +2,8 @@ package com.veilorigins.client;
 
 import com.veilorigins.VeilOrigins;
 import com.veilorigins.api.VeilOriginsAPI;
-import com.veilorigins.client.gui.RadialMenuScreen;
+import com.veilorigins.client.gui.AbilityBarScreen;
+import com.veilorigins.client.gui.OriginCardCarouselScreen;
 import com.veilorigins.config.VeilOriginsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +28,12 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onClientPlayerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        // CRITICAL: Clear ALL old data before receiving new server data
+        // This prevents data bleeding between different servers/worlds
+        ClientOriginData.clear();
+        ClientPossessionHandler.clear();
+        VeilOriginsAPI.clearClientCache();
+        
         // Reset state on login
         hasShownOriginSelect = false;
 
@@ -45,6 +52,12 @@ public class ClientEventHandler {
         hasShownOriginSelect = false;
         pendingOriginSelect = false;
         joinDelayTicks = 0;
+        
+        // CRITICAL: Clear ALL client-side cached data to prevent data bleeding between servers
+        ClientOriginData.clear();
+        ClientPossessionHandler.clear();
+        VeilOriginsAPI.clearClientCache();
+        VeilOrigins.LOGGER.debug("Cleared all client origin data on disconnect");
     }
 
     /**
@@ -78,7 +91,7 @@ public class ClientEventHandler {
         if (!VeilOriginsAPI.hasOrigin(player)) {
             VeilOrigins.LOGGER.info("Player has no origin, opening origin selection menu");
             hasShownOriginSelect = true;
-            mc.setScreen(new RadialMenuScreen(RadialMenuScreen.MenuMode.ORIGIN_SELECT));
+            mc.setScreen(new OriginCardCarouselScreen());
 
             // Also send a chat message
             player.displayClientMessage(
@@ -97,7 +110,7 @@ public class ClientEventHandler {
     public static void openOriginSelectionMenu() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
-            mc.setScreen(new RadialMenuScreen(RadialMenuScreen.MenuMode.ORIGIN_SELECT));
+            mc.setScreen(new OriginCardCarouselScreen());
         }
     }
 
@@ -107,7 +120,7 @@ public class ClientEventHandler {
     public static void openAbilityMenu() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && VeilOriginsAPI.hasOrigin(mc.player)) {
-            mc.setScreen(new RadialMenuScreen(RadialMenuScreen.MenuMode.ABILITY_SELECT));
+            mc.setScreen(new AbilityBarScreen());
         }
     }
 }

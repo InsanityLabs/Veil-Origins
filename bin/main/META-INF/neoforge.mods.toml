@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="OSL-3.0"
+issueTrackerURL="https://github.com/yourusername/veil_origins/issues"
+
+[[mixins]]
+config="veil_origins.mixins.json"
+
+[[mods]]
+modId="veil_origins"
+version="1.0.2"
+displayName="Veil Origins"
+description="A comprehensive origin system"
+authors="Insanity Studios"
+modproperties.catalogueItemIcon="minecraft:ender_eye"
+
+[[dependencies.veil_origins]]
+modId="neoforge"
+type="required"
+versionRange="[21.1,21.2)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.veil_origins]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.21.3]"
+ordering="NONE"
+side="BOTH"

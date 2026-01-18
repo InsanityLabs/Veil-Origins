@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class VeilOriginsAPI {
     private static final Map<ResourceLocation, Origin> ORIGINS = new HashMap<>();
-    // Runtime cache - repopulated from persistent data on login
-    private static final Map<Player, Origin> PLAYER_ORIGINS = new HashMap<>();
+    // Runtime cache - uses UUID as key to survive player entity replacement on respawn
+    private static final Map<java.util.UUID, Origin> PLAYER_ORIGINS = new HashMap<>();
 
     public static void registerOrigin(Origin origin) {
         ORIGINS.put(origin.getId(), origin);
@@ -28,8 +28,8 @@ public class VeilOriginsAPI {
      * Get the player's origin from cache, loading from persistent data if needed
      */
     public static Origin getPlayerOrigin(Player player) {
-        // First check cache
-        Origin cached = PLAYER_ORIGINS.get(player);
+        // First check cache using UUID
+        Origin cached = PLAYER_ORIGINS.get(player.getUUID());
         if (cached != null) {
             return cached;
         }
@@ -40,7 +40,7 @@ public class VeilOriginsAPI {
             Origin origin = ORIGINS.get(data.getOriginId());
             if (origin != null) {
                 // Cache it but don't trigger onEquip (handled separately on login)
-                PLAYER_ORIGINS.put(player, origin);
+                PLAYER_ORIGINS.put(player.getUUID(), origin);
                 return origin;
             }
         }
@@ -52,18 +52,32 @@ public class VeilOriginsAPI {
      * Set the player's origin, updating both cache and persistent data
      */
     public static void setPlayerOrigin(Player player, Origin origin) {
-        Origin oldOrigin = PLAYER_ORIGINS.get(player);
+        Origin oldOrigin = PLAYER_ORIGINS.get(player.getUUID());
 
         // Remove old origin effects
         if (oldOrigin != null) {
-            oldOrigin.getPassives().forEach(passive -> passive.onRemove(player));
+            try {
+                oldOrigin.getPassives().forEach(passive -> {
+                    try {
+                        passive.onRemove(player);
+                    } catch (Exception e) {
+                        VeilOrigins.LOGGER.error("Error removing passive {}: {}", passive.getId(), e.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                VeilOrigins.LOGGER.error("Error removing old origin passives: {}", e.getMessage());
+            }
+            // Remove old skill effects
+            com.veilorigins.progression.skill.SkillEffectHandler.removeAllSkillEffects(player);
+            // Remove origin scale
+            com.veilorigins.event.OriginSizeHandler.removeOriginScale(player);
         }
 
-        // Update cache
+        // Update cache using UUID
         if (origin != null) {
-            PLAYER_ORIGINS.put(player, origin);
+            PLAYER_ORIGINS.put(player.getUUID(), origin);
         } else {
-            PLAYER_ORIGINS.remove(player);
+            PLAYER_ORIGINS.remove(player.getUUID());
         }
 
         // Persist to data attachment
@@ -72,8 +86,19 @@ public class VeilOriginsAPI {
 
         // Apply new origin effects
         if (origin != null) {
-            origin.getPassives().forEach(passive -> passive.onEquip(player));
+            origin.getPassives().forEach(passive -> {
+                try {
+                    passive.onEquip(player);
+                } catch (Exception e) {
+                    VeilOrigins.LOGGER.error("Error applying passive {}: {}", passive.getId(), e.getMessage());
+                }
+            });
+            // Apply skill effects for the new origin
+            com.veilorigins.progression.skill.SkillEffectHandler.applyAllSkillEffects(
+                player, origin.getId().getPath());
             VeilOrigins.LOGGER.info("Set origin {} for player {}", origin.getId(), player.getName().getString());
+        } else {
+            VeilOrigins.LOGGER.info("Cleared origin for player {}", player.getName().getString());
         }
     }
 
@@ -86,11 +111,11 @@ public class VeilOriginsAPI {
      */
     public static void setPlayerOriginClient(Player player, Origin origin) {
         if (origin != null) {
-            PLAYER_ORIGINS.put(player, origin);
+            PLAYER_ORIGINS.put(player.getUUID(), origin);
             VeilOrigins.LOGGER.debug("Client: Set origin {} for player {}", origin.getId(),
                     player.getName().getString());
         } else {
-            PLAYER_ORIGINS.remove(player);
+            PLAYER_ORIGINS.remove(player.getUUID());
             VeilOrigins.LOGGER.debug("Client: Cleared origin for player {}", player.getName().getString());
         }
     }
@@ -104,10 +129,23 @@ public class VeilOriginsAPI {
         if (data != null && data.getOriginId() != null) {
             Origin origin = ORIGINS.get(data.getOriginId());
             if (origin != null) {
-                // Cache the origin
-                PLAYER_ORIGINS.put(player, origin);
-                // Apply passive effects
-                origin.getPassives().forEach(passive -> passive.onEquip(player));
+                // Check if already cached (avoid double-loading)
+                if (PLAYER_ORIGINS.containsKey(player.getUUID())) {
+                    VeilOrigins.LOGGER.debug("Origin already loaded for player {}, skipping", player.getName().getString());
+                    return;
+                }
+                
+                // Cache the origin using UUID
+                PLAYER_ORIGINS.put(player.getUUID(), origin);
+                // Apply passive effects with error handling
+                origin.getPassives().forEach(passive -> {
+                    try {
+                        passive.onEquip(player);
+                    } catch (Exception e) {
+                        VeilOrigins.LOGGER.error("Error applying passive {} for player {}: {}", 
+                            passive.getId(), player.getName().getString(), e.getMessage());
+                    }
+                });
                 VeilOrigins.LOGGER.info("Loaded origin {} for player {}", origin.getId(), player.getName().getString());
             } else {
                 VeilOrigins.LOGGER.warn("Player {} has unknown origin ID: {}", player.getName().getString(),
@@ -120,10 +158,19 @@ public class VeilOriginsAPI {
      * Clean up player from cache on logout
      */
     public static void unloadPlayer(Player player) {
-        Origin origin = PLAYER_ORIGINS.remove(player);
+        Origin origin = PLAYER_ORIGINS.remove(player.getUUID());
         if (origin != null) {
             origin.getPassives().forEach(passive -> passive.onRemove(player));
         }
+    }
+
+    /**
+     * Clear all client-side cached data.
+     * Called when disconnecting from a server to prevent data bleeding between servers.
+     */
+    public static void clearClientCache() {
+        PLAYER_ORIGINS.clear();
+        VeilOrigins.LOGGER.debug("Cleared all client-side origin cache");
     }
 
     /**

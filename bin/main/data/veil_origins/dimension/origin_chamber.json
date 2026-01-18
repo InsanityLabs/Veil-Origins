@@ -1,0 +1,20 @@
+{
+  "type": "veil_origins:origin_chamber",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "minecraft:the_void",
+      "layers": [
+        {
+          "block": "minecraft:obsidian",
+          "height": 1
+        },
+        {
+          "block": "minecraft:air",
+          "height": 255
+        }
+      ],
+      "structure_overrides": []
+    }
+  }
+}

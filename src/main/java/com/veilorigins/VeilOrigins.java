@@ -1,25 +1,21 @@
 package com.veilorigins;
 
-import com.veilorigins.api.UnicodeFontHandler;
 import com.veilorigins.api.VeilOriginsAPI;
-import com.veilorigins.client.OriginHudOverlay;
 import com.veilorigins.config.VeilOriginsConfig;
 import com.veilorigins.data.OriginData;
+import com.veilorigins.progression.legendary.LegendaryAbilityRegistry;
+import com.veilorigins.progression.SkillTreeRegistry;
 import com.veilorigins.registry.ModItems;
 import com.veilorigins.registry.ModOrigins;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,41 +52,41 @@ public class VeilOrigins {
         LOGGER.info("Veil Origins: Registered {} origins", VeilOriginsAPI.getAllOrigins().size());
         VeilOriginsAPI.getAllOrigins().forEach((id, origin) -> LOGGER.info("  - {} ({})", origin.getDisplayName(), id));
 
+        // Register legendary abilities
+        LegendaryAbilityRegistry.register();
+        LOGGER.info("Veil Origins: Registered legendary abilities for all origins");
+
+        // Register skill trees (OLD system - kept for compatibility)
+        SkillTreeRegistry.init();
+        LOGGER.info("Veil Origins: Registered old skill tree registry");
+        
+        // Initialize NEW skill trees (with actual effects) - MUST be done here for dedicated server
+        com.veilorigins.progression.skill.SkillTrees.initialize();
+        LOGGER.info("Veil Origins: Initialized new skill trees with {} trees", 
+            com.veilorigins.progression.skill.SkillTrees.getTree("dryad") != null ? "dryad found" : "dryad NOT found");
+
         // Register packets
         modEventBus.addListener(com.veilorigins.network.ModPackets::register);
 
         modEventBus.addListener(this::commonSetup);
 
-        // Register client events directly on the mod event bus
+        // Register client events via separate class to avoid loading client classes on server
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            LOGGER.info("Veil Origins: Registering client events...");
-            modEventBus.addListener(this::onClientSetup);
-            // Note: Keybindings are registered via @EventBusSubscriber in KeyBindings class
-            modEventBus.addListener(this::registerGuiLayers);
+            com.veilorigins.client.ClientSetup.register(modEventBus);
         }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("Veil Origins: Common setup complete");
-    }
-
-    private void onClientSetup(FMLClientSetupEvent event) {
-        // Initialize Unicode font handler for rendering Unicode symbols in HUD
-        event.enqueueWork(() -> {
-            if (UnicodeFontHandler.initialize()) {
-                LOGGER.info("Veil Origins: Unicode font handler initialized successfully");
-            } else {
-                LOGGER.warn("Veil Origins: Unicode font handler initialization failed, falling back to ASCII symbols");
-            }
-        });
-        LOGGER.info("Veil Origins: Client setup complete");
-    }
-
-    private void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.HOTBAR,
-                ResourceLocation.fromNamespaceAndPath(MOD_ID, "origin_hud"),
-                new OriginHudOverlay());
-        LOGGER.info("Veil Origins: Registered HUD overlay");
+        LOGGER.info("Veil Origins: Progression system initialized (Max Level: 50, Max Prestige: 10)");
+        
+        // Verify skill trees are initialized (they should be from constructor)
+        var dryadTree = com.veilorigins.progression.skill.SkillTrees.getTree("dryad");
+        if (dryadTree != null) {
+            LOGGER.info("Veil Origins: Skill trees verified - dryad tree has {} skills", 
+                dryadTree.getAllSkills().size());
+        } else {
+            LOGGER.error("Veil Origins: CRITICAL - Skill trees NOT initialized! Dryad tree is null!");
+        }
     }
 }
-

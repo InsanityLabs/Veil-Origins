@@ -14,7 +14,7 @@ public class SolarPoweredPassive extends OriginPassive {
     @Override
     public void onTick(Player player) {
         Level level = player.level();
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         long time = level.getDayTime() % 24000;

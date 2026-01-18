@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
@@ -53,8 +52,7 @@ public class RaiseDeadAbility extends OriginAbility {
 
             // Alternate between zombie and skeleton
             if (i % 2 == 0) {
-                Zombie zombie = EntityType.ZOMBIE.create(serverLevel, null, spawnPos, MobSpawnType.MOB_SUMMONED, false,
-                        false);
+                Zombie zombie = EntityType.ZOMBIE.create(serverLevel);
                 if (zombie != null) {
                     // Make the zombie serve the necromancer
                     zombie.setPos(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
@@ -80,8 +78,7 @@ public class RaiseDeadAbility extends OriginAbility {
                     spawnSummonParticles(serverLevel, spawnPos);
                 }
             } else {
-                Skeleton skeleton = EntityType.SKELETON.create(serverLevel, null, spawnPos, MobSpawnType.MOB_SUMMONED,
-                        false, false);
+                Skeleton skeleton = EntityType.SKELETON.create(serverLevel);
                 if (skeleton != null) {
                     skeleton.setPos(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
                     skeleton.setPersistenceRequired();
@@ -118,8 +115,8 @@ public class RaiseDeadAbility extends OriginAbility {
                 SoundEvents.EVOKER_PREPARE_SUMMON, SoundSource.PLAYERS, 1.0f, 0.8f);
 
         // Notify player
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                ChatFormatting.DARK_PURPLE + "You raise " + summoned + " undead minions from the grave!"));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                ChatFormatting.DARK_PURPLE + "You raise " + summoned + " undead minions from the grave!"), false);
 
         startCooldown();
     }

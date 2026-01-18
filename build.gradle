@@ -6,7 +6,7 @@ plugins {
     id 'net.neoforged.gradle.userdev' version '7.0.163'
 }
 
-version = '1.0.4'
+version = mod_version
 group = 'com.veilorigins'
 
 base {
@@ -53,6 +53,9 @@ runs {
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+// Add templates to resources for processing
+sourceSets.main.resources { srcDir 'src/main/templates' }
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"

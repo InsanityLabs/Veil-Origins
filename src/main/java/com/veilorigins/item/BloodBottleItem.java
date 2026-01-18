@@ -19,7 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class BloodBottleItem extends Item {
     }
     
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         
         // Only vampires can drink blood
@@ -90,7 +89,7 @@ public class BloodBottleItem extends Item {
     }
     
     @Override
-    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity) {
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!(entity instanceof Player player)) {
             return stack;
         }
@@ -133,28 +132,28 @@ public class BloodBottleItem extends Item {
         }
     }
     
-    // Note: getUseDuration signature may differ in 1.21.1 - keeping method for functionality
-    public int getUseDuration(@NotNull ItemStack stack) {
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 32; // Same as vanilla drinking
     }
     
     @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+    public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.DRINK;
     }
     
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltipComponents, flag);
         
         if (bloodAmount == 0) {
-            tooltip.add(Component.literal("Empty - fill by draining blood").withStyle(ChatFormatting.GRAY));
+            tooltipComponents.add(Component.literal("Empty - fill by draining blood").withStyle(ChatFormatting.GRAY));
         } else if (bloodAmount == 50) {
-            tooltip.add(Component.literal("Half Full - restores 50 blood").withStyle(ChatFormatting.DARK_RED));
+            tooltipComponents.add(Component.literal("Half Full - restores 50 blood").withStyle(ChatFormatting.DARK_RED));
         } else if (bloodAmount == 100) {
-            tooltip.add(Component.literal("Full - restores 100 blood").withStyle(ChatFormatting.RED));
+            tooltipComponents.add(Component.literal("Full - restores 100 blood").withStyle(ChatFormatting.RED));
         }
         
-        tooltip.add(Component.literal("Only vampires can drink this").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+        tooltipComponents.add(Component.literal("Only vampires can drink this").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
     }
 }

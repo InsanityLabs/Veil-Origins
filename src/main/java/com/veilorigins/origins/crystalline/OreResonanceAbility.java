@@ -57,7 +57,7 @@ public class OreResonanceAbility extends OriginAbility {
 
     @Override
     public void onActivate(Player player, Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         BlockPos center = player.blockPosition();
@@ -113,9 +113,9 @@ public class OreResonanceAbility extends OriginAbility {
                     .append(ChatFormatting.DARK_GRAY + ": " + ChatFormatting.WHITE)
                     .append(count).append(" "));
             message.append(ChatFormatting.DARK_GRAY + ")");
-            player.sendSystemMessage(Component.literal(message.toString()));
+            player.displayClientMessage(Component.literal(message.toString()), false);
         } else {
-            player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "No ores detected nearby..."));
+            player.displayClientMessage(Component.literal(ChatFormatting.GRAY + "No ores detected nearby..."), false);
         }
 
         player.causeFoodExhaustion(HUNGER_COST);
@@ -125,7 +125,7 @@ public class OreResonanceAbility extends OriginAbility {
     @Override
     public void tick(Player player) {
         Level level = player.level();
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         UUID id = player.getUUID();
@@ -154,7 +154,7 @@ public class OreResonanceAbility extends OriginAbility {
 
             if (markers.isEmpty()) {
                 activeMarkers.remove(id);
-                player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Ore Resonance faded."));
+                player.displayClientMessage(Component.literal(ChatFormatting.GRAY + "Ore Resonance faded."), false);
             }
         }
     }

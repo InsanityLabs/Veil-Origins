@@ -14,14 +14,14 @@ public class IncorporealPassive extends OriginPassive {
         // "Cannot wear armor" - Drop armor if equipped?
         // Or handle in event handler preventing equip.
         // Simple enforcement:
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlot.values()) {
                 if (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR) { // Armor slots
                     if (!player.getItemBySlot(slot).isEmpty()) {
                         player.drop(player.getItemBySlot(slot).copy(), true);
                         player.setItemSlot(slot, net.minecraft.world.item.ItemStack.EMPTY);
-                        player.sendSystemMessage(net.minecraft.network.chat.Component
-                                .literal(ChatFormatting.RED + "Your ethereal form cannot bear physical armor!"));
+                        player.displayClientMessage(net.minecraft.network.chat.Component
+                                .literal(ChatFormatting.RED + "Your ethereal form cannot bear physical armor!"), false);
                     }
                 }
             }

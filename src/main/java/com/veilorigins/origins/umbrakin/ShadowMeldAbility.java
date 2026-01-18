@@ -29,8 +29,8 @@ public class ShadowMeldAbility extends OriginAbility {
 
         // Only works in darkness (light level 7 or below)
         if (lightLevel > 7) {
-            player.sendSystemMessage(Component.literal(
-                    ChatFormatting.RED + "Too bright! Shadow Meld requires darkness (light level 7 or below)."));
+            player.displayClientMessage(Component.literal(
+                    ChatFormatting.RED + "Too bright! Shadow Meld requires darkness (light level 7 or below)."), false);
             return;
         }
 
@@ -50,7 +50,7 @@ public class ShadowMeldAbility extends OriginAbility {
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.5f, 0.5f);
 
-        player.sendSystemMessage(Component.literal(ChatFormatting.DARK_GRAY + "You meld into the shadows..."));
+        player.displayClientMessage(Component.literal(ChatFormatting.DARK_GRAY + "You meld into the shadows..."), false);
 
         startCooldown();
     }
@@ -67,12 +67,12 @@ public class ShadowMeldAbility extends OriginAbility {
                 player.removeEffect(MobEffects.INVISIBILITY);
                 isActive = false;
                 activeDuration = 0;
-                player.sendSystemMessage(Component.literal(ChatFormatting.RED + "The light breaks your shadow meld!"));
+                player.displayClientMessage(Component.literal(ChatFormatting.RED + "The light breaks your shadow meld!"), false);
             }
 
             if (activeDuration == 0) {
                 isActive = false;
-                player.sendSystemMessage(Component.literal(ChatFormatting.DARK_GRAY + "Shadow Meld ended."));
+                player.displayClientMessage(Component.literal(ChatFormatting.DARK_GRAY + "Shadow Meld ended."), false);
             }
         }
     }
@@ -82,7 +82,7 @@ public class ShadowMeldAbility extends OriginAbility {
             player.removeEffect(MobEffects.INVISIBILITY);
             isActive = false;
             activeDuration = 0;
-            player.sendSystemMessage(Component.literal(ChatFormatting.RED + "Attacking breaks your shadow meld!"));
+            player.displayClientMessage(Component.literal(ChatFormatting.RED + "Attacking breaks your shadow meld!"), false);
         }
     }
 

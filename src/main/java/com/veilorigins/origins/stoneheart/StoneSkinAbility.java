@@ -28,7 +28,7 @@ public class StoneSkinAbility extends OriginAbility {
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, DURATION, -10, false, false));
 
         // Visual feedback
-        player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "You become as immovable as stone!"));
+        player.displayClientMessage(Component.literal(ChatFormatting.GRAY + "You become as immovable as stone!"), false);
 
         startCooldown();
     }
@@ -43,13 +43,13 @@ public class StoneSkinAbility extends OriginAbility {
 
             // Warning when ending
             if (activeDuration == 3 * 20) {
-                player.sendSystemMessage(
-                        Component.literal(ChatFormatting.YELLOW + "Stone Skin ending in 3 seconds..."));
+                player.displayClientMessage(
+                        Component.literal(ChatFormatting.YELLOW + "Stone Skin ending in 3 seconds..."), false);
             }
 
             if (activeDuration == 0) {
                 isActive = false;
-                player.sendSystemMessage(Component.literal(ChatFormatting.GRAY + "Stone Skin ended."));
+                player.displayClientMessage(Component.literal(ChatFormatting.GRAY + "Stone Skin ended."), false);
             }
         }
     }

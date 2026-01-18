@@ -30,8 +30,8 @@ public class DarknessBoltAbility extends OriginAbility {
 
         // Only works in darkness (light level below 10)
         if (lightLevel >= 10) {
-            player.sendSystemMessage(Component.literal(
-                    ChatFormatting.RED + "Too bright! Darkness Bolt requires darkness (light level below 10)."));
+            player.displayClientMessage(Component.literal(
+                    ChatFormatting.RED + "Too bright! Darkness Bolt requires darkness (light level below 10)."), false);
             return;
         }
 

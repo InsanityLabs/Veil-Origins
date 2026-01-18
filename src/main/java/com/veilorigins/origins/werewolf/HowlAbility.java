@@ -20,7 +20,7 @@ public class HowlAbility extends OriginAbility {
     private static final int RADIUS = 15;
 
     public HowlAbility() {
-        super("howl", 200);
+        super("howl", 100);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class HowlAbility extends OriginAbility {
         }
 
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.WOLF_HOWL, SoundSource.PLAYERS, 3.0f, 0.8f);
+                SoundEvents.ENDER_DRAGON_GROWL, SoundSource.PLAYERS, 3.0f, 0.8f);
         
         startCooldown();
     }

@@ -95,12 +95,10 @@ public class ForestBondPassive extends OriginPassive {
         if (biomeHolder.is(BiomeTags.IS_JUNGLE)) {
             return true;
         }
-        // Manual check for forest-type biomes by name
-        ResourceLocation biomeKey = level.registryAccess()
-                .registryOrThrow(Registries.BIOME)
-                .getKey(biomeHolder.value());
-        if (biomeKey != null) {
-            String biomeName = biomeKey.getPath().toLowerCase();
+        // Manual check for forest-type biomes by name using the holder's key
+        var biomeKey = biomeHolder.unwrapKey();
+        if (biomeKey.isPresent()) {
+            String biomeName = biomeKey.get().location().getPath().toLowerCase();
             return biomeName.contains("forest") ||
                     biomeName.contains("woods") ||
                     biomeName.contains("grove") ||
@@ -135,8 +133,8 @@ public class ForestBondPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                ChatFormatting.DARK_GREEN + "As a Dryad, forests empower you and animals trust you."));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                ChatFormatting.DARK_GREEN + "As a Dryad, forests empower you and animals trust you."), false);
     }
 
     @Override

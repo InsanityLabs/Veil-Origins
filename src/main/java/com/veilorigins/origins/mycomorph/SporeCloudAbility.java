@@ -45,7 +45,7 @@ public class SporeCloudAbility extends OriginAbility {
         cloud.setRadius((float) RADIUS);
         cloud.setRadiusOnUse(0f);
         cloud.setDuration(DURATION);
-        cloud.setParticle(ParticleTypes.MYCELIUM);
+        // In 1.21.10, setParticle is removed - cloud uses default particle
 
         // Poison enemies
         cloud.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 1)); // Poison II 5s per tick inside?
@@ -102,7 +102,7 @@ public class SporeCloudAbility extends OriginAbility {
 
     private void performEffect(Player player) {
         Level level = player.level();
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         BlockPos center = player.blockPosition();

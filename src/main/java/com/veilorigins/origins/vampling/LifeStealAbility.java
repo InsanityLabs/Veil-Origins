@@ -20,7 +20,7 @@ public class LifeStealAbility extends OriginAbility {
     private static final float HEAL_AMOUNT = 1.5f;
 
     public LifeStealAbility() {
-        super("life_steal", 100);
+        super("life_steal", 60);
     }
 
     @Override

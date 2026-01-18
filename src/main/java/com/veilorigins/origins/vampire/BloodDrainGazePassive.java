@@ -362,32 +362,32 @@ public class BloodDrainGazePassive extends OriginPassive {
             resetDrainState(player, state);
         }
     }
-
+    
     /**
      * Tries to fill a blood bottle in the player's offhand.
      */
     private void tryFillBloodBottle(Player player) {
         ItemStack offhand = player.getOffhandItem();
-        
-        // Check if player has an empty or half blood bottle in offhand
-        if (offhand.is(ModItems.BLOOD_BOTTLE_EMPTY.get())) {
-            // Convert empty to half
-            player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, 
-                    new ItemStack(ModItems.BLOOD_BOTTLE_HALF.get()));
+        if (offhand.getItem() == ModItems.BLOOD_BOTTLE_EMPTY.get()) {
+            // Fill empty -> half
+            offhand.shrink(1);
+            ItemStack filledStack = new ItemStack(ModItems.BLOOD_BOTTLE_HALF.get());
+            if (!player.getInventory().add(filledStack)) {
+                player.drop(filledStack, false);
+            }
             player.displayClientMessage(
-                    Component.literal(ChatFormatting.DARK_RED + "Blood bottle filling..."),
+                    Component.literal(ChatFormatting.GRAY + "(Bottle filling...)"),
                     true);
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.5f, 0.8f);
-        } else if (offhand.is(ModItems.BLOOD_BOTTLE_HALF.get())) {
-            // Convert half to full
-            player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, 
-                    new ItemStack(ModItems.BLOOD_BOTTLE_FULL.get()));
+        } else if (offhand.getItem() == ModItems.BLOOD_BOTTLE_HALF.get()) {
+            // Fill half -> full
+            offhand.shrink(1);
+            ItemStack filledStack = new ItemStack(ModItems.BLOOD_BOTTLE_FULL.get());
+            if (!player.getInventory().add(filledStack)) {
+                player.drop(filledStack, false);
+            }
             player.displayClientMessage(
-                    Component.literal(ChatFormatting.RED + "Blood bottle full!"),
+                    Component.literal(ChatFormatting.DARK_RED + "(Bottle filled!)"),
                     true);
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.5f, 1.0f);
         }
     }
 
@@ -463,9 +463,9 @@ public class BloodDrainGazePassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(Component.literal(
+        player.displayClientMessage(Component.literal(
                 ChatFormatting.DARK_RED + "\u263D Blood Gaze: " + ChatFormatting.GRAY
-                        + "Crouch and stare at a creature with blood for 5 seconds to drain it!"));
+                        + "Crouch and stare at a creature with blood for 5 seconds to drain it!"), false);
     }
 
     @Override

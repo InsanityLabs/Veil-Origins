@@ -5,8 +5,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-@SuppressWarnings("removal")
-@EventBusSubscriber(modid = "veil_origins", bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = "veil_origins")
 public class VeilOriginsConfig {
         // ==================== CONFIG BUILDERS ====================
         private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();

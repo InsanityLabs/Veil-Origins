@@ -41,7 +41,7 @@ public class CrystalSpikeAbility extends OriginAbility {
 
     @Override
     public void onActivate(Player player, Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         Vec3 look = player.getLookAngle();
@@ -56,7 +56,7 @@ public class CrystalSpikeAbility extends OriginAbility {
                     (int) (look.z * i));
 
             // Find ground level
-            while (level.isEmptyBlock(spikePos) && spikePos.getY() > level.getMinBuildHeight()) {
+            while (level.isEmptyBlock(spikePos) && spikePos.getY() > level.dimensionType().minY()) {
                 spikePos = spikePos.below();
             }
             spikePos = spikePos.above(); // Place spike on top of ground
@@ -111,8 +111,8 @@ public class CrystalSpikeAbility extends OriginAbility {
         }
 
         if (!spikesPlaced.isEmpty()) {
-            player.sendSystemMessage(Component
-                    .literal(ChatFormatting.LIGHT_PURPLE + "" + spikesPlaced.size() + " crystal spikes erupted!"));
+            player.displayClientMessage(Component
+                    .literal(ChatFormatting.LIGHT_PURPLE + "" + spikesPlaced.size() + " crystal spikes erupted!"), false);
         }
 
         player.causeFoodExhaustion(HUNGER_COST);
@@ -121,7 +121,7 @@ public class CrystalSpikeAbility extends OriginAbility {
 
     @Override
     public void tick(Player player) {
-        if (player.level().isClientSide)
+        if (player.level().isClientSide())
             return;
 
         Level level = player.level();

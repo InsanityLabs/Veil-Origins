@@ -37,6 +37,28 @@ public record ActivateAbilityPacket(int abilityIndex) implements CustomPacketPay
                     // Only check canUse() - it handles cooldown internally and may allow toggle-off
                     // during cooldown
                     if (ability.canUse(serverPlayer)) {
+                        // Check if vampire/vampling and consume blood for ability cost
+                        String originPath = origin.getId().getPath();
+                        if (originPath.equals("vampire") || originPath.equals("vampling")) {
+                            int bloodCost = ability.getResourceCost();
+                            if (bloodCost > 0) {
+                                com.veilorigins.data.OriginData.PlayerOriginData data = 
+                                    serverPlayer.getData(com.veilorigins.data.OriginData.PLAYER_ORIGIN);
+                                
+                                // Check if player has enough blood
+                                if (data.getResourceBar() < bloodCost) {
+                                    serverPlayer.displayClientMessage(
+                                        net.minecraft.network.chat.Component.literal(
+                                            net.minecraft.ChatFormatting.RED + "Not enough blood! Need " + bloodCost + " blood."),
+                                        true);
+                                    return;
+                                }
+                                
+                                // Consume blood
+                                data.consumeResource(bloodCost);
+                            }
+                        }
+                        
                         ability.onActivate(serverPlayer, serverPlayer.level());
                         VeilOrigins.LOGGER.info("Player {} activated ability {}",
                                 serverPlayer.getName().getString(), packet.abilityIndex);

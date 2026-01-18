@@ -29,7 +29,7 @@ public class NecromancerWeaknessesPassive extends OriginPassive {
 
             // Check if in direct bright sunlight
             boolean inBrightSunlight = level.canSeeSky(playerPos.above()) &&
-                    level.isDay() &&
+                    (level.getDayTime() < 13000) &&
                     !level.isRaining() &&
                     level.getBrightness(LightLayer.SKY, playerPos.above()) >= 15;
 
@@ -78,9 +78,9 @@ public class NecromancerWeaknessesPassive extends OriginPassive {
 
     @Override
     public void onEquip(Player player) {
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal(
                 ChatFormatting.RED + "Warning: As a Necromancer, prolonged sunlight exposure is harmful. "
-                        + "Healing is less effective. Holy places weaken you."));
+                        + "Healing is less effective. Holy places weaken you."), false);
     }
 
     @Override

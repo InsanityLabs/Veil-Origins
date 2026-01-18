@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.veilorigins.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "veil_origins.refmap.json",
+  "mixins": [
+    "CommandsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

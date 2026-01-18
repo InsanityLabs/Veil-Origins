@@ -58,7 +58,7 @@ public class WindBlastAbility extends OriginAbility {
             }
 
             // Extinguish fire
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 BlockPos center = player.blockPosition();
                 for (BlockPos pos : BlockPos.betweenClosed(center.offset(-3, -1, -3), center.offset(3, 3, 3))) {
                     if (level.getBlockState(pos).is(Blocks.FIRE)) {

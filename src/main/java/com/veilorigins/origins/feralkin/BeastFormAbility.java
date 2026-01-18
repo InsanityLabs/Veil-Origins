@@ -19,7 +19,7 @@ public class BeastFormAbility extends OriginAbility {
     @Override
     public void onActivate(Player player, Level level) {
         // Play transformation sound
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WOLF_GROWL,
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDER_DRAGON_GROWL,
                 SoundSource.PLAYERS, 1.5f, 0.7f);
 
         // Apply beast form effects
